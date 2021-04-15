@@ -1,21 +1,40 @@
-import React from 'react'
-import {Link} from 'react-router-dom';
-import MathJax from '@innodoc/react-mathjax-node'
-import '../index.css'
+import React from 'react';
+import PropTypes from 'prop-types';
+import MathJax from '@innodoc/react-mathjax-node';
+import '../index.css';
 
-const Formula = (props) => {
-    return(
-        <article className="formula">
-            <h3 className="formula-title">{props.title}</h3>
-            <button className='formula-button' title='Delete formula' onClick={() => props.handleRemove(props.id)}><i className='fa fa-trash'></i></button>
-            <Link className='formula-button' title='Edit formula' to={`/edit/${props.id}`}><i className='fa fa-edit'></i></Link>
-            <div style={{clear:"both"}}></div>
-            <MathJax.Provider>
-                <MathJax.MathJaxNode displayType="inline" texCode={props.equation} />
-            </MathJax.Provider>
-            <p>{props.txt}</p>
-        </article>
-    );
-}
+const Formula = ({
+  id, title, equation, txt, handleRemove,
+}) => (
+  <article className="formula">
+    <h3 className="formula-title">{title}</h3>
+    <button
+      type="button"
+      className="formula-button"
+      title="Delete formula"
+      onClick={() => handleRemove(id)}
+    >
+      <i
+        className="fa fa-trash"
+      />
+    </button>
+    <a className="formula-button" title="Edit formula" href={`http://localhost:3000/edit/${id}`}>
+      <i className="fa fa-edit" />
+    </a>
+    <div style={{ clear: 'both' }} />
+    <MathJax.Provider>
+      <MathJax.MathJaxNode displayType="inline" texCode={equation} />
+    </MathJax.Provider>
+    <p>{txt}</p>
+  </article>
+);
+
+Formula.propTypes = {
+  id: PropTypes.number.isRequired,
+  title: PropTypes.string.isRequired,
+  equation: PropTypes.string.isRequired,
+  txt: PropTypes.string.isRequired,
+  handleRemove: PropTypes.func.isRequired,
+};
 
 export default Formula;

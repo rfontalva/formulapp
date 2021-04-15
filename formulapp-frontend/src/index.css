@@ -1,0 +1,187 @@
+:root {
+    /* dark shades of primary color*/
+    --clr-primary-1: hsl(205, 86%, 17%);
+    --clr-primary-2: hsl(205, 77%, 27%);
+    --clr-primary-3: hsl(205, 72%, 37%);
+    --clr-primary-4: hsl(205, 63%, 48%);
+    /* primary/main color */
+    --clr-primary-5: hsl(205, 78%, 60%);
+    /* lighter shades of primary color */
+    --clr-primary-6: hsl(205, 89%, 70%);
+    --clr-primary-7: hsl(205, 90%, 76%);
+    --clr-primary-8: hsl(205, 86%, 81%);
+    --clr-primary-9: hsl(205, 90%, 88%);
+    --clr-primary-10: hsl(205, 100%, 96%);
+    /* darkest grey - used for headings */
+    --clr-grey-1: hsl(209, 61%, 16%);
+    --clr-grey-2: hsl(211, 39%, 23%);
+    --clr-grey-3: hsl(209, 34%, 30%);
+    --clr-grey-4: hsl(209, 28%, 39%);
+    /* grey used for paragraphs */
+    --clr-grey-5: hsl(210, 22%, 49%);
+    --clr-grey-6: hsl(209, 23%, 60%);
+    --clr-grey-7: hsl(211, 27%, 70%);
+    --clr-grey-8: hsl(210, 31%, 80%);
+    --clr-grey-9: hsl(212, 33%, 89%);
+    --clr-grey-10: hsl(210, 36%, 96%);
+    --clr-white: #fff;
+    --clr-red-dark: hsl(360, 67%, 44%);
+    --clr-red-light: hsl(360, 71%, 66%);
+    --clr-green-dark: hsl(125, 67%, 44%);
+    --clr-green-light: hsl(125, 71%, 66%);
+    --clr-black: #222;
+    --transition: all 0.3s linear;
+    --spacing: 0.1rem;
+    --radius: 0.25rem;
+    --light-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    --dark-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+    --max-width: 1170px;
+    --fixed-width: 450px;
+    --clr-orange-1: hsl(12, 83%, 98%);
+    --clr-orange-2: hsl(14, 91%, 95%);
+    --clr-orange-3: hsl(12, 89%, 89%);
+    --clr-orange-4: hsl(13, 87%, 82%);
+    --clr-orange-5: hsl(13, 88%, 68%);
+    --clr-orange-6: hsl(13, 88%, 55%);
+    --clr-orange-7: hsl(13, 74%, 49%);
+    --clr-orange-8: hsl(13, 74%, 33%);
+    --clr-orange-9: hsl(13, 73%, 25%);
+    --clr-orange-10: hsl(13, 73%, 16%);
+}
+
+body {
+    background-color: lightsteelblue;
+}
+
+.container {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    /* align-items: start; */
+}
+
+.formula {
+    border-style: solid;
+    border-color: transparent;
+    border-radius: var(--radius);
+    border-width: 1px;
+    padding-left: 1rem;
+    background-color: white;
+}
+
+.formula p {
+    white-space: pre-line;
+}
+
+.formula-button {
+    float: right;
+    margin-bottom: 1rem;
+    margin-right: 1rem;
+    margin-top: 1rem;
+    background: var(--clr-primary-5);
+    border-radius: var(--radius);
+    border-color: transparent;
+    color: var(--clr-white);
+    padding: 0.25rem 0.5rem;
+    text-transform: capitalize;
+    cursor: pointer;
+}
+
+.formula-button:hover {
+    background: var(--clr-primary-1);
+    color: var(--clr-primary-5);
+}
+
+.formula-title {
+    float: left;
+    max-width: 10rem;
+
+}
+
+.formula {
+    clear: both;
+}
+
+.topnav {
+    overflow: hidden;
+    background-color: var(--clr-grey-1);
+}
+
+.topnav a {
+    float: left;
+    display: block;
+    color: #f2f2f2;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+
+.topnav a:hover {
+    background-color: var(--clr-grey-6);
+    color: black;
+}
+
+.topnav ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+.input-formula {
+    background: var(--clr-white);
+    max-width: var(--fixed-width);
+    margin: auto;
+    margin-bottom: 4rem;
+    padding: 1rem 2rem;
+    border-radius: var(--radius);
+}
+
+.input-formula input {
+    background: var(--clr-grey-10);
+    border-color: transparent;
+    border-radius: var(--radius);
+    padding: 0.25rem 0.5rem;
+}
+
+.input-formula button {
+    margin-bottom: 1rem;
+    margin-right: 1rem;
+    margin-top: 1rem;
+    background: var(--clr-primary-5);
+    border-radius: var(--radius);
+    border-color: transparent;
+    color: var(--clr-white);
+    padding: 0.25rem 0.5rem;
+    text-transform: capitalize;
+    cursor: pointer;
+    max-height: 2rem;
+}
+
+.input-formula {
+    justify-content: space-between;
+    margin: 10px 0;
+}
+
+.input-formula input, textarea {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;  
+}
+
+.input-formula button {
+    float: right;
+}
+
+.grid {
+    display: grid;
+    place-items: center;
+}
+
+.app-title {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}

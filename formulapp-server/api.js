@@ -1,46 +1,47 @@
+const util = require('util');
 const connection = require('./connection');
 
+const queryDB = util.promisify(connection.query).bind(connection);
+const execSql = async (query) => {
+  try {
+    const results = await queryDB(query);
+    return results;
+  } catch (err) {
+    throw new Error(err);
+  }
+};
+
 function getAllFormulas(req, res) {
-  connection.query('select * from formulapp.equations', (err, results) => {
-    if (err) {
-      return res.send(err);
-    }
-    return res.json({
-      results,
-    });
-  });
+  const selectQuery = 'select * from formulapp.equations';
+  execSql(selectQuery)
+    .then((results) => res.json(results))
+    .catch((error) => res.send(error));
 }
 
 function addFormula(req, res) {
   const { title, equation, txt } = req.query;
-  connection.query(`insert into formulapp.equations (title, equation, txt) VALUE ('${title}', '${equation}', '${txt}')`, (err) => {
-    if (err) {
-      return res.send(err);
-    }
-    return res.send('added equation');
-  });
+  const insertQuery = `insert into formulapp.equations (title, equation, txt) VALUE ('${title}', '${equation}', '${txt}')`;
+  execSql(insertQuery)
+    .then(() => res.send('Added equation'))
+    .catch((error) => res.send(error));
 }
 
 function editFormula(req, res) {
   const {
     id, title, equation, txt,
   } = req.query;
-  connection.query(`UPDATE formulapp.equations SET title='${title}', equation='${equation}', txt='${txt}' WHERE id_equation=${id}`, (err) => {
-    if (err) {
-      return res.send(err);
-    }
-    return res.send('added equation');
-  });
+  const editQuery = `UPDATE formulapp.equations SET title='${title}', equation='${equation}', txt='${txt}' WHERE id_equation=${id}`;
+  execSql(editQuery)
+    .then(() => res.send(`edited equation: ${title}`))
+    .catch((error) => res.send(error));
 }
 
 function removeFormula(req, res) {
   const { id } = req.query;
-  connection.query(`DELETE FROM formulapp.equations WHERE id_equation = ${id}`, (err) => {
-    if (err) {
-      return res.send(err);
-    }
-    return res.send('removed equation');
-  });
+  const deleteQuery = `DELETE FROM formulapp.equations WHERE id_equation = ${id}`;
+  execSql(deleteQuery)
+    .then(() => res.send('removed equation'))
+    .catch((error) => res.send(error));
 }
 
 function getSelect(req, res) {
@@ -48,14 +49,9 @@ function getSelect(req, res) {
   if (query.includes('insert') || query.includes('update') || query.includes('delete') || query.includes('drop') || query.includes('create')) {
     return res.send('invalid operation');
   }
-  return connection.query(`${query}`, (err, results) => {
-    if (err) {
-      return res.send(err);
-    }
-    return res.json({
-      results,
-    });
-  });
+  return execSql(query)
+    .then((results) => res.json({ results }))
+    .catch((error) => res.send(error));
 }
 
 module.exports = {

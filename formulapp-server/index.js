@@ -6,7 +6,7 @@ const app = express();
 
 app.use(cors());
 
-app.get('/',(req, res) => {
+app.get('/', (req, res) => {
   api.getAllFormulas(req, res);
 });
 

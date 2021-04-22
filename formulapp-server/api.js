@@ -12,7 +12,7 @@ const execSql = async (query) => {
 };
 
 function getAllFormulas(req, res) {
-  const selectQuery = 'select * from formulapp.equations';
+  const selectQuery = 'select * from formulapp.equation';
   execSql(selectQuery)
     .then((results) => res.json(results))
     .catch((error) => res.send(error));
@@ -20,7 +20,7 @@ function getAllFormulas(req, res) {
 
 function addFormula(req, res) {
   const { title, equation, txt } = req.query;
-  const insertQuery = `insert into formulapp.equations (title, equation, txt) VALUE ('${title}', '${equation}', '${txt}')`;
+  const insertQuery = `insert into formulapp.equation (title, equation, txt) VALUE ('${title}', '${equation}', '${txt}')`;
   execSql(insertQuery)
     .then(() => res.send('Added equation'))
     .catch((error) => res.send(error));
@@ -30,7 +30,7 @@ function editFormula(req, res) {
   const {
     id, title, equation, txt,
   } = req.query;
-  const editQuery = `UPDATE formulapp.equations SET title='${title}', equation='${equation}', txt='${txt}' WHERE id_equation=${id}`;
+  const editQuery = `UPDATE formulapp.equation SET title='${title}', equation='${equation}', txt='${txt}' WHERE id_equation=${id}`;
   execSql(editQuery)
     .then(() => res.send(`edited equation: ${title}`))
     .catch((error) => res.send(error));
@@ -38,7 +38,7 @@ function editFormula(req, res) {
 
 function removeFormula(req, res) {
   const { id } = req.query;
-  const deleteQuery = `DELETE FROM formulapp.equations WHERE id_equation = ${id}`;
+  const deleteQuery = `DELETE FROM formulapp.equation WHERE id_equation = ${id}`;
   execSql(deleteQuery)
     .then(() => res.send('removed equation'))
     .catch((error) => res.send(error));

@@ -6,7 +6,7 @@ const Home = () => {
   const getFormulas = () => {
     fetch('http://localhost:4000/')
       .then((response) => response.json())
-      .then((response) => setFormulas(response.results))
+      .then((response) => setFormulas(response))
       .catch((err) => console.error(err));
   };
 

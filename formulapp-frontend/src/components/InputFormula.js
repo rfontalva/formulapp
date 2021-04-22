@@ -1,19 +1,19 @@
 import React, { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import MathJax from '@innodoc/react-mathjax-node';
-import urlEncoding from '../utils/urlUtils';
+import utils from '../utils/urlUtils';
 import '../index.css';
 
 const InputFormula = () => {
   const { id } = useParams();
-  let isNew;
+  let isNew = true;
   if (id) isNew = false;
   const [item, setItem] = React.useState({});
 
   const getFormula = async () => {
     const defaultItem = { title: '', equation: '', txt: '' };
     if (id) {
-      const query = `select * from formulapp.equations where id_equation=${parseInt(id, 10)}`;
+      const query = `select * from formulapp.equation where id_equation=${parseInt(id, 10)}`;
       const response = await fetch(`http://localhost:4000/query?query=${query}`);
       const results = await response.json();
       if (results.results) { setItem(results.results[0]); }
@@ -24,10 +24,10 @@ const InputFormula = () => {
 
   const addFormula = () => {
     let { title, equation, txt } = item;
-    title = title.replace(/\\/g, '\\\\');
-    equation = equation.replace(/\\/g, '\\\\');
-    txt = txt.replace(/\\/g, '\\\\');
-    txt = txt.replace(/<br\s*[/]?>/gi, '\n');
+    const breakLine = true;
+    title = utils.urlEncoding(title);
+    equation = utils.urlEncoding(equation);
+    txt = utils.urlEncoding(txt, breakLine);
     fetch(`http://localhost:4000/add?title=${title}&equation=${equation}&txt=${txt}`)
       .then((response) => response.json())
       .catch((err) => console.error(err));
@@ -36,12 +36,13 @@ const InputFormula = () => {
   const editFormula = () => {
     let { title, equation, txt } = item;
     const breakLine = true;
-    title = urlEncoding(title);
-    equation = urlEncoding(equation);
-    txt = urlEncoding(txt, breakLine);
+    title = utils.urlEncoding(title);
+    equation = utils.urlEncoding(equation);
+    txt = utils.urlEncoding(txt, breakLine);
     fetch(`http://localhost:4000/edit?id=${parseInt(id, 10)}&title=${title}&equation=${equation}&txt=${txt}`)
       .then((response) => response.json())
       .catch((err) => console.error(err));
+    utils.goToUrl('');
   };
 
   const changeHandler = (e) => {
@@ -54,10 +55,10 @@ const InputFormula = () => {
     e.preventDefault();
     if (isNew) {
       addFormula();
+      setItem({});
     } else {
       editFormula();
     }
-    setItem({});
   };
 
   useEffect(() => {

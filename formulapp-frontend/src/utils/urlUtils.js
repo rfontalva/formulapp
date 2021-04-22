@@ -5,4 +5,13 @@ const urlEncoding = (str, breakLine) => {
   return replaced;
 };
 
-export default urlEncoding;
+const goToUrl = (ext) => {
+  window.location.href = `http://localhost:3000/${ext}`;
+};
+
+const utils = {
+  urlEncoding,
+  goToUrl,
+};
+
+export default utils;

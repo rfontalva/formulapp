@@ -95,7 +95,6 @@ body {
 .formula-title {
     float: left;
     max-width: 10rem;
-
 }
 
 .formula {
@@ -119,6 +118,23 @@ body {
 .topnav a:hover {
     background-color: var(--clr-grey-6);
     color: black;
+}
+
+.navbar-item {
+    float: left;
+    display: block;
+    background-color: var(--clr-grey-1);
+    color: #f2f2f2;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+    border-style: none;
+}
+
+.navbar-item:hover {
+    background-color: var(--clr-grey-6);
+    color: black;
+    border-style: none;
 }
 
 .topnav ul {

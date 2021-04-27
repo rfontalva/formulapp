@@ -55,5 +55,5 @@ function getSelect(req, res) {
 }
 
 module.exports = {
-  getAllFormulas, addFormula, editFormula, removeFormula, getSelect,
+  getAllFormulas, addFormula, editFormula, removeFormula, getSelect, execSql,
 };

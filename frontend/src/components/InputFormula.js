@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import MathJax from '@innodoc/react-mathjax-node';
 import utils from '../utils/urlUtils';
+import Equation from '../utils/equationUtils';
 import '../index.css';
 
 const InputFormula = () => {
@@ -9,7 +10,7 @@ const InputFormula = () => {
   let isNew = true;
   if (id) isNew = false;
   const [item, setItem] = React.useState({});
-
+  const [latexParser, setLatex] = React.useState(new Equation(''));
   const getFormula = async () => {
     const defaultItem = { title: '', equation: '', txt: '' };
     if (id) {
@@ -48,6 +49,10 @@ const InputFormula = () => {
   const changeHandler = (e) => {
     const { name } = e.target;
     const { value } = e.target;
+    if (name === 'equation') {
+      setLatex(new Equation(value));
+      console.log(latexParser.terms);
+    }
     setItem({ ...item, [name]: value });
   };
 
@@ -62,7 +67,7 @@ const InputFormula = () => {
   };
 
   useEffect(() => {
-    getFormula(id, setItem);
+    if (!isNew) getFormula(id, setItem);
   }, []);
 
   return (
@@ -83,7 +88,7 @@ const InputFormula = () => {
           </label>
         </form>
         <MathJax.Provider>
-          <MathJax.MathJaxNode displayType="inline" texCode={item.equation} />
+          <MathJax.MathJaxNode displayType="inline" texCode={latexParser.latex} />
         </MathJax.Provider>
         <button type="submit" onClick={submitHandler}>Enviar</button>
       </div>

@@ -24,10 +24,10 @@ const InputFormula = () => {
   };
 
   const addFormula = () => {
-    let { title, equation, txt } = item;
+    let { title, txt } = item;
     const breakLine = true;
     title = utils.urlEncoding(title);
-    equation = utils.urlEncoding(equation);
+    const equation = utils.urlEncoding(latexParser.latex);
     txt = utils.urlEncoding(txt, breakLine);
     fetch(`http://localhost:4000/add?title=${title}&equation=${equation}&txt=${txt}`)
       .then((response) => response.json())

@@ -1,7 +1,6 @@
-function transformDivision(terms) {
+function divisionToLatex(terms) {
   let aux = '';
   const newTerms = terms.map((val) => val.expression);
-  console.log(newTerms);
   for (let i = 0; i < terms.length; i += 1) {
     const term = terms[i].expression;
     if (term.includes('/')) {
@@ -13,12 +12,37 @@ function transformDivision(terms) {
   return newTerms;
 }
 
+function divisionToEquation(expression) {
+  const pattern = '\\dfrac{';
+  let expr = expression;
+  let save = '';
+  while (expr.includes(pattern)) {
+    if (expr.indexOf(pattern)) {
+      save = expr.substr(0, expr.indexOf(pattern));
+      expr = expr.substr(expr.indexOf(pattern));
+    }
+    let startIndex = expr.indexOf(pattern) + pattern.length;
+    let endIndex = expr.indexOf('}');
+    let aux = expr.substr(startIndex, endIndex - startIndex);
+    expr = expr.substr(endIndex + 1);
+    startIndex = 1;
+    endIndex = expr.indexOf('}');
+    aux += `/${expr.substr(startIndex, endIndex - startIndex)}`;
+    expr = expr.substr(endIndex + 1);
+    expr = save + aux + expr;
+  }
+  return expr;
+}
+
 class Equation {
-  constructor(equation) {
-    this.parsers = ['+', '-', '='];
-    this.operators = ['/', '^'];
-    this.terms = this.separateInTerms(equation);
-    this.latex = this.transformToLatex();
+  constructor(expression, isLatex) {
+    if (isLatex) {
+      this.transformFromLatex(expression);
+      this.terms = this.separateInTerms(this.latex);
+    } else {
+      this.terms = this.separateInTerms(expression);
+      this.transformToLatex();
+    }
   }
 
   separateInTerms(expression) {
@@ -65,8 +89,12 @@ class Equation {
   }
 
   transformToLatex() {
-    this.terms = transformDivision(this.terms);
-    return this.terms.join('');
+    this.terms = divisionToLatex(this.terms);
+    this.latex = this.terms.join('');
+  }
+
+  transformFromLatex(expression) {
+    this.latex = divisionToEquation(expression);
   }
 }
 

@@ -9,17 +9,22 @@ const InputFormula = () => {
   const { id } = useParams();
   let isNew = true;
   if (id) isNew = false;
-  const [item, setItem] = React.useState({});
+  const [item, setItem] = React.useState({ title: '', equation: '', txt: '' });
   const [latexParser, setLatex] = React.useState(new Equation(''));
+
   const getFormula = async () => {
-    const defaultItem = { title: '', equation: '', txt: '' };
-    if (id) {
+    if (!isNew) {
       const query = `select * from formulapp.equation where id_equation=${parseInt(id, 10)}`;
       const response = await fetch(`http://localhost:4000/query?query=${query}`);
       const results = await response.json();
-      if (results.results) { setItem(results.results[0]); }
-    } else {
-      setItem(defaultItem);
+      if (results.results) {
+        const { title, equation, txt } = results.results[0];
+        const isLatex = true;
+        const expr = new Equation(equation, isLatex).latex;
+        setItem({ title, txt, equation: expr });
+        setLatex(expr);
+        // setItem({ ...item, equation: expr });
+      }
     }
   };
 
@@ -35,10 +40,10 @@ const InputFormula = () => {
   };
 
   const editFormula = () => {
-    let { title, equation, txt } = item;
+    let { title, txt } = item;
     const breakLine = true;
     title = utils.urlEncoding(title);
-    equation = utils.urlEncoding(equation);
+    const equation = utils.urlEncoding(latexParser.latex);
     txt = utils.urlEncoding(txt, breakLine);
     fetch(`http://localhost:4000/edit?id=${parseInt(id, 10)}&title=${title}&equation=${equation}&txt=${txt}`)
       .then((response) => response.json())
@@ -51,7 +56,6 @@ const InputFormula = () => {
     const { value } = e.target;
     if (name === 'equation') {
       setLatex(new Equation(value));
-      console.log(latexParser.terms);
     }
     setItem({ ...item, [name]: value });
   };

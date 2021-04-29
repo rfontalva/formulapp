@@ -22,7 +22,7 @@ const InputFormula = () => {
         const isLatex = true;
         const expr = new Equation(equation, isLatex).latex;
         setItem({ title, txt, equation: expr });
-        setLatex(expr);
+        setLatex(new Equation(expr));
         // setItem({ ...item, equation: expr });
       }
     }
@@ -82,13 +82,13 @@ const InputFormula = () => {
             Title
             <input type="text" id="formulaTitle" name="title" onChange={changeHandler} value={item.title} />
           </label>
-          <label htmlFor="formulaEquation">
-            Equation
-            <input type="text" id="formulaEquation" name="equation" onChange={changeHandler} value={item.equation} />
-          </label>
           <label htmlFor="formulaTxt">
             Description
             <textarea id="formulaTxt" name="txt" onChange={changeHandler} value={item.txt} />
+          </label>
+          <label htmlFor="formulaEquation">
+            Equation
+            <input type="text" id="formulaEquation" name="equation" onChange={changeHandler} value={item.equation} />
           </label>
         </form>
         <MathJax.Provider>

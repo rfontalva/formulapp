@@ -1,7 +1,18 @@
+function nthIndex(str, pat, n) {
+  let asArrayI = n + 1;
+  const L = str.length; let
+    i = -1;
+  while (asArrayI-- && i++ < L) {
+    i = str.indexOf(pat, i);
+    if (i < 0) break;
+  }
+  return i;
+}
+
 function divisionToLatex(terms) {
   let aux = '';
   const newTerms = terms.map((val) => val.expression);
-  for (let i = 0; i < terms.length; i += 1) {
+  for (let i = 0; i < terms.length; i++) {
     const term = terms[i].expression;
     if (term.includes('/')) {
       const index = term.search('/');
@@ -46,44 +57,39 @@ class Equation {
   }
 
   separateInTerms(expression) {
-    let lastParse = 0;
+    let lastTermIndex = 0;
+    let lastBracketIndex = 0;
+    let foundBrackets = 0;
     const terms = [];
-    let termStructure = { hasSubterm: false, expression: '', terms: {} };
-    for (let i = 0; i < expression.length; i += 1) {
+    const termStructure = { hasSubterm: false, expression: '', subterms: {} };
+    for (let i = 0; i < expression.length; i++) {
       const symbol = expression[i];
       if (symbol === '(') {
         termStructure.hasSubterm = true;
-        const closeBracket = expression.search(/\)/);
-        termStructure.expression = expression.substr(lastParse, closeBracket + 1);
-        termStructure.terms = this.separateInTerms(
-          expression.substr(i + 1, closeBracket - i - 1),
-        );
-        const clone = { ...termStructure };
-        terms.push(clone);
-        lastParse = closeBracket + 1;
-        i = lastParse;
-        termStructure = {
-          expression: expression.substr(i, 1),
-          hasSubterm: false,
-          terms: {},
-        };
-        terms.push(termStructure);
+        const closeBracket = nthIndex(expression, ')', foundBrackets);
+        if (closeBracket !== -1) {
+          foundBrackets++;
+          termStructure.expression = expression.substr(lastBracketIndex, closeBracket + 1);
+          termStructure.subterms = this.separateInTerms(
+            expression.substr(i + 1, closeBracket - i - 1),
+          );
+          lastBracketIndex = closeBracket;
+          i = lastBracketIndex;
+        }
       }
       if (symbol === '+' || symbol === '-' || symbol === '=') {
-        termStructure.expression = expression.substr(lastParse, i - lastParse);
-        lastParse = i + 1;
-        const clone = { ...termStructure };
+        termStructure.expression = expression.substr(lastTermIndex, i - lastTermIndex);
+        lastTermIndex = i + 1;
+        let clone = { ...termStructure };
         terms.push(clone);
         termStructure.expression = expression.substr(i, 1);
-        terms.push(termStructure);
+        clone = { ...termStructure };
+        terms.push(clone);
+        termStructure.hasSubterm = false;
+        termStructure.subterm = {};
       }
-      termStructure = {
-        hasSubterm: false,
-        expression: '',
-        terms: {},
-      };
     }
-    termStructure.expression = expression.substr(lastParse);
+    termStructure.expression = expression.substr(lastTermIndex);
     terms.push(termStructure);
     return terms;
   }

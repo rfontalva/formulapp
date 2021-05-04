@@ -104,6 +104,7 @@ body {
 .topnav {
     overflow: hidden;
     background-color: var(--clr-grey-1);
+    height: 3rem;
 }
 
 .topnav a {
@@ -113,6 +114,7 @@ body {
     text-align: center;
     padding: 14px 16px;
     text-decoration: none;
+    height: 3rem;
 }
 
 .topnav a:hover {
@@ -209,4 +211,33 @@ body {
 .app-title {
     margin-top: 1rem;
     margin-bottom: 1rem;
+}
+
+.search-box input {
+    display: inline-block;
+    height: 1rem;
+}
+
+.search-box button {
+    display: inline-block;
+    margin-right: 1rem;
+    margin-top: 0.75rem;
+    margin-bottom: 0.75rem;
+    height: 1.5rem;
+    background: var(--clr-primary-5);
+    border-radius: var(--radius);
+    border-color: transparent;
+    color: var(--clr-white);
+    padding: 0.25rem 0.5rem;
+    cursor: pointer;
+}
+
+.search-box button i {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.topnav .search-box {
+    float: right;
 }

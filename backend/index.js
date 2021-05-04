@@ -6,6 +6,10 @@ const app = express();
 
 app.use(cors());
 
+app.listen(4000, '0.0.0.0', () => {
+  console.log('Backend is up');
+});
+
 app.get('/', (req, res) => {
   api.getAllFormulas(req, res);
 });
@@ -24,8 +28,4 @@ app.get('/remove', (req, res) => {
 
 app.get('/query', (req, res) => {
   api.getSelect(req, res);
-});
-
-app.listen(4000, () => {
-  console.log('Backend is up');
 });

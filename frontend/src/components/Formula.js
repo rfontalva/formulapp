@@ -18,7 +18,7 @@ const Formula = ({
         className="fa fa-trash"
       />
     </button>
-    <a className="formula-button" title="Edit formula" href={`http://localhost:3000/edit/${id}`}>
+    <a className="formula-button" title="Edit formula" href={`${window.frontend}edit/${id}`}>
       <i className="fa fa-edit" />
     </a>
     <div style={{ clear: 'both' }} />

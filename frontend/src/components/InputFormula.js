@@ -15,7 +15,7 @@ const InputFormula = () => {
   const getFormula = async () => {
     if (!isNew) {
       const query = `select * from formulapp.equation where id_equation=${parseInt(id, 10)}`;
-      const response = await fetch(`http://localhost:4000/query?query=${query}`);
+      const response = await fetch(`${window.backend}query?query=${query}`);
       const results = await response.json();
       if (results.results) {
         const { title, equation, txt } = results.results[0];
@@ -34,7 +34,7 @@ const InputFormula = () => {
     title = utils.urlEncoding(title);
     const equation = utils.urlEncoding(latexParser.latex);
     txt = utils.urlEncoding(txt, breakLine);
-    fetch(`http://localhost:4000/add?title=${title}&equation=${equation}&txt=${txt}`)
+    fetch(`${window.backend}add?title=${title}&equation=${equation}&txt=${txt}`)
       .then((response) => response.json())
       .catch((err) => console.error(err));
   };
@@ -45,7 +45,7 @@ const InputFormula = () => {
     title = utils.urlEncoding(title);
     const equation = utils.urlEncoding(latexParser.latex);
     txt = utils.urlEncoding(txt, breakLine);
-    fetch(`http://localhost:4000/edit?id=${parseInt(id, 10)}&title=${title}&equation=${equation}&txt=${txt}`)
+    fetch(`${window.backend}edit?id=${parseInt(id, 10)}&title=${title}&equation=${equation}&txt=${txt}`)
       .then((response) => response.json())
       .catch((err) => console.error(err));
     utils.goToUrl('');

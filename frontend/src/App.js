@@ -6,6 +6,9 @@ import InputFormula from './components/InputFormula';
 import Navbar from './components/Navbar';
 import Error from './components/Error';
 
+window.backend = 'http://192.168.1.12:4000/';
+window.frontend = 'http://192.168.1.12:3000/';
+
 const Formulapp = () => (
   <div className="app-title">
     <h1 style={{ display: 'inline' }}>Formulapp</h1>
@@ -29,6 +32,9 @@ const App = () => (
       </Route>
       <Route path="/edit/:id">
         <InputFormula />
+      </Route>
+      <Route path="/search/:searchTitle">
+        <Home search />
       </Route>
       <Route path="*">
         <Error />

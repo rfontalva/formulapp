@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import MathJax from '@innodoc/react-mathjax-node';
 import utils from '../utils/urlUtils';
 import Equation from '../utils/equationUtils';
+import dbUtils from '../utils/dbUtils';
 import '../index.css';
 
 const InputFormula = () => {
@@ -12,20 +13,15 @@ const InputFormula = () => {
   const [item, setItem] = React.useState({ title: '', equation: '', txt: '' });
   const [latexParser, setLatex] = React.useState(new Equation(''));
 
-  const getFormula = async () => {
-    if (!isNew) {
-      const query = `select * from formulapp.equation where id_equation=${parseInt(id, 10)}`;
-      const response = await fetch(`${window.backend}query?query=${query}`);
-      const results = await response.json();
-      if (results.results) {
-        const { title, equation, txt } = results.results[0];
-        const isLatex = true;
-        const expr = new Equation(equation, isLatex).latex;
-        setItem({ title, txt, equation: expr });
-        setLatex(new Equation(expr));
-        // setItem({ ...item, equation: expr });
-      }
-    }
+  const getFormula = () => {
+    const query = `select * from formulapp.equation where id_equation=${parseInt(id, 10)}`;
+    dbUtils.getRows(query).then((results) => {
+      const { title, equation, txt } = results[0];
+      const isLatex = true;
+      const expr = new Equation(equation, isLatex).latex;
+      setItem({ title, txt, equation: expr });
+      setLatex(new Equation(expr));
+    });
   };
 
   const addFormula = () => {
@@ -71,7 +67,7 @@ const InputFormula = () => {
   };
 
   useEffect(() => {
-    if (!isNew) getFormula(id, setItem);
+    if (!isNew) getFormula();
   }, []);
 
   return (

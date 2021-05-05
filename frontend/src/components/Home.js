@@ -8,16 +8,15 @@ const Home = ({ search }) => {
   const isSearch = search;
   let searchTitle = '';
   if (isSearch) {
-    searchTitle = useParams();
+    searchTitle = useParams().searchTitle;
   }
   const [formulas, setFormulas] = React.useState([]);
   const getFormulas = () => {
     if (isSearch) {
-      console.log(searchTitle);
-      const query = `select * from formulapp.equation where title = '${searchTitle}'`;
-      console.log(query);
+      const query = `select * from formulapp.equation where title like '%${searchTitle}%'`;
       dbUtils.getRows(query)
-        .then((results) => console.log(results.results));
+        .then((results) => setFormulas(results))
+        .catch((err) => console.error(err));
     } else {
       fetch(window.backend)
         .then((response) => response.json())

@@ -39,7 +39,7 @@ const InputFormula = () => {
     let { title, txt } = item;
     const breakLine = true;
     title = utils.urlEncoding(title);
-    const equation = utils.urlEncoding(latexParser.latex);
+    const equation = encodeURIComponent(latexParser.latex);
     txt = utils.urlEncoding(txt, breakLine);
     fetch(`${window.backend}edit?id=${parseInt(id, 10)}&title=${title}&equation=${equation}&txt=${txt}`)
       .then((response) => response.json())

@@ -1,7 +1,5 @@
-import urlUtils from './urlUtils';
-
 async function getRows(query) {
-  const encoded = urlUtils.urlEncoding(query);
+  const encoded = encodeURIComponent(query);
   console.log(encoded, query);
   const response = await fetch(`${window.backend}query?query=${encoded}`);
   const results = await response.json();

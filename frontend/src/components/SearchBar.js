@@ -9,13 +9,25 @@ const SearchBar = () => {
     setSearch(e.target.value);
   };
 
+  const keyDownHandler = (e) => {
+    if (e.keyCode === 13) utils.goToUrl(`search/${search}`);
+  };
+
   const clickHandler = () => {
     if (search !== '') utils.goToUrl(`search/${search}`);
   };
 
   return (
     <div className="search-box">
-      <input type="text" id="searchBox" name="searchBox" placeholder="Buscar..." onChange={changeHandler} value={search} />
+      <input
+        type="text"
+        id="searchBox"
+        name="searchBox"
+        placeholder="Buscar..."
+        onChange={changeHandler}
+        onKeyDown={keyDownHandler}
+        value={search}
+      />
       <button
         aria-label="Search"
         type="button"

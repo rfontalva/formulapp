@@ -50,7 +50,7 @@ function getSelect(req, res) {
     return res.send('invalid operation');
   }
   return execSql(query)
-    .then((results) => res.json({ results }))
+    .then((results) => res.json(results))
     .catch((error) => res.send(error));
 }
 

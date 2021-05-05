@@ -13,6 +13,9 @@ const Navbar = () => (
         <li>
           <a href="/add">Agregar</a>
         </li>
+        <li>
+          <a href="/lookup">Buscar</a>
+        </li>
       </ul>
     </nav>
   </div>

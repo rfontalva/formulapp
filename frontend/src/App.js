@@ -5,6 +5,7 @@ import Home from './components/Home';
 import InputFormula from './components/InputFormula';
 import Navbar from './components/Navbar';
 import Error from './components/Error';
+import Lookup from './components/Lookup';
 
 window.backend = 'http://192.168.1.12:4000/';
 window.frontend = 'http://192.168.1.12:3000/';
@@ -35,6 +36,9 @@ const App = () => (
       </Route>
       <Route path="/search/:searchTitle">
         <Home search />
+      </Route>
+      <Route path="/lookup">
+        <Lookup />
       </Route>
       <Route path="*">
         <Error />

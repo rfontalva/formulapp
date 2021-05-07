@@ -53,7 +53,7 @@ const Home = ({ search }) => {
             equation={equation}
             txt={txt}
             handleRemove={handleRemove}
-            buttons="true"
+            buttons
           />
         ))}
       </div>

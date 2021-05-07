@@ -60,6 +60,12 @@ body {
     /* align-items: start; */
 }
 
+@media only screen and (max-width: 768px) {
+    .formulas-container {
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    }
+  }
+
 .formula {
     border-style: solid;
     border-color: transparent;

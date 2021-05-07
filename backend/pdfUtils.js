@@ -1,55 +1,82 @@
-const api = require('./api');
+const puppeteer = require('puppeteer');
+const fs = require('fs');
 
-async function getRow(query) {
-  const response = await api.getSelect(query);
-  const result = await response.json();
-  return result.results[0];
-}
-
-function createCheatSheet(ids, title) {
-  const idsArray = [1, 2];
-  let content = `
-  <!doctype html>
-  <html>
-     <head>
-          <meta charset="utf-8">
-          <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-          <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-          <title>${title}</title>
+const generateCheatsheet = (formulas, header) => {
+  const mapp = formulas.map(((val) => (
+    `<article class="formula">
+          <h3 class="formula-title">${val.title}</h3>
+          <div />
+          <p>$$${val.equation}$$</p>
+          <p>${val.txt}</p>
+        </article>`
+  ))).join('');
+  return (
+    `
+    <!doctype html>
+    <html>
+        <head>
+        <meta charset="utf-8">
+        <script type="text/javascript" id="MathJax-script" async
+          src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+        </script>
+        <title>${header}</title>
         <style>
-            h1 {
-                color: green;
-            }
+          :root {
+            --spacing: 0.1rem;
+            --radius: 0.25rem;
+          }
+          .margin-top {
+            margin-top: 50px;
+          }
+          .justify-center {
+            text-align: center;
+          }
+          .container {
+            display: grid;
+            gap: 1rem;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+          }
+          .formula {
+            border-style: solid;
+            border-radius: var(--radius);
+            border-width: 1px;
+            padding-left: 1rem;
+            background-color: white;
+          }
+          .formula p {
+            white-space: pre-line;
+          }
+          .formula-title {
+            float: left;
+            max-width: 10rem;
+          }
+          .formula {
+            clear: both;
+          }
         </style>
-      </head>
-      <body>
-        <h1>${title}</h1>
-  `;
-  content += idsArray.map((id) => {
-    const query = `select * from formulapp.equation where id_equation = ${id}`;
-    const row = getRow(query);
-    return `
-      <article>
-      <h3>${row.title}</h3>
-      <math display="block">${row.equation}</math>
-      <p>${row.txt}</p>
-      </article>
-      `;
-  });
-  content += `
-    </body>
+        </head>
+        <body>
+        <div class="container">
+            <h1>${header}</h1>
+            ${mapp}
+        </body>
     </html>
-  `;
-  return content;
-}
+    `
+  );
+};
 
-module.exports = { createCheatSheet };
+const printPdf = async (formulas, header) => {
+  const html = generateCheatsheet(formulas, header);
+  const path = `${__dirname}/generic.html`;
+  fs.writeFileSync(path, html);
+  const url = `file:///${path}`;
+  const browser = await puppeteer.launch({
+    headless: true,
+  });
+  const page = await browser.newPage();
+  await page.goto(url, { waitUntil: 'networkidle0' });
+  await page.pdf({ path: `${header}.pdf`, format: 'A4' });
+  await browser.close();
+};
 
-//   const q = api.getSelect(`select * from formulapp.equation where id_equation = ${id}`);
-//   content += `
-//     <article>
-//       <h3>${q.title}</h3>
-//       <math display="block">${q.equation}</math>
-//       <p>${q.txt}</p>
-//     </article>
-//   `;
+module.exports = printPdf;

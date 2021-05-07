@@ -9,7 +9,7 @@ const PdfGenerator = () => {
   const [formulas, setFormulas] = React.useState([]);
 
   const submitHandler = () => {
-    if (csTitle !== '') {
+    if (csTitle !== '' && localStorage.ids) {
       fetch(`${window.backend}create-pdf?${localStorage.ids}header=${csTitle}`, { method: 'POST' })
         .then(() => axios.get(`${window.backend}fetch-pdf?header=${csTitle}`, { responseType: 'blob' }))
         .then((res) => {
@@ -17,10 +17,16 @@ const PdfGenerator = () => {
           saveAs(pdfBlob, `${csTitle}.pdf`);
         })
         .then(() => fetch(`${window.backend}delete-pdf?header=${csTitle}`, { method: 'DELETE' }));
-      localStorage.ids = '';
+      localStorage.removeItem('ids');
     } else {
-      // eslint-disable-next-line no-alert
-      alert('Title can\'t be left empty');
+      if (csTitle === '') {
+        // eslint-disable-next-line no-alert
+        alert('Title can\'t be left empty');
+      }
+      if (!localStorage.ids) {
+        // eslint-disable-next-line no-alert
+        alert('No formulas were selected');
+      }
     }
   };
 
@@ -35,8 +41,7 @@ const PdfGenerator = () => {
   };
 
   React.useEffect(() => {
-    getFormulas();
-    console.log(formulas);
+    if (localStorage.ids) { getFormulas(); }
   }, []);
 
   return (

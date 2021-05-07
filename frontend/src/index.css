@@ -53,10 +53,10 @@ body {
     background-color: lightsteelblue;
 }
 
-.container {
+.formulas-container {
     display: grid;
     gap: 1rem;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
     /* align-items: start; */
 }
 
@@ -207,6 +207,15 @@ body {
     display: grid;
     place-items: center;
 }
+
+.grid-side {
+    display: grid;
+    float: left;
+    place-items: left;
+    max-width: 20rem;
+    margin-right: 2rem;
+}
+
 
 .app-title {
     margin-top: 1rem;

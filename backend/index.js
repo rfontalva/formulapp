@@ -1,3 +1,4 @@
+const fs = require('fs');
 const express = require('express');
 const cors = require('cors');
 const api = require('./api');
@@ -34,10 +35,19 @@ app.get('/query', (req, res) => {
 app.post('/create-pdf', async (req, res) => {
   const ids = req.query.ids.map((x) => +x);
   const formulas = await api.execSql(`select * from formulapp.equation where id_equation in (${ids})`);
-  printPdf(formulas, req.query.header);
+  await printPdf(formulas, req.query.header);
   res.send(Promise.resolve());
 });
 
 app.get('/fetch-pdf', (req, res) => {
-  res.sendFile(`${__dirname}/${req.query.header}.pdf`);
+  const path = `${__dirname}/${req.query.header}.pdf`;
+  console.log(path);
+  res.sendFile(path);
+});
+
+app.delete('/delete-pdf', (req, res) => {
+  const path = `${__dirname}/${req.query.header}.pdf`;
+  fs.unlink(path, (err) => {
+    if (err) { res.send(err); }
+  });
 });

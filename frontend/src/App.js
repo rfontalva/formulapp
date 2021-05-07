@@ -1,11 +1,9 @@
 import React from 'react';
 import MathJax from '@innodoc/react-mathjax-node';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
-import Home from './components/Home';
-import InputFormula from './components/InputFormula';
-import Navbar from './components/Navbar';
-import Error from './components/Error';
-import Lookup from './components/Lookup';
+import {
+  Home, InputFormula, Navbar, Error, Lookup, PdfGenerator,
+} from './components/index';
 
 window.backend = 'http://192.168.1.12:4000/';
 window.frontend = 'http://192.168.1.12:3000/';
@@ -39,6 +37,9 @@ const App = () => (
       </Route>
       <Route path="/lookup">
         <Lookup />
+      </Route>
+      <Route path="/generate">
+        <PdfGenerator />
       </Route>
       <Route path="*">
         <Error />

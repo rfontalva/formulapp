@@ -56,9 +56,10 @@ const generateCheatsheet = (formulas, header) => {
         </style>
         </head>
         <body>
+        <h1>${header}</h1>
         <div class="container">
-            <h1>${header}</h1>
             ${mapp}
+        </div>
         </body>
     </html>
     `

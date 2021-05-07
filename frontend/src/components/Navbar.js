@@ -16,6 +16,9 @@ const Navbar = () => (
         <li>
           <a href="/lookup">Buscar</a>
         </li>
+        <li>
+          <a href="/generate">Crear</a>
+        </li>
       </ul>
     </nav>
   </div>

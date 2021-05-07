@@ -20,7 +20,9 @@ const Home = ({ search }) => {
     } else {
       fetch(window.backend)
         .then((response) => response.json())
-        .then((response) => setFormulas(response))
+        .then((response) => {
+          setFormulas(response);
+        })
         .catch((err) => console.error(err));
     }
   };
@@ -38,7 +40,7 @@ const Home = ({ search }) => {
 
   return (
     <>
-      <div className="container">
+      <div className="formulas-container">
         {formulas.map((
           {
             id_equation, title, equation, txt,
@@ -51,6 +53,7 @@ const Home = ({ search }) => {
             equation={equation}
             txt={txt}
             handleRemove={handleRemove}
+            buttons="true"
           />
         ))}
       </div>

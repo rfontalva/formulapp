@@ -104,3 +104,7 @@ dist
 .tern-port
 
 .vscode
+
+*.pdf
+
+/backend/generic.html

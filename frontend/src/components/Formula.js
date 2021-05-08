@@ -6,17 +6,19 @@ import '../index.css';
 const Formula = ({
   id, title, equation, txt, handleRemove, buttons,
 }) => {
+  const [isAdded, setAdded] = React.useState(false);
   const addId = () => {
     if (!localStorage.ids) {
       localStorage.ids = '';
     }
     localStorage.ids += `ids=${id}&`;
+    setAdded(true);
   };
 
   return (
     <article className="formula">
       <h3 className="formula-title">{title}</h3>
-      {buttons && (
+      {handleRemove && (
       <button
         type="button"
         className="formula-button"
@@ -33,18 +35,19 @@ const Formula = ({
         <i className="fa fa-edit" />
       </a>
       )}
-      {buttons && (
-      <button
-        type="button"
-        className="formula-button"
-        title="Add formula"
-        onClick={addId}
-      >
-        <i
-          className="fa fa-plus"
-        />
-      </button>
-      )}
+      {buttons && !isAdded
+        && (
+        <button
+          type="button"
+          className="formula-button"
+          title="Add formula"
+          onClick={addId}
+        >
+          <i
+            className="fa fa-plus"
+          />
+        </button>
+        )}
       <div style={{ clear: 'both' }} />
       <MathJax.Provider>
         <MathJax.MathJaxNode displayType="inline" texCode={equation} />
@@ -64,7 +67,7 @@ Formula.propTypes = {
 };
 
 Formula.defaultProps = {
-  handleRemove: () => {},
+  handleRemove: undefined,
   buttons: false,
 };
 

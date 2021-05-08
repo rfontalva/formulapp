@@ -10,9 +10,14 @@ const goToUrl = (ext) => {
   window.location.href = `${window.frontend}${ext}`;
 };
 
+const goHome = () => {
+  window.location.href = `${window.frontend}`;
+};
+
 const utils = {
   urlEncoding,
   goToUrl,
+  goHome,
 };
 
 export default utils;

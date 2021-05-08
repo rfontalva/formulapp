@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import MathJax from '@innodoc/react-mathjax-node';
-import utils from '../utils/urlUtils';
+import urlUtils from '../utils/urlUtils';
 import Equation from '../utils/equationUtils';
 import dbUtils from '../utils/dbUtils';
 import '../index.css';
@@ -27,9 +27,9 @@ const InputFormula = () => {
   const addFormula = () => {
     let { title, txt } = item;
     const breakLine = true;
-    title = utils.urlEncoding(title);
-    const equation = utils.urlEncoding(latexParser.latex);
-    txt = utils.urlEncoding(txt, breakLine);
+    title = urlUtils.urlEncoding(title);
+    const equation = urlUtils.urlEncoding(latexParser.latex);
+    txt = urlUtils.urlEncoding(txt, breakLine);
     fetch(`${window.backend}add?title=${title}&equation=${equation}&txt=${txt}`)
       .then((response) => response.json())
       .catch((err) => console.error(err));
@@ -38,13 +38,13 @@ const InputFormula = () => {
   const editFormula = () => {
     let { title, txt } = item;
     const breakLine = true;
-    title = utils.urlEncoding(title);
+    title = urlUtils.urlEncoding(title);
     const equation = encodeURIComponent(latexParser.latex);
-    txt = utils.urlEncoding(txt, breakLine);
+    txt = urlUtils.urlEncoding(txt, breakLine);
     fetch(`${window.backend}edit?id=${parseInt(id, 10)}&title=${title}&equation=${equation}&txt=${txt}`)
       .then((response) => response.json())
       .catch((err) => console.error(err));
-    utils.goToUrl('');
+    urlUtils.goHome();
   };
 
   const changeHandler = (e) => {
@@ -60,7 +60,11 @@ const InputFormula = () => {
     e.preventDefault();
     if (isNew) {
       addFormula();
-      setItem({});
+      const x = document.getElementById('snackbar');
+      x.className = 'show';
+      setTimeout(() => { x.className = x.className.replace('show', ''); }, 3000);
+      // setItem({ title: '', equation: '', txt: '' });
+      setLatex(new Equation(''));
     } else {
       editFormula();
     }
@@ -91,6 +95,9 @@ const InputFormula = () => {
           <MathJax.MathJaxNode displayType="inline" texCode={latexParser.latex} />
         </MathJax.Provider>
         <button type="submit" onClick={submitHandler}>Enviar</button>
+      </div>
+      <div id="snackbar">
+        {`Se agrego ${item.title}`}
       </div>
     </article>
   );

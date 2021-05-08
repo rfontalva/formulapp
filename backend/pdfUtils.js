@@ -7,7 +7,7 @@ const generateCheatsheet = (formulas, header) => {
           <h3 class="formula-title">${val.title}</h3>
           <div />
           <p>$$${val.equation}$$</p>
-          <p>${val.txt}</p>
+          <p class="txt">${val.txt}</p>
         </article>`
   ))).join('');
   return (
@@ -43,7 +43,9 @@ const generateCheatsheet = (formulas, header) => {
             padding-left: 1rem;
             background-color: white;
           }
-          .formula p {
+          .formula .txt {
+            margin-top: 2rem;
+            max-width: 95%;
             white-space: pre-line;
           }
           .formula-title {

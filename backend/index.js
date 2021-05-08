@@ -41,7 +41,6 @@ app.post('/create-pdf', async (req, res) => {
 
 app.get('/fetch-pdf', (req, res) => {
   const path = `${__dirname}/${req.query.header}.pdf`;
-  console.log(path);
   res.sendFile(path);
 });
 

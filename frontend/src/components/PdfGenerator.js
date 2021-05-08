@@ -2,6 +2,7 @@ import React from 'react';
 import axios from 'axios';
 import { saveAs } from 'file-saver';
 import dbUtils from '../utils/dbUtils';
+// import urlUtils from '../utils/urlUtils';
 import Formula from './Formula';
 
 const PdfGenerator = () => {
@@ -18,6 +19,7 @@ const PdfGenerator = () => {
         })
         .then(() => fetch(`${window.backend}delete-pdf?header=${csTitle}`, { method: 'DELETE' }));
       localStorage.removeItem('ids');
+      // urlUtils.goHome();
     } else {
       if (csTitle === '') {
         // eslint-disable-next-line no-alert
@@ -43,6 +45,12 @@ const PdfGenerator = () => {
   React.useEffect(() => {
     if (localStorage.ids) { getFormulas(); }
   }, []);
+
+  const handleRemove = (id) => {
+    const replaced = localStorage.ids.replace(`ids=${id}&`, '');
+    localStorage.ids = replaced;
+    getFormulas();
+  };
 
   return (
     <div className="cheatsheet">
@@ -70,6 +78,7 @@ const PdfGenerator = () => {
             title={title}
             equation={equation}
             txt={txt}
+            handleRemove={handleRemove}
           />
         ))}
       </div>

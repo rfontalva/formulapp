@@ -19,22 +19,53 @@ function getAllFormulas(req, res) {
 }
 
 function addFormula(req, res) {
-  const { title, equation, txt } = req.query;
-  const insertQuery = `insert into formulapp.equation (title, equation, txt) VALUE ('${title}', '${equation}', '${txt}')`;
-  execSql(insertQuery)
+  const { title, equation, txt, category, topic } = req.query;
+  const insertEquation = `INSERT INTO formulapp.equation (title, equation, txt) VALUE ('${title}', '${equation}', '${txt}')`;
+  const insertCategory = `INSERT IGNORE INTO formulapp.category (txt) VALUE ('${category}')`;
+  const insertTopic = `INSERT INTO formulapp.topic (id_category, txt)
+  SELECT * FROM (SELECT id_category, '${topic}' AS txt FROM formulapp.category c
+    WHERE c.txt='${category}') AS tmp 
+  WHERE NOT EXISTS 
+    (SELECT id_category, txt FROM formulapp.topic t WHERE id_category=(SELECT id_category FROM formulapp.category c
+    WHERE c.txt='${category}') AND t.txt='${topic}')`;
+  const insertTag = `INSERT INTO formulapp.tag (id_equation, id_category, id_topic) VALUE 
+  ((SELECT id_equation FROM formulapp.equation WHERE title='${title}'),
+  (SELECT id_category FROM formulapp.category WHERE txt='${category}'),
+  (SELECT id_topic FROM formulapp.topic WHERE txt='${topic}'))`;
+  execSql(insertEquation)
+    .then(() => execSql(insertCategory))
+    .then(() => execSql(insertTopic))
+    .then(() => execSql(insertTag))
     .then(() => res.send('Added equation'))
     .catch((error) => res.send(error));
 }
 
-function editFormula(req, res) {
+async function editFormula(req, res) {
   const {
-    id, title, equation, txt,
+    id, title, equation, txt, category, topic
   } = req.query;
-  const editQuery = `UPDATE formulapp.equation SET title='${title}', equation='${equation}', txt='${txt}' WHERE id_equation=${id}`;
-  execSql(editQuery)
-    .then(() => res.send(`edited equation: ${title}`))
-    .catch((error) => res.send(error));
-}
+  const editEquation = `UPDATE formulapp.equation SET title='${title}', equation='${equation}', txt='${txt}' WHERE id_equation=${id}`;
+  const insertCategory = `INSERT IGNORE INTO formulapp.category (txt) VALUE ('${category}')`;
+  const insertTopic = `INSERT INTO formulapp.topic (id_category, txt)
+  SELECT * FROM (SELECT id_category, '${topic}' AS txt FROM formulapp.category c
+    WHERE c.txt='${category}') AS tmp 
+  WHERE NOT EXISTS 
+    (SELECT id_category, txt FROM formulapp.topic t WHERE id_category=(SELECT id_category FROM formulapp.category c
+    WHERE c.txt='${category}') AND t.txt='${topic}')`;
+  const editTag = `UPDATE formulapp.tag SET 
+  id_category=(SELECT id_category FROM formulapp.category WHERE txt='${category}'),
+  id_topic=(SELECT id_topic FROM formulapp.topic WHERE txt='${topic}')
+  WHERE id_equation = (SELECT id_equation FROM formulapp.equation WHERE title='${title}')`;
+  try {
+    await execSql(editEquation);
+    await execSql(insertCategory);
+    await execSql(insertTopic);
+    await execSql(editTag);
+    res.send(`edited equation: ${title}`);
+  } catch (error){
+    res.send(error);
+  }
+};
 
 function removeFormula(req, res) {
   const { id } = req.query;

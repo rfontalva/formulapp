@@ -1,8 +1,7 @@
-const urlEncoding = (str, breakLine) => {
+const urlEncoding = (str) => {
   let replaced = str.replace(/\\/g, '\\\\');
   replaced = replaced.replace(/\+/g, '%2b');
   replaced = replaced.replace(/'/g, '%27');
-  if (breakLine) { replaced = replaced.replace(/<br\s*[/]?>/gi, '\\n'); }
   return replaced;
 };
 

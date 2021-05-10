@@ -5,8 +5,8 @@ import {
   Home, InputFormula, Navbar, Error, Lookup, PdfGenerator,
 } from './components/index';
 
-window.backend = 'http://192.168.1.12:4000/';
-window.frontend = 'http://192.168.1.12:3000/';
+window.backend = 'http://192.168.1.23:4000/';
+window.frontend = 'http://192.168.1.23:3000/';
 
 const Formulapp = () => (
   <div className="app-title">

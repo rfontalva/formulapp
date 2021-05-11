@@ -52,14 +52,17 @@ async function editFormula(req, res) {
   WHERE NOT EXISTS 
     (SELECT id_category, txt FROM formulapp.topic t WHERE id_category=(SELECT id_category FROM formulapp.category c
     WHERE c.txt='${category}') AND t.txt='${topic}')`;
-  const editTag = `UPDATE formulapp.tag SET 
-  id_category=(SELECT id_category FROM formulapp.category WHERE txt='${category}'),
-  id_topic=(SELECT id_topic FROM formulapp.topic WHERE txt='${topic}')
-  WHERE id_equation = (SELECT id_equation FROM formulapp.equation WHERE title='${title}')`;
+  const editTag = `INSERT INTO formulapp.tag (id_category, id_topic, id_equation) VALUES
+    ((SELECT id_category FROM formulapp.category WHERE txt='${category}'),
+    (SELECT id_topic FROM formulapp.topic WHERE txt='${topic}'),
+    (SELECT id_equation FROM formulapp.equation WHERE title='${title}')) as tmp
+  ON DUPLICATE KEY UPDATE
+    id_category = tmp.id_category,
+    id_topic = tmp.id_topic`;
   try {
     await execSql(editEquation);
-    await execSql(insertCategory);
-    await execSql(insertTopic);
+    if(category!=='') await execSql(insertCategory);
+    if(topic!=='') await execSql(insertTopic);
     await execSql(editTag);
     res.send(`edited equation: ${title}`);
   } catch (error){

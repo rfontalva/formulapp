@@ -151,7 +151,7 @@ body {
     padding: 0;
 }
 
-.input-formula {
+.inputs-box {
     background: var(--clr-white);
     max-width: var(--fixed-width);
     margin: auto;
@@ -160,14 +160,14 @@ body {
     border-radius: var(--radius);
 }
 
-.input-formula input {
+.inputs-box input {
     background: var(--clr-grey-10);
     border-color: transparent;
     border-radius: var(--radius);
     padding: 0.25rem 0.5rem;
 }
 
-.input-formula textarea {
+.inputs-box textarea {
     background: var(--clr-grey-10);
     border-radius: var(--radius);
     padding: 0.25rem 0.5rem;
@@ -176,7 +176,18 @@ body {
     max-height: 300%;
 }
 
-.input-formula button {
+.inputs-box select {
+    background: var(--clr-grey-10);
+    border-radius: var(--radius);
+    padding: 0.25rem 0.5rem;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+    max-width: 100%;
+    min-width: 100%;
+    max-height: 300%;
+}
+
+.inputs-box button {
     margin-bottom: 1rem;
     margin-right: 1rem;
     margin-top: 1rem;
@@ -190,12 +201,12 @@ body {
     max-height: 2rem;
 }
 
-.input-formula {
+.inputs-box {
     justify-content: space-between;
     margin: 10px 0;
 }
 
-.input-formula input, textarea {
+.inputs-box input, textarea {
     width: 100%;
     padding: 12px 20px;
     margin: 8px 0;
@@ -205,7 +216,7 @@ body {
     box-sizing: border-box;  
 }
 
-.input-formula button {
+.inputs-box button {
     float: right;
 }
 

@@ -13,6 +13,8 @@ const InputFormula = () => {
   const [item, setItem] = React.useState({
     title: '', equation: '', txt: '', topic: '', category: '',
   });
+  const [categories, setCategories] = React.useState([]);
+  const [topics, setTopics] = React.useState([]);
   const [latexParser, setLatex] = React.useState(new Equation(''));
   let tempName = '';
 
@@ -51,7 +53,7 @@ const InputFormula = () => {
       .catch((err) => console.error(err));
   };
 
-  const editFormula = () => {
+  const editFormula = async () => {
     let {
       title, txt, topic, category,
     } = item;
@@ -60,11 +62,12 @@ const InputFormula = () => {
     topic = urlUtils.urlEncoding(topic);
     const equation = urlUtils.urlEncoding(latexParser.latex);
     txt = encodeURIComponent(txt);
-    console.log(`${window.backend}edit?id=${parseInt(id, 10)}&title=${title}&equation=${equation}&txt=${txt}&category=${category}&topic=${topic}`);
-    fetch(`${window.backend}edit?id=${parseInt(id, 10)}&title=${title}&equation=${equation}&txt=${txt}&category=${category}&topic=${topic}`)
-      .then((response) => response.json())
-      .catch((err) => console.error(err));
-    urlUtils.goHome();
+    try {
+      await fetch(`${window.backend}edit?id=${parseInt(id, 10)}&title=${title}&equation=${equation}&txt=${txt}&category=${category}&topic=${topic}`);
+      urlUtils.goHome();
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const changeHandler = (e) => {
@@ -93,13 +96,33 @@ const InputFormula = () => {
     }
   };
 
+  const getCategories = () => {
+    const query = 'select * from formulapp.category';
+    dbUtils.getRows(query)
+      .then((results) => setCategories(results))
+      .catch((err) => console.error(err));
+  };
+
+  const getTopics = () => {
+    const query = `select * from formulapp.topic where id_category=
+    (select id_category from formulapp.category where txt='${item.category}')`;
+    dbUtils.getRows(query)
+      .then((results) => setTopics(results))
+      .catch((err) => console.error(err));
+  };
+
   useEffect(() => {
+    getCategories();
     if (!isNew) getFormula();
   }, []);
 
+  useEffect(() => {
+    getTopics();
+  }, [item.category]);
+
   return (
     <article className="grid">
-      <div className="input-formula">
+      <div className="inputs-box">
         <form onSubmit={submitHandler}>
           <label htmlFor="formulaTitle">
             Título
@@ -107,11 +130,33 @@ const InputFormula = () => {
           </label>
           <label htmlFor="formulaCategory">
             Categoría
-            <input type="text" id="formulaCategory" name="category" onChange={changeHandler} value={item.category} />
+            <input type="text" id="formulaCategory" name="category" onChange={changeHandler} value={item.category} list="categories" />
+            <datalist id="categories">
+              <option aria-label="void" value="" />
+              {categories.map((val) => (
+                <option
+                  id={val.id_category}
+                  value={val.txt}
+                >
+                  {val.txt}
+                </option>
+              ))}
+            </datalist>
           </label>
           <label htmlFor="formulaTopic">
             Tópico
-            <input type="text" id="formulaTopic" name="topic" onChange={changeHandler} value={item.topic} />
+            <input type="text" id="formulaTopic" name="topic" onChange={changeHandler} value={item.topic} list="topics" />
+            <datalist id="topics">
+              <option aria-label="void" value="" />
+              {topics.map((val) => (
+                <option
+                  id={val.id_topic}
+                  value={val.txt}
+                >
+                  {val.txt}
+                </option>
+              ))}
+            </datalist>
           </label>
           <label htmlFor="formulaTxt">
             Descripción

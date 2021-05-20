@@ -51,12 +51,16 @@
 
 body {
     background-color: lightsteelblue;
+    margin: 0px
 }
 
 .formulas-container {
     display: grid;
     gap: 1rem;
     grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    margin-left: 1rem;
+    margin-right: 1rem;
+    transition: var(--transition)
     /* align-items: start; */
 }
 
@@ -111,6 +115,7 @@ body {
     overflow: hidden;
     background-color: var(--clr-grey-1);
     height: 3rem;
+    width: 100%;
 }
 
 .topnav a {
@@ -237,6 +242,8 @@ body {
 .app-title {
     margin-top: 1rem;
     margin-bottom: 1rem;
+    margin-left: 1rem;
+    transition: var(--transition);
 }
 
 .search-box input {
@@ -282,30 +289,132 @@ body {
     left: 50%;
     bottom: 30px;
     font-size: 17px;
-  }
-  
-  #snackbar.show {
+}
+
+#snackbar.show {
     visibility: visible;
     -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
     animation: fadein 0.5s, fadeout 0.5s 2.5s;
-  }
-  
-  @-webkit-keyframes fadein {
+}
+
+@-webkit-keyframes fadein {
     from {bottom: 0; opacity: 0;} 
     to {bottom: 30px; opacity: 1;}
-  }
-  
-  @keyframes fadein {
+}
+
+@keyframes fadein {
     from {bottom: 0; opacity: 0;}
     to {bottom: 30px; opacity: 1;}
-  }
-  
-  @-webkit-keyframes fadeout {
+}
+
+@-webkit-keyframes fadeout {
     from {bottom: 30px; opacity: 1;} 
     to {bottom: 0; opacity: 0;}
-  }
-  
-  @keyframes fadeout {
+}
+
+@keyframes fadeout {
     from {bottom: 30px; opacity: 1;}
     to {bottom: 0; opacity: 0;}
-  }
+}
+
+.burger {
+	display: inline-block;
+	width:3rem;
+	height: 3rem;
+	position: relative;
+	z-index: 2;
+    cursor: pointer;
+    border-color: transparent;
+}
+
+.burger:focus {
+    border-style: none;
+}
+
+.topnav .burger {
+    float: left;
+}
+ 
+.burger div {
+	width: 100%;
+	height: 4px;
+	border-radius: 4px;
+	display: block;
+    margin-top: 0.1rem;
+    margin-bottom: 0.1rem;
+	background: var(--clr-white);
+	transition: all 0.25s ease; /* Propiedades a animar | Tiempo | Tipo animación*/
+	transform-origin : 0px 100%;
+}
+ 
+.burger span:nth-child(2) {
+	top: calc(50% - 2px);
+}
+ 
+.burger span:nth-child(3) {
+    bottom: 0;
+}
+
+.open span:nth-child(1) {
+    top: 18px;
+    -webkit-transform: rotate(135deg);
+    -moz-transform: rotate(135deg);
+    -o-transform: rotate(135deg);
+    transform: rotate(135deg);
+}
+  
+.open span:nth-child(2) {
+    opacity: 0;
+    left: -60px;
+}
+
+.open span:nth-child(3) {
+    top: 18px;
+    color: red;
+    -webkit-transform: rotate(-135deg);
+    -moz-transform: rotate(-135deg);
+    -o-transform: rotate(-135deg);
+    transform: rotate(-135deg);
+}
+
+.sidenav {
+    height: 100%;
+    width: 0;
+    margin-top: 0.5rem;
+    position: fixed;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    background-color: var(--clr-grey-1);
+    overflow-x: hidden;
+    /* transition: 0.5s; */
+    transition: var(--transition);
+    padding-top: 60px;
+}
+  
+.sidenav a {
+    padding: 8px 8px 8px 32px;
+    text-decoration: none;
+    font-size: 25px;
+    color: var(--clr-white);
+    display: block;
+    transition: var(--transition);
+}
+  
+.sidenav a:hover {
+    background-color: var(--clr-grey-6);
+    color: var(--clr-black);
+}
+  
+.sidenav .closebtn {
+    position: absolute;
+    top: 0;
+    right: 25px;
+    font-size: 36px;
+    margin-left: 50px;
+}
+  
+@media screen and (max-height: 450px) {
+    .sidenav {padding-top: 15px;}
+    .sidenav a {font-size: 18px;}
+}

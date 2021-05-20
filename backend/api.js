@@ -12,7 +12,7 @@ const execSql = async (query) => {
 };
 
 function getAllFormulas(req, res) {
-  const selectQuery = 'select * from formulapp.equation';
+  const selectQuery = 'select * from formulapp.equation order by rand()';
   execSql(selectQuery)
     .then((results) => res.json(results))
     .catch((error) => res.send(error));

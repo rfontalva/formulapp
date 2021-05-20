@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom';
 import Formula from './Formula';
 import dbUtils from '../utils/dbUtils';
 
-const Home = ({ search }) => {
+const Home = React.forwardRef(({ search }, ref) => {
   const isSearch = search;
   let searchTitle = '';
   if (isSearch) {
@@ -40,7 +40,7 @@ const Home = ({ search }) => {
 
   return (
     <>
-      <div className="formulas-container">
+      <div ref={ref} className="formulas-container">
         {formulas.map((
           {
             id_equation, title, equation, txt,
@@ -59,7 +59,7 @@ const Home = ({ search }) => {
       </div>
     </>
   );
-};
+});
 
 Home.propTypes = {
   search: PropTypes.bool,

@@ -1,21 +1,15 @@
 import React from 'react';
+import MenuItems from './data/menu.json';
 
 const SideMenu = React.forwardRef((_, ref) => (
   <div ref={ref} className="sidenav">
     <nav>
       <ul>
-        <li>
-          <a href="/">Inicio</a>
-        </li>
-        <li>
-          <a href="/add">Agregar</a>
-        </li>
-        <li>
-          <a href="/lookup">Buscar</a>
-        </li>
-        <li>
-          <a href="/generate">Crear</a>
-        </li>
+        {MenuItems.map(({ title, link }) => (
+          <li>
+            <a href={link}>{title}</a>
+          </li>
+        ))}
       </ul>
     </nav>
   </div>

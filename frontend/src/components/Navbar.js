@@ -5,6 +5,7 @@ import Burger from './Burger';
 import SideMenu from './SideMenu';
 import useMobile from '../hooks/useMobile';
 import RefContext from '../context/RefContext';
+import MenuItems from './data/menu.json';
 
 const Navbar = () => {
   const { titleRef, divClick } = React.useContext(RefContext);
@@ -44,18 +45,11 @@ const Navbar = () => {
           )}
           {isMobile || (
           <>
-            <li>
-              <a href="/">Inicio</a>
-            </li>
-            <li>
-              <a href="/add">Agregar</a>
-            </li>
-            <li>
-              <a href="/lookup">Buscar</a>
-            </li>
-            <li>
-              <a href="/generate">Crear</a>
-            </li>
+            {MenuItems.map(({ title, link }) => (
+              <li>
+                <a href={link}>{title}</a>
+              </li>
+            ))}
           </>
           )}
         </ul>

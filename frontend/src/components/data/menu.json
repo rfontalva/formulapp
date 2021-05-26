@@ -1,0 +1,18 @@
+[
+  {
+    "title": "Inicio",
+    "link":"/"
+  },
+  {
+    "title": "Agregar",
+    "link":"/add"
+  },
+  {
+    "title": "Buscar",
+    "link":"/lookup"
+  },
+  {
+    "title": "Crear",
+    "link":"/generate"
+  }
+]

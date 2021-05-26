@@ -18,7 +18,7 @@ const Home = React.forwardRef(({ search }, ref) => {
         .then((results) => setFormulas(results))
         .catch((err) => console.error(err));
     } else {
-      fetch(window.backend)
+      fetch('/api')
         .then((response) => response.json())
         .then((response) => {
           setFormulas(response);
@@ -32,7 +32,7 @@ const Home = React.forwardRef(({ search }, ref) => {
   }, []);
 
   const handleRemove = (id) => {
-    fetch(`${window.backend}remove?id=${id}`)
+    fetch(`/api/remove?id=${id}`)
       .then((response) => response.json())
       .catch((err) => console.error(err));
     getFormulas();

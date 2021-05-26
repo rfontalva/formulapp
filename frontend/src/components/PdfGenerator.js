@@ -11,13 +11,13 @@ const PdfGenerator = () => {
 
   const submitHandler = () => {
     if (csTitle !== '' && localStorage.ids) {
-      fetch(`${window.backend}create-pdf?${localStorage.ids}header=${csTitle}`, { method: 'POST' })
+      fetch(`/api/create-pdf?${localStorage.ids}header=${csTitle}`, { method: 'POST' })
         .then(() => axios.get(`${window.backend}fetch-pdf?header=${csTitle}`, { responseType: 'blob' }))
         .then((res) => {
           const pdfBlob = new Blob([res.data], { type: 'application/pdf' });
           saveAs(pdfBlob, `${csTitle}.pdf`);
         })
-        .then(() => fetch(`${window.backend}delete-pdf?header=${csTitle}`, { method: 'DELETE' }));
+        .then(() => fetch(`/api/delete-pdf?header=${csTitle}`, { method: 'DELETE' }));
       localStorage.removeItem('ids');
       // urlUtils.goHome();
     } else {

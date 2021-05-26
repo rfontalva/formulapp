@@ -5,7 +5,6 @@ import {
   AppTitle, Home, InputFormula, Navbar, Error, Lookup, PdfGenerator,
 } from './components/index';
 
-window.backend = 'http://192.168.1.23:4000/';
 window.frontend = 'http://192.168.1.23:3000/';
 
 const App = () => {

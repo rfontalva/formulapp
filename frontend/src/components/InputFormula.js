@@ -48,7 +48,7 @@ const InputFormula = () => {
     topic = urlUtils.urlEncoding(topic);
     const equation = urlUtils.urlEncoding(latexParser.latex);
     txt = encodeURIComponent(txt);
-    fetch(`${window.backend}add?id=${parseInt(id, 10)}&title=${title}&equation=${equation}&txt=${txt}&category=${category}&topic=${topic}`)
+    fetch(`/api/add?id=${parseInt(id, 10)}&title=${title}&equation=${equation}&txt=${txt}&category=${category}&topic=${topic}`)
       .then((response) => response.json())
       .catch((err) => console.error(err));
   };
@@ -63,7 +63,7 @@ const InputFormula = () => {
     const equation = urlUtils.urlEncoding(latexParser.latex);
     txt = encodeURIComponent(txt);
     try {
-      await fetch(`${window.backend}edit?id=${parseInt(id, 10)}&title=${title}&equation=${equation}&txt=${txt}&category=${category}&topic=${topic}`);
+      await fetch(`/api/edit?id=${parseInt(id, 10)}&title=${title}&equation=${equation}&txt=${txt}&category=${category}&topic=${topic}`);
       urlUtils.goHome();
     } catch (err) {
       console.error(err);

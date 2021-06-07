@@ -2,30 +2,32 @@ import React from 'react';
 import axios from 'axios';
 import { saveAs } from 'file-saver';
 import dbUtils from '../utils/dbUtils';
-// import urlUtils from '../utils/urlUtils';
 import Formula from './Formula';
 
 const PdfGenerator = () => {
   const [csTitle, setCSTitle] = React.useState('');
+  const [formulasHeader, setHeader] = React.useState(localStorage.ids);
   const [formulas, setFormulas] = React.useState([]);
 
+  const createPdf = async () => {
+    await fetch(`/api/pdf?${formulasHeader}header=${csTitle}`, { method: 'POST' });
+    const res = await axios.get(`/api/pdf?header=${csTitle}`, { responseType: 'blob' });
+    const pdfBlob = new Blob([res.data], { type: 'application/pdf' });
+    saveAs(pdfBlob, `${csTitle}.pdf`);
+    await fetch(`/api/pdf?header=${csTitle}`, { method: 'DELETE' });
+  };
+
   const submitHandler = () => {
-    if (csTitle !== '' && localStorage.ids) {
-      fetch(`/api/create-pdf?${localStorage.ids}header=${csTitle}`, { method: 'POST' })
-        .then(() => axios.get(`${window.backend}fetch-pdf?header=${csTitle}`, { responseType: 'blob' }))
-        .then((res) => {
-          const pdfBlob = new Blob([res.data], { type: 'application/pdf' });
-          saveAs(pdfBlob, `${csTitle}.pdf`);
-        })
-        .then(() => fetch(`/api/delete-pdf?header=${csTitle}`, { method: 'DELETE' }));
+    if (csTitle !== '' && formulasHeader) {
+      createPdf();
+      console.log('se creo');
       localStorage.removeItem('ids');
-      // urlUtils.goHome();
     } else {
       if (csTitle === '') {
         // eslint-disable-next-line no-alert
         alert('Title can\'t be left empty');
       }
-      if (!localStorage.ids) {
+      if (!formulasHeader) {
         // eslint-disable-next-line no-alert
         alert('No formulas were selected');
       }
@@ -33,7 +35,7 @@ const PdfGenerator = () => {
   };
 
   const getFormulas = () => {
-    let removedText = localStorage.ids.replace(/\D+/g, ', ');
+    let removedText = formulasHeader.replace(/\D+/g, ', ');
     removedText = removedText.substr(2, removedText.length - 2);
     const idArray = removedText.split(',').map((x) => +x);
     const query = `select * from formulapp.equation where id_equation in (${idArray})`;
@@ -43,12 +45,12 @@ const PdfGenerator = () => {
   };
 
   React.useEffect(() => {
-    if (localStorage.ids) { getFormulas(); }
+    if (formulasHeader) { getFormulas(); }
   }, []);
 
   const handleRemove = (id) => {
-    const replaced = localStorage.ids.replace(`ids=${id}&`, '');
-    localStorage.ids = replaced;
+    const replaced = formulasHeader.replace(`ids=${id}&`, '');
+    setHeader(replaced);
     getFormulas();
   };
 

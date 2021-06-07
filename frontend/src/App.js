@@ -5,7 +5,7 @@ import {
   AppTitle, Home, InputFormula, Navbar, Error, Lookup, PdfGenerator,
 } from './components/index';
 
-window.frontend = 'http://192.168.1.23:3000/';
+window.frontend = 'http://localhost:3000/';
 
 const App = () => {
   const titleRef = React.useRef(null);

@@ -46,8 +46,8 @@ const Navbar = () => {
           {isMobile || (
           <>
             {MenuItems.map(({ title, link }) => (
-              <li>
-                <a href={link}>{title}</a>
+              <li key={title}>
+                <a key={title} href={link}>{title}</a>
               </li>
             ))}
           </>

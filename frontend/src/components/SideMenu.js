@@ -6,8 +6,8 @@ const SideMenu = React.forwardRef((_, ref) => (
     <nav>
       <ul>
         {MenuItems.map(({ title, link }) => (
-          <li>
-            <a href={link}>{title}</a>
+          <li key={`sm${title}`}>
+            <a key={`sm${title}`} href={link}>{title}</a>
           </li>
         ))}
       </ul>

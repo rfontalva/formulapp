@@ -1,9 +1,10 @@
-const mysql = require('mysql');
+const mysql = require('mysql2');
+const secret = require('./secret.json');
 
 const connection = mysql.createConnection({
   host: 'localhost',
   user: 'root',
-  password: 'password',
+  password: secret.password,
   database: 'formulapp',
 });
 

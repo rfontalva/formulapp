@@ -7,7 +7,7 @@ const Paginator = ({
   const handleClick = (increment) => {
     paginate(increment);
   };
-  const hasMore = page * 9 < length;
+  const hasMore = page * 9 < length - 9;
   return (
     <>
       { page !== 0

@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { useParams } from 'react-router-dom';
 import Formula from './Formula';
 import dbUtils from '../utils/dbUtils';
+import Paginator from './Paginator';
 
 const Home = React.forwardRef(({ search }, ref) => {
   const isSearch = search;
@@ -11,6 +12,7 @@ const Home = React.forwardRef(({ search }, ref) => {
     searchTitle = useParams().searchTitle;
   }
   const [formulas, setFormulas] = React.useState([]);
+  const [page, setPage] = React.useState(0);
   const getFormulas = () => {
     if (isSearch) {
       const query = `select * from formulapp.equation where title like '%${searchTitle}%'`;
@@ -31,6 +33,10 @@ const Home = React.forwardRef(({ search }, ref) => {
     getFormulas();
   }, []);
 
+  const paginate = (increment) => {
+    setPage(page + increment);
+  };
+
   const handleRemove = (id) => {
     fetch(`/api/remove?id=${id}`)
       .then((response) => response.json())
@@ -41,7 +47,7 @@ const Home = React.forwardRef(({ search }, ref) => {
   return (
     <>
       <div ref={ref} className="formulas-container">
-        {formulas.map((
+        {formulas.slice(page * 9, page * 9 + 9).map((
           {
             id_equation, title, equation, txt,
           },
@@ -57,6 +63,11 @@ const Home = React.forwardRef(({ search }, ref) => {
           />
         ))}
       </div>
+      <Paginator
+        paginate={paginate}
+        page={page}
+        length={formulas.length}
+      />
     </>
   );
 });

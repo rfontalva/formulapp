@@ -2,7 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import RefContext from './context/RefContext';
 import {
-  AppTitle, Home, InputFormula, Navbar, Error, Lookup, PdfGenerator,
+  AppTitle, Home, InputFormula, Navbar, Error, Lookup, PdfGenerator, Footer,
 } from './components/index';
 
 window.frontend = 'http://localhost:3000/';
@@ -16,37 +16,42 @@ const App = () => {
   };
   const refs = { titleRef, opRef, divClick };
   return (
-    <RefContext.Provider value={refs}>
-      <Router>
-        <Navbar />
-        <div aria-hidden="true" onMouseDown={mouseDownHandler} ref={opRef}>
-          <AppTitle ref={titleRef} />
-          <Switch>
-            <Route exact path="/">
-              <Home />
-            </Route>
-            <Route path="/add">
-              <InputFormula />
-            </Route>
-            <Route path="/edit/:id">
-              <InputFormula />
-            </Route>
-            <Route path="/search/:searchTitle">
-              <Home search />
-            </Route>
-            <Route path="/lookup">
-              <Lookup />
-            </Route>
-            <Route path="/generate">
-              <PdfGenerator />
-            </Route>
-            <Route path="*">
-              <Error />
-            </Route>
-          </Switch>
+    <div className="page-container">
+      <RefContext.Provider value={refs}>
+        <div className="content-wrap">
+          <Router>
+            <Navbar />
+            <div aria-hidden="true" onMouseDown={mouseDownHandler} ref={opRef}>
+              <AppTitle ref={titleRef} />
+              <Switch>
+                <Route exact path="/">
+                  <Home />
+                </Route>
+                <Route path="/add">
+                  <InputFormula />
+                </Route>
+                <Route path="/edit/:id">
+                  <InputFormula />
+                </Route>
+                <Route path="/search/:searchTitle">
+                  <Home search />
+                </Route>
+                <Route path="/lookup">
+                  <Lookup />
+                </Route>
+                <Route path="/generate">
+                  <PdfGenerator />
+                </Route>
+                <Route path="*">
+                  <Error />
+                </Route>
+              </Switch>
+            </div>
+          </Router>
         </div>
-      </Router>
-    </RefContext.Provider>
+        <Footer />
+      </RefContext.Provider>
+    </div>
   );
 };
 

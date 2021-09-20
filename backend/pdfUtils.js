@@ -25,9 +25,15 @@ const generateCheatsheet = (formulas, header) => {
             --spacing: 0.1rem;
             --radius: 0.25rem;
           }
-          .a4{
-            width: 21cm;
-            height: 29.7cm;
+          @media print {
+            body {
+              width: 21cm;
+              height: 29.7cm;
+              margin-top: 10mm;
+              padding-right: 16mm;
+              padding-bottom: 27mm;
+              margin-left: 16mm;
+            }
           }
           .margin-top {
             margin-top: 50px;
@@ -61,7 +67,7 @@ const generateCheatsheet = (formulas, header) => {
           }
         </style>
         </head>
-        <body class="a4">
+        <body>
         <h1>${header}</h1>
         <div class="container">
             ${mapp}

@@ -10,7 +10,10 @@ window.frontend = 'http://localhost:3000/';
 const App = () => {
   const titleRef = React.useRef(null);
   const opRef = React.useRef(null);
+
   const [divClick, setDivClick] = React.useState(false);
+  const [user, setUser] = React.useState();
+
   const mouseDownHandler = (e) => {
     if (opRef.current.contains(e.target)) setDivClick(!divClick);
   };
@@ -20,7 +23,7 @@ const App = () => {
       <RefContext.Provider value={refs}>
         <div className="content-wrap">
           <Router>
-            <Navbar />
+            <Navbar user={user} setUser={setUser} />
             <div aria-hidden="true" onMouseDown={mouseDownHandler} ref={opRef}>
               <AppTitle ref={titleRef} />
               <Switch>
@@ -39,7 +42,7 @@ const App = () => {
                 <Route path="/lookup">
                   <Lookup />
                 </Route>
-                <Route path="/generate">
+                <Route user={user} path="/generate">
                   <PdfGenerator />
                 </Route>
                 <Route path="*">

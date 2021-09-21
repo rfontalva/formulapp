@@ -290,6 +290,23 @@ html, body {
     float: right;
 }
 
+.login-navbar {
+    cursor: pointer;
+    margin-right: 1rem;
+    margin-top: 0.75rem;
+    margin-bottom: 0.75rem;
+    height: 1.5rem;
+    text-align: center;
+    font-family: 'Rubik';
+    background-color: transparent;
+    border-color: transparent;
+    color: var(--clr-white);
+}
+
+.topnav .login-navbar {
+    float: right;
+}
+
 #snackbar {
     visibility: hidden;
     min-width: 250px;
@@ -481,3 +498,108 @@ footer {
 .previous {
     float: left;
 }
+
+.login-input {
+	background-color: #eee;
+	border: none;
+	padding: 12px 15px;
+	margin: 8px 0;
+	width: 100%;
+}
+
+.login-container {
+    display: flex;
+    justify-content: center;
+}
+
+.sign-in-container {
+    background-color: #fff;
+    width: 380px;
+    margin-top: 10rem;
+    max-height: 400px;
+	z-index: 2;
+    border-radius: 10px;
+  	box-shadow: 0 14px 28px rgba(0,0,0,0.25), 
+      0 10px 10px rgba(0,0,0,0.22);
+    position: absolute;
+	overflow: hidden;
+    padding-bottom: 2rem;
+    overflow-x: hidden;
+}
+
+.login-form {
+    background-color: #FFFFFF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 0 50px;
+    height: 100%;
+    text-align: center;
+}
+
+.form-container {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    transition: all 0.6s ease-in-out;
+}
+
+.sign-in-container  h1 {
+	font-weight: bold;
+    font-family: 'Rubik', sans-serif;
+    margin-top: 1rem;
+}
+
+.sign-in-container p {
+    font-size: 14px;
+	font-weight: 100;
+	line-height: 20px;
+	letter-spacing: 0.5px;
+	margin: 20px 0;
+}
+
+.sign-in-container a {
+    color: #333;
+	font-size: 14px;
+	text-decoration: none;
+	margin: 15px 0;
+}
+
+.sign-in-container button {
+	border-radius: 20px;
+	border: transparent;
+	background-color: var(--clr-primary-1);
+	color: #FFFFFF;
+	font-size: 12px;
+	font-weight: bold;
+	padding: 12px 45px;
+    letter-spacing: 1px;
+	text-transform: uppercase;
+	transition: transform 80ms ease-in;
+}
+
+.sign-in-container button:active {
+	transform: scale(0.95);
+}
+
+.sign-in-container button:focus {
+	outline: none;
+}
+
+
+/* 
+.social-container {
+    margin: 20px 0;
+}
+
+.social-container a {
+    border: 1px solid #DDDDDD;
+    border-radius: 50%;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 5px;
+    height: 40px;
+    width: 40px;
+} */

@@ -9,7 +9,7 @@ function nthIndex(str, pat, n) {
   return i;
 }
 
-function divisionToLatex(terms) {
+function division2Latex(terms) {
   let aux = '';
   const newTerms = terms.map((val) => val.expression);
   for (let i = 0; i < terms.length; i++) {
@@ -23,7 +23,7 @@ function divisionToLatex(terms) {
   return newTerms;
 }
 
-function divisionToEquation(expression) {
+function Latex2Division(expression) {
   const pattern = '\\dfrac{';
   let expr = expression;
   let save = '';
@@ -95,12 +95,12 @@ class Equation {
   }
 
   transformToLatex() {
-    this.terms = divisionToLatex(this.terms);
+    this.terms = division2Latex(this.terms);
     this.latex = this.terms.join('');
   }
 
   transformFromLatex(expression) {
-    this.latex = divisionToEquation(expression);
+    this.latex = Latex2Division(expression);
   }
 }
 

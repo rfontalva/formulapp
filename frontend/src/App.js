@@ -1,8 +1,8 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import { BrowserRouter as Router } from 'react-router-dom';
 import RefContext from './context/RefContext';
 import {
-  AppTitle, Home, InputFormula, Navbar, Error, Lookup, PdfGenerator, Footer,
+  AppTitle, Navbar, Footer, SwitchTree,
 } from './components/index';
 
 window.frontend = 'http://localhost:3000/';
@@ -17,7 +17,22 @@ const App = () => {
   const mouseDownHandler = (e) => {
     if (opRef.current.contains(e.target)) setDivClick(!divClick);
   };
-  const refs = { titleRef, opRef, divClick };
+  const refs = {
+    titleRef, opRef, divClick, user, setUser,
+  };
+
+  React.useEffect(() => {
+    const username = 'username=';
+    const search = document.cookie.search(username);
+    console.log(document.cookie);
+    if (search !== -1) {
+      const startIndex = search + username.length;
+      const end = document.cookie.slice(startIndex).search(';') + startIndex;
+      console.log(search + username.length);
+      setUser(document.cookie.slice(startIndex, end));
+    }
+  }, []);
+
   return (
     <div className="page-container">
       <RefContext.Provider value={refs}>
@@ -26,29 +41,7 @@ const App = () => {
             <Navbar user={user} setUser={setUser} />
             <div aria-hidden="true" onMouseDown={mouseDownHandler} ref={opRef}>
               <AppTitle ref={titleRef} />
-              <Switch>
-                <Route exact path="/">
-                  <Home />
-                </Route>
-                <Route path="/add">
-                  <InputFormula />
-                </Route>
-                <Route path="/edit/:id">
-                  <InputFormula />
-                </Route>
-                <Route path="/search/:searchTitle">
-                  <Home search />
-                </Route>
-                <Route path="/lookup">
-                  <Lookup />
-                </Route>
-                <Route user={user} path="/generate">
-                  <PdfGenerator />
-                </Route>
-                <Route path="*">
-                  <Error />
-                </Route>
-              </Switch>
+              <SwitchTree />
             </div>
           </Router>
         </div>

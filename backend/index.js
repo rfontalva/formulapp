@@ -41,6 +41,23 @@ app.post('/api/pdf', async (req, res) => {
   res.send(Promise.resolve());
 });
 
+app.post('/api/authenticate', (req, res) => {
+  api.authenticate(req, res);
+});
+
+app.get('/api/validate', (req, res) => {
+});
+
+app.put('/api/user',  (req, res) => {
+  api.validate(req, res)
+  .then(() => {
+    if(res.statusCode !== 501 && res.statusCode !== 502) {
+      api.addUser(req, res);
+    }
+  })
+  .catch((err) => {throw new Error(err)});
+});
+
 app.get('/api/pdf', (req, res) => {
   const path = `${__dirname}/${req.query.header}.pdf`;
   res.sendFile(path);

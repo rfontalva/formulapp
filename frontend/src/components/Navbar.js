@@ -1,16 +1,20 @@
 import React from 'react';
 import '../index.css';
-import PropTypes from 'prop-types';
 import SearchBar from './SearchBar';
 import Burger from './Burger';
 import SideMenu from './SideMenu';
 import Login from './Login';
+// import UserMenu from './UserMenu';
 import useMobile from '../hooks/useMobile';
 import RefContext from '../context/RefContext';
 import MenuItems from './data/menu.json';
+import utils from '../utils/urlUtils';
+import UserMenu from './UserMenu';
 
-const Navbar = ({ user, setUser }) => {
-  const { titleRef, divClick } = React.useContext(RefContext);
+const Navbar = () => {
+  const {
+    titleRef, divClick, user,
+  } = React.useContext(RefContext);
   const [isOpen, setIsOpen] = React.useState(false);
   const sideNavRef = React.createRef();
   const br = React.createRef();
@@ -40,12 +44,11 @@ const Navbar = ({ user, setUser }) => {
 
   React.useEffect(() => {
     setIsOpen(false);
-    setUser();
   }, [divClick]);
 
   return (
     <>
-      <Login show={show} />
+      <Login show={show} setShow={setShow} />
       <div aria-hidden="true" className="topnav">
         <SearchBar />
         <SideMenu ref={sideNavRef} />
@@ -60,7 +63,7 @@ const Navbar = ({ user, setUser }) => {
             <>
               {MenuItems.map(({ title, link }) => (
                 <li key={title}>
-                  <a key={title} href={link}>{title}</a>
+                  <a className="navbar-item navbar-menu" key={title} href={link}>{title}</a>
                 </li>
               ))}
             </>
@@ -78,14 +81,26 @@ const Navbar = ({ user, setUser }) => {
             Iniciar sesión
           </button>
           )}
+        {user && (
+          <div className="dropdown login-navbar">
+            <button
+              type="button"
+              className="login-navbar"
+              id="user-button"
+              onKeyDown={() => keyDownHandler}
+              onClick={() => utils.goToUrl('profile')}
+            >
+              <span style={{ marginRight: '5px' }}>
+                <i className="fa fa-user" />
+              </span>
+              {user}
+            </button>
+            <UserMenu />
+          </div>
+        )}
       </div>
     </>
   );
-};
-
-Navbar.propTypes = {
-  user: PropTypes.number.isRequired,
-  setUser: PropTypes.func.isRequired,
 };
 
 export default Navbar;

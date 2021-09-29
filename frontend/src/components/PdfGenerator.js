@@ -3,24 +3,28 @@ import axios from 'axios';
 import { saveAs } from 'file-saver';
 import dbUtils from '../utils/dbUtils';
 import Formula from './Formula';
+import RefContext from '../context/RefContext';
 
 const PdfGenerator = () => {
+  const { user } = React.useContext(RefContext);
   const [csTitle, setCSTitle] = React.useState('');
   const [formulasHeader, setHeader] = React.useState(localStorage.ids);
   const [formulas, setFormulas] = React.useState([]);
+  const [isDownloading, setIsDownloading] = React.useState(false);
 
   const createPdf = async () => {
+    setIsDownloading(true);
     await fetch(`/api/pdf?${formulasHeader}header=${csTitle}`, { method: 'POST' });
     const res = await axios.get(`/api/pdf?header=${csTitle}`, { responseType: 'blob' });
     const pdfBlob = new Blob([res.data], { type: 'application/pdf' });
     saveAs(pdfBlob, `${csTitle}.pdf`);
+    setIsDownloading(false);
     await fetch(`/api/pdf?header=${csTitle}`, { method: 'DELETE' });
   };
 
   const submitHandler = () => {
     if (csTitle !== '' && formulasHeader) {
       createPdf();
-      console.log('se creo');
       localStorage.removeItem('ids');
     } else {
       if (csTitle === '') {
@@ -38,13 +42,14 @@ const PdfGenerator = () => {
     let removedText = formulasHeader.replace(/\D+/g, ', ');
     removedText = removedText.substr(2, removedText.length - 2);
     const idArray = removedText.split(',').map((x) => +x);
-    const query = `select * from formulapp.equation where id_equation in (${idArray})`;
+    const query = `select * from formulapp.equation where id_formula in (${idArray})`;
     dbUtils.getRows(query)
       .then((results) => setFormulas(results))
       .catch((err) => console.error(err));
   };
 
   React.useEffect(() => {
+    console.log(user);
     if (formulasHeader) { getFormulas(); }
   }, []);
 
@@ -52,6 +57,10 @@ const PdfGenerator = () => {
     const replaced = formulasHeader.replace(`ids=${id}&`, '');
     setHeader(replaced);
     getFormulas();
+  };
+
+  const saveSheet = () => {
+    console.log('WIP');
   };
 
   return (
@@ -64,19 +73,21 @@ const PdfGenerator = () => {
               <input type="text" id="cheatSheetTitle" name="title" onChange={(e) => setCSTitle(e.target.value)} value={csTitle} />
             </label>
           </form>
-          <button type="button" onClick={submitHandler}>Descargar</button>
+          {!isDownloading && <button type="button" onClick={submitHandler}>Descargar</button>}
+          {isDownloading && <p>Descargando...</p>}
+          {user && <button type="button" onClick={saveSheet}>Guardar</button>}
         </div>
       </article>
       {csTitle && <h1>{csTitle}</h1>}
       <div className="formulas-container">
         {formulas.map((
           {
-            id_equation, title, equation, txt,
+            id_formula, title, equation, txt,
           },
         ) => (
           <Formula
-            key={id_equation}
-            id={id_equation}
+            key={id_formula}
+            id={id_formula}
             title={title}
             equation={equation}
             txt={txt}

@@ -19,13 +19,13 @@ const InputFormula = () => {
   let tempName = '';
 
   const getFormula = () => {
-    const query = `select e.id_equation, e.title, e.txt, e.equation,
+    const query = `select e.id_formula, e.title, e.txt, e.equation,
     c.txt as "category", tp.txt as "topic"
     from formulapp.equation e
-      left join formulapp.tag tg using (id_equation)
+      left join formulapp.tag tg using (id_formula)
       left join formulapp.category c on c.id_category=tg.id_category
       left join formulapp.topic tp on tp.id_topic=tg.id_topic
-    where id_equation=${parseInt(id, 10)}`;
+    where id_formula=${parseInt(id, 10)}`;
     dbUtils.getRows(query).then((results) => {
       const {
         title, equation, txt, category, topic,

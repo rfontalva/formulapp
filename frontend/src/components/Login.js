@@ -14,15 +14,9 @@ const Login = ({ show, setShow }) => {
     setWrongUser(false);
   };
 
-  const changeHandler = (e) => {
-    const { name } = e.target;
-    const { value } = e.target;
-    console.log(inputs);
-    setInputs({ ...inputs, [name]: value });
-  };
-
   const authenticate = async () => {
     setWrongUser(false);
+    console.log('alo');
     const { email, password } = inputs;
     const response = await fetch(`/api/authenticate?email=${email}&password=${password}`, { method: 'POST' });
     if (response.status === 200) {
@@ -31,10 +25,21 @@ const Login = ({ show, setShow }) => {
       setShow(false);
       const cookievalue = `username=${username}`;
       const expiryDate = new Date(new Date().getTime() + 60 * 60 * 1000 * 24).toGMTString();
-      document.cookie = `${cookievalue};expires=${expiryDate}`;
+      document.cookie = `${cookievalue};`;
+      document.cookie = `Expires=${expiryDate};`;
       return;
     }
     setWrongUser(true);
+  };
+
+  const keyDownHandler = (e) => {
+    if (e.keyCode === 13) authenticate();
+  };
+
+  const changeHandler = (e) => {
+    const { name } = e.target;
+    const { value } = e.target;
+    setInputs({ ...inputs, [name]: value });
   };
 
   return (
@@ -54,6 +59,7 @@ const Login = ({ show, setShow }) => {
               type="email"
               placeholder="Email"
               name="email"
+              onKeyDown={keyDownHandler}
               onChange={changeHandler}
             />
             <input
@@ -62,6 +68,7 @@ const Login = ({ show, setShow }) => {
               type="password"
               placeholder="Contraseña"
               name="password"
+              onKeyDown={keyDownHandler}
               onChange={changeHandler}
             />
             {wrongUser && <p className="error-text">Usuario o contraseña incorrectos</p>}

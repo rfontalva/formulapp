@@ -7,6 +7,7 @@ import Paginator from './Paginator';
 
 const Home = React.forwardRef(({ search }, ref) => {
   const isSearch = search;
+  const pageLength = 12;
   let searchTitle = '';
   if (isSearch) {
     searchTitle = useParams().searchTitle;
@@ -47,14 +48,14 @@ const Home = React.forwardRef(({ search }, ref) => {
   return (
     <>
       <div ref={ref} className="formulas-container">
-        {formulas.slice(page * 9, page * 9 + 9).map((
+        {formulas.slice(page * pageLength, page * pageLength + pageLength).map((
           {
-            id_equation, title, equation, txt,
+            id_formula, title, equation, txt,
           },
         ) => (
           <Formula
-            key={id_equation}
-            id={id_equation}
+            key={id_formula}
+            id={id_formula}
             title={title}
             equation={equation}
             txt={txt}

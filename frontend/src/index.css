@@ -89,6 +89,7 @@ html, body {
     border-width: 1px;
     padding-left: 1rem;
     background-color: var(--clr-white);
+    box-shadow: 0px 5px 8px 0px rgb(0 0 0 / 20%);
 }
 
 .formula p {
@@ -98,16 +99,21 @@ html, body {
 .formula-button {
     float: right;
     margin-bottom: 1rem;
+    display: flex;
     margin-right: 1rem;
     margin-top: 1rem;
     background: var(--clr-primary-5);
     border-radius: var(--radius);
     border-color: transparent;
     color: var(--clr-white);
-    padding: 0.25rem 0.5rem;
+    padding: 0 0.5rem;
     text-transform: capitalize;
     cursor: pointer;
+    height: 2rem;
+    vertical-align: center;
+    align-items: center;
 }
+
 
 .formula-button:hover {
     background: var(--clr-primary-1);
@@ -435,7 +441,7 @@ html, body {
     left: 0;
     background-color: var(--clr-grey-1);
     overflow-x: hidden;
-    /* transition: 0.5s; */
+    font-family: 'Rubik', 'sans-serif';
     transition: var(--transition);
     padding-top: 60px;
 }
@@ -495,6 +501,8 @@ footer {
 }
 
 .arrow-button {
+    position: absolute;
+    bottom: 9rem;
     margin-top: 0rem;
     margin-bottom: 1rem;
     margin-right: 1rem;
@@ -509,11 +517,11 @@ footer {
 }
   
 .next {
-    float: right;
+    right: 0;
 }
 
 .previous {
-    float: left;
+    left: 0;
 }
 
 .login-input {
@@ -662,13 +670,22 @@ footer {
 
 .dropdown-content .dropdown-item {
     color: black;
-    display: block;
     background-color: #f1f1f1;
     height: 1rem;
-    display: block;
     margin-top: 0;
-    margin-bottom: 0;
+    border-style: none;
 }
+
+.dropdown-button{
+    font-size: 16px;
+    margin-bottom: 1.5rem;
+    cursor: pointer;
+}
+
+.dropdown-item button {
+    color: red;
+}
+
 
 .dropdown-item:hover {
     text-decoration: underline;
@@ -678,33 +695,17 @@ footer {
     margin-bottom: 0;
 }
 
+
 @keyframes growOut {
     0% { 
         opacity: 0;
-        /* transform: translateY(-60px); */
     }
 
     100% {
         opacity: 1;
-        /* transform: translateY(0); */
     }
 }
 
-@keyframes scaleZ {
-    0% {
-        opacity: 0;
-        transform: scale(0);
-    }
-    
-    80% {
-        transform: scale(1.07);
-    }
-
-    100% {
-        opacity: 1;
-        transform: scale(1);
-    }
-}
 
 .dropdown-content a:hover .dropdown-content,
 .dropdown:focus .dropdown-content,
@@ -734,6 +735,20 @@ footer {
     align-self: center;
     font-size: 24px;
     color: 'inherit';
+}
+
+#footer-button {
+    border-style: none;
+    color: inherit;
+    background-color: inherit;
+    font-size: inherit;
+    font-family: 'Rubik', 'sans-serif';
+    cursor: pointer;
+    text-decoration: inherit;
+    position: inherit;
+    outline: 0;
+    text-align: left;
+    padding: 0 0;
 }
 
 /* 

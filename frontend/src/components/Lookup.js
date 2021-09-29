@@ -109,12 +109,12 @@ const Lookup = () => {
       <div className="formulas-container" style={{ marginTop: '1.6rem' }}>
         {formulas.map((
           {
-            id_equation, title, equation, description,
+            id_formula, title, equation, description,
           },
         ) => (
           <Formula
-            key={id_equation}
-            id={id_equation}
+            key={id_formula}
+            id={id_formula}
             title={title}
             equation={equation}
             txt={description}

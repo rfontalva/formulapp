@@ -24,11 +24,9 @@ const App = () => {
   React.useEffect(() => {
     const username = 'username=';
     const search = document.cookie.search(username);
-    console.log(document.cookie);
     if (search !== -1) {
       const startIndex = search + username.length;
       const end = document.cookie.slice(startIndex).search(';') + startIndex;
-      console.log(search + username.length);
       setUser(document.cookie.slice(startIndex, end));
     }
   }, []);

@@ -16,7 +16,7 @@ var api = {
   },
 
   getAllFormulas(req, res) {
-    const selectQuery = 'select * from formulapp.equation order by rand()';
+    const selectQuery = 'select * from Formula order by rand()';
     this.execSql(selectQuery)
       .then((results) => res.json(results))
       .catch((error) => res.send(error));
@@ -24,18 +24,18 @@ var api = {
 
   addFormula(req, res) {
     const { title, equation, txt, category, topic } = req.query;
-    const insertEquation = `INSERT INTO formulapp.equation (title, equation, txt) VALUE ('${title}', '${equation}', '${txt}')`;
-    const insertCategory = `INSERT IGNORE INTO formulapp.category (txt) VALUE ('${category}')`;
-    const insertTopic = `INSERT INTO formulapp.topic (id_category, txt)
-    SELECT * FROM (SELECT id_category, '${topic}' AS txt FROM formulapp.category c
+    const insertEquation = `INSERT INTO Formula (title, equation, txt) VALUE ('${title}', '${equation}', '${txt}')`;
+    const insertCategory = `INSERT IGNORE INTO Category (txt) VALUE ('${category}')`;
+    const insertTopic = `INSERT INTO Topic (id_category, txt)
+    SELECT * FROM (SELECT id_category, '${topic}' AS txt FROM Category c
       WHERE c.txt='${category}') AS tmp 
     WHERE NOT EXISTS 
-      (SELECT id_category, txt FROM formulapp.topic t WHERE id_category=(SELECT id_category FROM formulapp.category c
+      (SELECT id_category, txt FROM Topic t WHERE id_category=(SELECT id_category FROM Category c
       WHERE c.txt='${category}') AND t.txt='${topic}')`;
-    const insertTag = `INSERT INTO formulapp.tag (id_equation, id_category, id_topic) VALUE 
-    ((SELECT id_equation FROM formulapp.equation WHERE title='${title}'),
-    (SELECT id_category FROM formulapp.category WHERE txt='${category}'),
-    (SELECT id_topic FROM formulapp.topic WHERE txt='${topic}'))`;
+    const insertTag = `INSERT INTO Tag (id_formula, id_category, id_topic) VALUE 
+    ((SELECT id_formula FROM Formula WHERE title='${title}'),
+    (SELECT id_category FROM Category WHERE txt='${category}'),
+    (SELECT id_topic FROM Topic WHERE txt='${topic}'))`;
     this.execSql(insertEquation)
       .then(() => this.execSql(insertCategory))
       .then(() => this.execSql(insertTopic))
@@ -48,18 +48,18 @@ var api = {
     const {
       id, title, equation, txt, category, topic
     } = req.query;
-    const editEquation = `UPDATE formulapp.equation SET title='${title}', equation='${equation}', txt='${txt}' WHERE id_equation=${id}`;
-    const insertCategory = `INSERT IGNORE INTO formulapp.category (txt) VALUE ('${category}')`;
-    const insertTopic = `INSERT INTO formulapp.topic (id_category, txt)
-    SELECT * FROM (SELECT id_category, '${topic}' AS txt FROM formulapp.category c
+    const editEquation = `UPDATE Formula SET title='${title}', equation='${equation}', txt='${txt}' WHERE id_formula=${id}`;
+    const insertCategory = `INSERT IGNORE INTO Category (txt) VALUE ('${category}')`;
+    const insertTopic = `INSERT INTO Topic (id_category, txt)
+    SELECT * FROM (SELECT id_category, '${topic}' AS txt FROM Category c
       WHERE c.txt='${category}') AS tmp 
     WHERE NOT EXISTS 
-      (SELECT id_category, txt FROM formulapp.topic t WHERE id_category=(SELECT id_category FROM formulapp.category c
+      (SELECT id_category, txt FROM Topic t WHERE id_category=(SELECT id_category FROM Category c
       WHERE c.txt='${category}') AND t.txt='${topic}')`;
-    const editTag = `INSERT INTO formulapp.tag (id_category, id_topic, id_equation) VALUES
-      ((SELECT id_category FROM formulapp.category WHERE txt='${category}'),
-      (SELECT id_topic FROM formulapp.topic WHERE txt='${topic}'),
-      (SELECT id_equation FROM formulapp.equation WHERE title='${title}')) as tmp
+    const editTag = `INSERT INTO Tag (id_category, id_topic, id_formula) VALUES
+      ((SELECT id_category FROM Category WHERE txt='${category}'),
+      (SELECT id_topic FROM Topic WHERE txt='${topic}'),
+      (SELECT id_formula FROM Formula WHERE title='${title}')) as tmp
     ON DUPLICATE KEY UPDATE
       id_category = tmp.id_category,
       id_topic = tmp.id_topic`;
@@ -76,7 +76,7 @@ var api = {
 
   removeFormula(req, res) {
     const { id } = req.query;
-    const deleteQuery = `DELETE FROM formulapp.equation WHERE id_equation = ${id}`;
+    const deleteQuery = `DELETE FROM Formula WHERE id_formula = ${id}`;
     this.execSql(deleteQuery)
       .then(() => res.send('removed equation'))
       .catch((error) => res.send(error));
@@ -94,12 +94,10 @@ var api = {
 
   async authenticate(req, res) {
     const { email, password } = req.query;
-    console.log(password);
     const salted = password + secret.salt;
     const encrypted = crypto.createHash('sha256').update(salted, 'utf8').digest('hex');
-    console.log(encrypted);
     const existsQuery = `SELECT IF((SELECT count(*) FROM User WHERE email = '${email}' and password = '${encrypted}') ,1,0) as isempty`;
-    const query = `SELECT * from formulapp.User WHERE email = '${email}' and password = '${encrypted}'`;
+    const query = `SELECT * from User WHERE email = '${email}' and password = '${encrypted}'`;
     try {
       const existsResponse = await this.execSql(existsQuery);
       const isEmpty = existsResponse[0].isempty;
@@ -113,7 +111,6 @@ var api = {
     }
     try {
       response = await this.execSql(query);
-      console.log(response);
       res.json(response[0]);
       res.status(200);
     }
@@ -127,7 +124,7 @@ var api = {
     const salted = password + secret.salt;
     const encrypted = crypto.createHash('sha256').update(salted, 'utf8').digest('hex');
     const query = `
-      INSERT INTO formulapp.User 
+      INSERT INTO User 
       (firstname, lastname, username, email, password)
       VALUES ('${firstname}', '${lastname}', '${username}', '${email}', '${encrypted}')`;
     try {
@@ -142,10 +139,10 @@ var api = {
   async validate(req, res) {
     const { username, email } = req.query;
     const queryUsername = `
-      select count(*) as userExists from formulapp.User 
+      select count(*) as userExists from User 
       where username='${username}'`;
     const queryEmail = `
-      select count(*) as emailExists from formulapp.User 
+      select count(*) as emailExists from User 
       where email='${email}'`;
     try {
       responseEmail = await this.execSql(queryEmail);

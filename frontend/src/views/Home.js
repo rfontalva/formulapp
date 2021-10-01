@@ -1,9 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { useParams } from 'react-router-dom';
-import Formula from './Formula';
 import dbUtils from '../utils/dbUtils';
-import Paginator from './Paginator';
+import {
+  Paginator, Formula,
+} from '../components/index';
 
 const Home = React.forwardRef(({ search }, ref) => {
   const isSearch = search;

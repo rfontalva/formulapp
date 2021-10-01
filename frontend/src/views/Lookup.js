@@ -1,6 +1,8 @@
 import React from 'react';
 import dbUtils from '../utils/dbUtils';
-import Formula from './Formula';
+import {
+  Formula,
+} from '../components/index';
 import '../index.css';
 import Equation from '../utils/equationUtils';
 

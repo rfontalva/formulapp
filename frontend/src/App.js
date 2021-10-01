@@ -2,8 +2,9 @@ import React from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import RefContext from './context/RefContext';
 import {
-  AppTitle, Navbar, Footer, SwitchTree,
+  AppTitle, Navbar, Footer,
 } from './components/index';
+import SwitchTree from './views/SwitchTree';
 
 window.frontend = 'http://localhost:3000/';
 

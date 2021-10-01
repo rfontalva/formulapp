@@ -2,7 +2,7 @@ import React from 'react';
 import axios from 'axios';
 import { saveAs } from 'file-saver';
 import dbUtils from '../utils/dbUtils';
-import Formula from './Formula';
+import { Formula } from '../components/index';
 import RefContext from '../context/RefContext';
 
 const PdfGenerator = () => {

@@ -42,7 +42,7 @@ const PdfGenerator = () => {
     let removedText = formulasHeader.replace(/\D+/g, ', ');
     removedText = removedText.substr(2, removedText.length - 2);
     const idArray = removedText.split(',').map((x) => +x);
-    const query = `select * from formulapp.equation where id_formula in (${idArray})`;
+    const query = `select * from Formula where id_formula in (${idArray})`;
     dbUtils.getRows(query)
       .then((results) => setFormulas(results))
       .catch((err) => console.error(err));
@@ -66,7 +66,7 @@ const PdfGenerator = () => {
   return (
     <div className="cheatsheet">
       <article className="grid-side">
-        <div className="inputs-box">
+        <div className="inputs-box side-box">
           <form onSubmit={submitHandler}>
             <label htmlFor="cheatSheetTitle">
               Title

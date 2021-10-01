@@ -16,7 +16,7 @@ const Home = React.forwardRef(({ search }, ref) => {
   const [page, setPage] = React.useState(0);
   const getFormulas = () => {
     if (isSearch) {
-      const query = `select * from formulapp.equation where title like '%${searchTitle}%'`;
+      const query = `select * from Formula where title like '%${searchTitle}%'`;
       dbUtils.getRows(query)
         .then((results) => setFormulas(results))
         .catch((err) => console.error(err));

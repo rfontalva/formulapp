@@ -19,21 +19,15 @@ const InputFormula = () => {
   let tempName = '';
 
   const getFormula = () => {
-    const query = `select e.id_formula, e.title, e.txt, e.equation,
-    c.txt as "category", tp.txt as "topic"
-    from formulapp.equation e
-      left join formulapp.tag tg using (id_formula)
-      left join formulapp.category c on c.id_category=tg.id_category
-      left join formulapp.topic tp on tp.id_topic=tg.id_topic
-    where id_formula=${parseInt(id, 10)}`;
+    const query = `select * from eq_search where id_formula=${parseInt(id, 10)}`;
     dbUtils.getRows(query).then((results) => {
       const {
-        title, equation, txt, category, topic,
+        title, equation, description, category, topic,
       } = results[0];
       const isLatex = true;
       const expr = new Equation(equation, isLatex).latex;
       setItem({
-        title, txt, equation: expr, category, topic,
+        title, txt: description, equation: expr, category, topic,
       });
       setLatex(new Equation(expr));
     });
@@ -97,15 +91,15 @@ const InputFormula = () => {
   };
 
   const getCategories = () => {
-    const query = 'select * from formulapp.category';
+    const query = 'select * from Category';
     dbUtils.getRows(query)
       .then((results) => setCategories(results))
       .catch((err) => console.error(err));
   };
 
   const getTopics = () => {
-    const query = `select * from formulapp.topic where id_category=
-    (select id_category from formulapp.category where txt='${item.category}')`;
+    const query = `select * from Topic where id_category=
+    (select id_category from Category where txt='${item.category}')`;
     dbUtils.getRows(query)
       .then((results) => setTopics(results))
       .catch((err) => console.error(err));

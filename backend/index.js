@@ -36,7 +36,7 @@ app.post('/api/pdf', async (req, res) => {
   let ids;
   if(typeof(req.query.ids) === 'string') ids = req.query.ids;
   else ids = req.query.ids.map((x) => +x);
-  const formulas = await api.execSql(`select * from formulapp.equation where id_formula in (${ids})`);
+  const formulas = await api.execSql(`select * from Formula where id_formula in (${ids})`);
   await printPdf(formulas, req.query.header);
   res.send(Promise.resolve());
 });

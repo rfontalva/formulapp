@@ -56,6 +56,10 @@ html, body {
     height: 100%;
 }
 
+label {
+    font-family: 'Rubik', 'sans-serif';
+}
+
 .page-container {
     position: relative;
     min-height: 100vh;
@@ -192,6 +196,7 @@ html, body {
     margin-bottom: 4rem;
     padding: 1rem 2rem;
     border-radius: var(--radius);
+    box-shadow: 0px 5px 8px 0px rgb(0 0 0 / 20%);
 }
 
 .inputs-box h1 {
@@ -749,6 +754,10 @@ footer {
     outline: 0;
     text-align: left;
     padding: 0 0;
+}
+
+.side-box {
+    margin-left: 1rem;
 }
 
 /* 

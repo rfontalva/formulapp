@@ -2,6 +2,7 @@ import React from 'react';
 import dbUtils from '../utils/dbUtils';
 import Formula from './Formula';
 import '../index.css';
+import Equation from '../utils/equationUtils';
 
 const Lookup = () => {
   const [search, setSearch] = React.useState({
@@ -13,8 +14,10 @@ const Lookup = () => {
   // eslint-disable-next-line no-unused-vars
   const [topics, setTopics] = React.useState([]);
   const getFormulas = () => {
-    const query = `select * from formulapp.eq_search where title like '%${search.title}%'
-    and description like '%${search.description}%' and equation like '%${search.equation}%' and
+    const equation = new Equation(search.equation).latex;
+    console.log(equation);
+    const query = `select * from eq_search where title like '%${search.title}%'
+    and description like '%${search.description}%' and equation like '%${equation}%' and
     category like '%${search.category}%' and topic like '%${search.topic}%'`;
     dbUtils.getRows(query)
       .then((results) => setFormulas(results))
@@ -22,15 +25,15 @@ const Lookup = () => {
   };
 
   const getCategories = () => {
-    const query = 'select * from formulapp.category';
+    const query = 'select * from Category';
     dbUtils.getRows(query)
       .then((results) => setCategories(results))
       .catch((err) => console.error(err));
   };
 
   const getTopics = () => {
-    const query = `select * from formulapp.topic where id_category=
-        (select id_category from formulapp.category where txt='${search.category}')`;
+    const query = `select * from Topic where id_category=
+        (select id_category from Category where txt='${search.category}')`;
     dbUtils.getRows(query)
       .then((results) => setTopics(results))
       .catch((err) => console.error(err));
@@ -58,7 +61,7 @@ const Lookup = () => {
   return (
     <>
       <article className="grid-side">
-        <div className="inputs-box">
+        <div className="inputs-box side-box">
           <form onSubmit={submitHandler}>
             <label htmlFor="searchTitle">
               Title

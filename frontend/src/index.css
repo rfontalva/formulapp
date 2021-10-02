@@ -60,6 +60,15 @@ label {
     font-family: 'Rubik', 'sans-serif';
 }
 
+input, textarea, select {
+    box-shadow: 0px 1px 2px 0px rgb(0 0 0 / 20%);
+}
+
+input:focus, textarea:focus, select:focus {
+    outline: none;
+}
+
+
 .page-container {
     position: relative;
     min-height: 100vh;
@@ -116,6 +125,7 @@ label {
     height: 2rem;
     vertical-align: center;
     align-items: center;
+    box-shadow: 0px 1px 2px 0px rgb(0 0 0 / 20%);
 }
 
 
@@ -758,6 +768,10 @@ footer {
 
 .side-box {
     margin-left: 1rem;
+}
+
+#profile-box {
+    padding-bottom: 3rem;
 }
 
 /* 

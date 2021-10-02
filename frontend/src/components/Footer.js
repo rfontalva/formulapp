@@ -1,12 +1,14 @@
 import React from 'react';
 import MenuItems from './data/menu.json';
 import RefContext from '../context/RefContext';
+import urlUtils from '../utils/urlUtils';
 
 const Footer = () => {
   const { user, setUser } = React.useContext(RefContext);
   const logOut = () => {
     setUser();
     document.cookie = 'username=; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+    urlUtils.goHome();
   };
   return (
     <footer>

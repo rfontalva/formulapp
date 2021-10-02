@@ -6,6 +6,7 @@ import Lookup from './Lookup';
 import PdfGenerator from './PdfGenerator';
 import SignUp from './SignUp';
 import Error from './Error';
+import Profile from './Profile';
 
 const SwitchTree = () => (
   <Switch>
@@ -29,6 +30,9 @@ const SwitchTree = () => (
     </Route>
     <Route path="/signup">
       <SignUp />
+    </Route>
+    <Route path="/profile">
+      <Profile />
     </Route>
     <Route path="*">
       <Error />

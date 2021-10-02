@@ -1,12 +1,14 @@
 import React from 'react';
 import '../index.css';
 import RefContext from '../context/RefContext';
+import urlUtils from '../utils/urlUtils';
 
 const UserMenu = () => {
   const { setUser } = React.useContext(RefContext);
   const logOut = () => {
     setUser();
     document.cookie = 'username=; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+    urlUtils.goHome();
   };
   return (
     <div className="dropdown-content">

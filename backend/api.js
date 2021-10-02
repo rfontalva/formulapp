@@ -128,7 +128,7 @@ var api = {
       (firstname, lastname, username, email, password)
       VALUES ('${firstname}', '${lastname}', '${username}', '${email}', '${encrypted}')`;
     try {
-      response = await this.execSql(query);
+      const response = await this.execSql(query);
       res.json(response);
       res.status(200);
     } catch (err) {
@@ -145,7 +145,7 @@ var api = {
       select count(*) as emailExists from User 
       where email='${email}'`;
     try {
-      responseEmail = await this.execSql(queryEmail);
+      const responseEmail = await this.execSql(queryEmail);
       if (responseEmail[0].emailExists) {
         res.status(401).json({ emailExists: 'Este email ya se encuentra en uso' })
         return;
@@ -154,7 +154,7 @@ var api = {
     catch (err) {
       throw new Error(err);
     }
-    responseUsername = await this.execSql(queryUsername);
+    const responseUsername = await this.execSql(queryUsername);
     if (responseUsername[0].userExists) {
       res.status(401).json({ usernameExists: 'Este nombre de usuario ya se encuentra en uso' })
       return;

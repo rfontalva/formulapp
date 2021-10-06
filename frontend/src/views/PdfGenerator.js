@@ -3,10 +3,9 @@ import axios from 'axios';
 import { saveAs } from 'file-saver';
 import dbUtils from '../utils/dbUtils';
 import { Formula } from '../components/index';
-import RefContext from '../context/RefContext';
+import userUtils from '../utils/userUtils';
 
 const PdfGenerator = () => {
-  const { user } = React.useContext(RefContext);
   const [csTitle, setCSTitle] = React.useState('');
   const [formulasHeader, setHeader] = React.useState(localStorage.ids);
   const [formulas, setFormulas] = React.useState([]);
@@ -49,7 +48,6 @@ const PdfGenerator = () => {
   };
 
   React.useEffect(() => {
-    console.log(user);
     if (formulasHeader) { getFormulas(); }
   }, []);
 
@@ -75,7 +73,7 @@ const PdfGenerator = () => {
           </form>
           {!isDownloading && <button type="button" onClick={submitHandler}>Descargar</button>}
           {isDownloading && <p>Descargando...</p>}
-          {user && <button type="button" onClick={saveSheet}>Guardar</button>}
+          {userUtils.isLoggedIn() && <button type="button" onClick={saveSheet}>Guardar</button>}
         </div>
       </article>
       {csTitle && <h1>{csTitle}</h1>}

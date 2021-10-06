@@ -1,38 +1,29 @@
 import React from 'react';
 import MenuItems from './data/menu.json';
-import RefContext from '../context/RefContext';
-import urlUtils from '../utils/urlUtils';
+import userUtils from '../utils/userUtils';
 
-const Footer = () => {
-  const { user, setUser } = React.useContext(RefContext);
-  const logOut = () => {
-    setUser();
-    document.cookie = 'username=; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
-    urlUtils.goHome();
-  };
-  return (
-    <footer>
-      <h3 className="footer-title">Formulapp®</h3>
-      <ul className="footer-menu">
-        {MenuItems.map(({ title, link }) => (
-          <li key={`${title}`}>
-            <a key={`${title}`} href={link}>{title}</a>
-          </li>
-        ))}
-        {user && (
+const Footer = () => (
+  <footer>
+    <h3 className="footer-title">Formulapp®</h3>
+    <ul className="footer-menu">
+      {MenuItems.map(({ title, link }) => (
+        <li key={`${title}`}>
+          <a key={`${title}`} href={link}>{title}</a>
+        </li>
+      ))}
+      {userUtils.isLoggedIn() && (
         <button
           type="button"
           id="footer-button"
           className="footer-menu"
-          onClick={logOut}
-          onKeyDown={logOut}
+          onClick={userUtils.logOut()}
+          onKeyDown={userUtils.logOut()}
         >
           Cerrar sesión
         </button>
-        )}
-      </ul>
-    </footer>
-  );
-};
+      )}
+    </ul>
+  </footer>
+);
 
 export default Footer;

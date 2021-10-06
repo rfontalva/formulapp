@@ -4,12 +4,12 @@ import SearchBar from './SearchBar';
 import Burger from './Burger';
 import SideMenu from './SideMenu';
 import Login from './Login';
-// import UserMenu from './UserMenu';
 import useMobile from '../hooks/useMobile';
 import RefContext from '../context/RefContext';
 import MenuItems from './data/menu.json';
 import utils from '../utils/urlUtils';
 import UserMenu from './UserMenu';
+import userUtils from '../utils/userUtils';
 
 const Navbar = () => {
   const {
@@ -70,7 +70,7 @@ const Navbar = () => {
             )}
           </ul>
         </nav>
-        {!user
+        {!userUtils.isLoggedIn()
           && (
           <button
             type="button"
@@ -81,7 +81,7 @@ const Navbar = () => {
             Iniciar sesión
           </button>
           )}
-        {user && (
+        {userUtils.isLoggedIn() && (
           <div className="dropdown login-navbar">
             <button
               type="button"

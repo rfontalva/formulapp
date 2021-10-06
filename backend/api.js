@@ -22,55 +22,59 @@ var api = {
       .catch((error) => res.send(error));
   },
 
-  addFormula(req, res) {
+  async addFormula(req, res) {
     const { title, equation, txt, category, topic } = req.query;
-    const insertEquation = `INSERT INTO Formula (title, equation, txt) VALUE ('${title}', '${equation}', '${txt}')`;
-    const insertCategory = `INSERT IGNORE INTO Category (txt) VALUE ('${category}')`;
+    const insertCategory = `INSERT IGNORE INTO Category (txt) VALUE ('${category}');`;
     const insertTopic = `INSERT INTO Topic (id_category, txt)
     SELECT * FROM (SELECT id_category, '${topic}' AS txt FROM Category c
       WHERE c.txt='${category}') AS tmp 
     WHERE NOT EXISTS 
       (SELECT id_category, txt FROM Topic t WHERE id_category=(SELECT id_category FROM Category c
-      WHERE c.txt='${category}') AND t.txt='${topic}')`;
-    const insertTag = `INSERT INTO Tag (id_formula, id_category, id_topic) VALUE 
-    ((SELECT id_formula FROM Formula WHERE title='${title}'),
-    (SELECT id_category FROM Category WHERE txt='${category}'),
-    (SELECT id_topic FROM Topic WHERE txt='${topic}'))`;
-    this.execSql(insertEquation)
-      .then(() => this.execSql(insertCategory))
-      .then(() => this.execSql(insertTopic))
-      .then(() => this.execSql(insertTag))
-      .then(() => res.send('Added equation'))
-      .catch((error) => res.send(error));
+      WHERE c.txt='${category}') AND t.txt='${topic}');`;
+    const insertEquation = `INSERT INTO Formula (title, equation, txt, id_topic) 
+      VALUE ('${title}', '${equation}', '${txt}', (
+        SELECT id_topic from topic t WHERE t.txt='${topic}'));`;
+    try {
+      await this.execSql('START TRANSACTION;');
+      await this.execSql(insertCategory);
+      await this.execSql(insertTopic);
+      await this.execSql(insertEquation);
+      await this.execSql('COMMIT;');
+      res.status(200).send(`Edited equation: ${title}`);
+    } catch (error) {
+      try {
+        await this.execSql('ROLLBACK;');
+      } catch(err) {
+        throw new Error(err);
+      }
+      res.status(400).send(error);
+    }
   },
 
   async editFormula(req, res) {
     const {
       id, title, equation, txt, category, topic
     } = req.query;
-    const editEquation = `UPDATE Formula SET title='${title}', equation='${equation}', txt='${txt}' WHERE id_formula=${id}`;
-    const insertCategory = `INSERT IGNORE INTO Category (txt) VALUE ('${category}')`;
-    const insertTopic = `INSERT INTO Topic (id_category, txt)
-    SELECT * FROM (SELECT id_category, '${topic}' AS txt FROM Category c
-      WHERE c.txt='${category}') AS tmp 
-    WHERE NOT EXISTS 
-      (SELECT id_category, txt FROM Topic t WHERE id_category=(SELECT id_category FROM Category c
-      WHERE c.txt='${category}') AND t.txt='${topic}')`;
-    const editTag = `INSERT INTO Tag (id_category, id_topic, id_formula) VALUES
-      ((SELECT id_category FROM Category WHERE txt='${category}'),
-      (SELECT id_topic FROM Topic WHERE txt='${topic}'),
-      (SELECT id_formula FROM Formula WHERE title='${title}')) as tmp
-    ON DUPLICATE KEY UPDATE
-      id_category = tmp.id_category,
-      id_topic = tmp.id_topic`;
+    const editEquation = `UPDATE Formula SET title='${title}', equation='${equation}', txt='${txt}', 
+      id_topic=(SELECT id_topic from Topic t JOIN Category c using (id_category) 
+      WHERE t.txt='${topic}' AND c.txt='${category}')
+      WHERE id_formula=${id};`;
+    const insertCategory = `INSERT IGNORE INTO Category (txt) VALUE ('${category}');`;
+    const insertTopic = `INSERT IGNORE INTO Topic (id_category, txt) VALUE ((SELECT id_category FROM Category c WHERE c.txt='${category}'), '${topic}');`
     try {
+      await this.execSql('START TRANSACTION;');
+      await this.execSql(insertCategory);
+      await this.execSql(insertTopic);
       await this.execSql(editEquation);
-      if (category !== '') await this.execSql(insertCategory);
-      if (topic !== '') await this.execSql(insertTopic);
-      await this.execSql(editTag);
-      res.send(`edited equation: ${title}`);
+      await this.execSql('COMMIT;');
+      res.send(`Edited equation: ${title}`);
     } catch (error) {
-      res.send(error);
+      try {
+        await this.execSql('ROLLBACK;');
+      } catch(err) {
+        throw new Error(err);
+      }
+      res.status(400).send(error);
     }
   },
 
@@ -78,14 +82,14 @@ var api = {
     const { id } = req.query;
     const deleteQuery = `DELETE FROM Formula WHERE id_formula = ${id}`;
     this.execSql(deleteQuery)
-      .then(() => res.send('removed equation'))
+      .then(() => res.send('Removed equation'))
       .catch((error) => res.send(error));
   },
 
   getSelect(req, res) {
     const { query } = req.query;
     if (query.includes('insert') || query.includes('update') || query.includes('delete') || query.includes('drop') || query.includes('create')) {
-      return res.send('invalid operation');
+      return res.send('Invalid operation');
     }
     return this.execSql(query)
       .then((results) => res.json(results))
@@ -102,7 +106,7 @@ var api = {
       const existsResponse = await this.execSql(existsQuery);
       const isEmpty = existsResponse[0].isempty;
       if (isEmpty === 0) {
-        res.status(500).send("user doesn't exist");
+        res.status(500).send("User doesn't exist");
         return;
       }
     }

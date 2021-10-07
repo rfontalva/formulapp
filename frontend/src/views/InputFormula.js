@@ -17,6 +17,7 @@ const InputFormula = () => {
     title: false, equation: false, txt: false, topic: false, category: false,
   });
   const [failed, setFailed] = React.useState(false);
+  const [isChecked, setIsChecked] = React.useState(false);
   const [categories, setCategories] = React.useState([]);
   const [topics, setTopics] = React.useState([]);
   const [latexParser, setLatex] = React.useState(new Equation(''));
@@ -73,20 +74,26 @@ const InputFormula = () => {
     const equation = urlUtils.urlEncoding(latexParser.latex);
     txt = encodeURIComponent(txt);
     try {
-      await fetch(`/api/add?id=${parseInt(id, 10)}&title=${title}&equation=${equation}&txt=${txt}&category=${category}&topic=${topic}`);
+      const response = await fetch(`/api/add?id=${parseInt(id, 10)}&title=${title}&equation=${equation}&txt=${txt}&category=${category}&topic=${topic}`);
+      return response.status;
     } catch (err) {
       setFailed(true);
+      return 400;
     }
   };
 
   const editFormula = async () => {
     let {
-      title, txt, topic, category,
+      title, txt, topic, category, equation,
     } = item;
     title = urlUtils.urlEncoding(title);
     category = urlUtils.urlEncoding(category);
     topic = urlUtils.urlEncoding(topic);
-    const equation = urlUtils.urlEncoding(latexParser.latex);
+    if (!isChecked) {
+      equation = urlUtils.urlEncoding(latexParser.latex);
+    } else {
+      equation = urlUtils.urlEncoding(equation);
+    }
     txt = encodeURIComponent(txt);
     try {
       const response = await fetch(`/api/edit?id=${parseInt(id, 10)}&title=${title}&equation=${equation}&txt=${txt}&category=${category}&topic=${topic}`);
@@ -103,8 +110,11 @@ const InputFormula = () => {
   const changeHandler = (e) => {
     const { name } = e.target;
     const { value } = e.target;
+    console.log(value);
     if (name === 'equation') {
-      setLatex(new Equation(value));
+      if (!isChecked) {
+        setLatex(new Equation(value));
+      } else setLatex({ latex: value });
     }
     if (errorMessages[name]) {
       setErrorMessages({
@@ -114,11 +124,12 @@ const InputFormula = () => {
     setItem({ ...item, [name]: value });
   };
 
-  const submitHandler = (e) => {
+  const submitHandler = async (e) => {
     e.preventDefault();
     if (!validate()) { return; }
     if (isNew) {
-      addFormula();
+      const status = await addFormula();
+      if (status === 400) { return; }
       tempName = item.title;
       const x = document.getElementById('snackbar');
       x.className += ' show';
@@ -145,6 +156,10 @@ const InputFormula = () => {
     dbUtils.getRows(query)
       .then((results) => setTopics(results))
       .catch((err) => console.error(err));
+  };
+
+  const changeCheckbox = () => {
+    setIsChecked(!isChecked);
   };
 
   useEffect(() => {
@@ -210,6 +225,10 @@ const InputFormula = () => {
           <label htmlFor="formulaEquation">
             Ecuación*
             <input type="text" id="formulaEquation" name="equation" onChange={changeHandler} value={item.equation} />
+          </label>
+          <label htmlFor="useLatex" id="checkbox-label">
+            Usar Latex
+            <input type="checkbox" id="useLatex" onChange={changeCheckbox} />
           </label>
           {errorMessages.equation && <p className="error-text">El campo Ecuación no puede quedar vacío</p>}
         </form>

@@ -33,7 +33,7 @@ var api = {
       WHERE c.txt='${category}') AND t.txt='${topic}');`;
     const insertEquation = `INSERT INTO Formula (title, equation, txt, id_topic) 
       VALUE ('${title}', '${equation}', '${txt}', (
-        SELECT id_topic from topic t WHERE t.txt='${topic}'));`;
+        SELECT id_topic from Topic t WHERE t.txt='${topic}'));`;
     try {
       await this.execSql('START TRANSACTION;');
       await this.execSql(insertCategory);
@@ -42,6 +42,7 @@ var api = {
       await this.execSql('COMMIT;');
       res.status(200).send(`Edited equation: ${title}`);
     } catch (error) {
+      console.log(error);
       try {
         await this.execSql('ROLLBACK;');
       } catch(err) {

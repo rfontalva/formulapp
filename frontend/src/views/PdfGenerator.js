@@ -63,7 +63,7 @@ const PdfGenerator = () => {
 
   return (
     <div className="cheatsheet">
-      <article className="grid-side">
+      <article className="grid-side" id="create-box">
         <div className="inputs-box side-box">
           <form onSubmit={submitHandler}>
             <label htmlFor="cheatSheetTitle">

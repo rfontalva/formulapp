@@ -55,7 +55,6 @@ const Profile = () => {
           <a href="/">Cambiar mi contraseña</a>
           <button
             type="button"
-            className="sign-btn"
             onClick={() => console.log('click')}
           >
             Borrar mi cuenta

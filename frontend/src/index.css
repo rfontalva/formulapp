@@ -68,7 +68,6 @@ input:focus, textarea:focus, select:focus {
     outline: none;
 }
 
-
 .page-container {
     position: relative;
     min-height: 100vh;
@@ -86,7 +85,6 @@ input:focus, textarea:focus, select:focus {
     margin-right: 1rem;
     margin-bottom: 1rem;
     transition: var(--transition);
-    /* align-items: start; */
 }
 
 @media only screen and (max-width: 768px) {
@@ -274,6 +272,23 @@ input:focus, textarea:focus, select:focus {
 
 .inputs-box button {
     float: right;
+}
+
+#checkbox-label {
+    display: inline-block;
+    font-size: 80%;
+    display: flex;
+    justify-content: right;
+    align-items: center;
+    vertical-align: middle;
+    flex-direction: left;
+}
+
+#useLatex {
+    float: right;
+    width: auto;
+    max-width: 30px;
+    margin-left: 5px;
 }
 
 .grid {

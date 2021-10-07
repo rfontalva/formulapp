@@ -70,7 +70,7 @@ const Navbar = () => {
             )}
           </ul>
         </nav>
-        {!userUtils.isLoggedIn()
+        {!userUtils.isLoggedIn(user)
           && (
           <button
             type="button"
@@ -81,7 +81,7 @@ const Navbar = () => {
             Iniciar sesión
           </button>
           )}
-        {userUtils.isLoggedIn() && (
+        {userUtils.isLoggedIn(user) && (
           <div className="dropdown login-navbar">
             <button
               type="button"

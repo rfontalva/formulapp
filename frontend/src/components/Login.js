@@ -16,7 +16,6 @@ const Login = ({ show, setShow }) => {
 
   const authenticate = async () => {
     setWrongUser(false);
-    console.log('alo');
     const { email, password } = inputs;
     const response = await fetch(`/api/authenticate?email=${email}&password=${password}`, { method: 'POST' });
     if (response.status === 200) {

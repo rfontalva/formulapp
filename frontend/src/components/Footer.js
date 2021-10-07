@@ -1,29 +1,41 @@
 import React from 'react';
 import MenuItems from './data/menu.json';
 import userUtils from '../utils/userUtils';
+import RefContext from '../context/RefContext';
 
-const Footer = () => (
-  <footer>
-    <h3 className="footer-title">Formulapp®</h3>
-    <ul className="footer-menu">
-      {MenuItems.map(({ title, link }) => (
-        <li key={`${title}`}>
-          <a key={`${title}`} href={link}>{title}</a>
+const Footer = () => {
+  const { user, setUser } = React.useContext(RefContext);
+
+  return (
+    <footer>
+      <a style={{ textDecoration: 'none', color: 'inherit' }} href="/">
+        <h3 className="footer-title">
+          Formulapp®
+        </h3>
+      </a>
+      <ul className="footer-menu">
+        {MenuItems.map(({ title, link }) => (
+          <li key={`${title}`}>
+            <a key={`${title}`} href={link}>{title}</a>
+          </li>
+        ))}
+        <li>
+          <a href="/about">Acerca de</a>
         </li>
-      ))}
-      {userUtils.isLoggedIn() && (
+        {userUtils.isLoggedIn(user) && (
         <button
           type="button"
           id="footer-button"
           className="footer-menu"
-          onClick={userUtils.logOut()}
-          onKeyDown={userUtils.logOut()}
+          onClick={() => userUtils.logOut(setUser)}
+          onKeyDown={() => userUtils.logOut(setUser)}
         >
           Cerrar sesión
         </button>
-      )}
-    </ul>
-  </footer>
-);
+        )}
+      </ul>
+    </footer>
+  );
+};
 
 export default Footer;

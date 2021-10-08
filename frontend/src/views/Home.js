@@ -15,19 +15,23 @@ const Home = React.forwardRef(({ search }, ref) => {
   }
   const [formulas, setFormulas] = React.useState([]);
   const [page, setPage] = React.useState(0);
-  const getFormulas = () => {
+  const getFormulas = async () => {
     if (isSearch) {
       const query = `select * from Formula where title like '%${searchTitle}%'`;
-      dbUtils.getRows(query)
-        .then((results) => setFormulas(results))
-        .catch((err) => console.error(err));
+      try {
+        const results = await dbUtils.getRows(query);
+        setFormulas(results);
+      } catch (err) {
+        console.error(err);
+      }
     } else {
-      fetch('/api')
-        .then((response) => response.json())
-        .then((response) => {
-          setFormulas(response);
-        })
-        .catch((err) => console.error(err));
+      try {
+        const response = await fetch('/api');
+        const res = await response.json();
+        setFormulas(res);
+      } catch (err) {
+        console.error(err);
+      }
     }
   };
 
@@ -39,10 +43,12 @@ const Home = React.forwardRef(({ search }, ref) => {
     setPage(page + increment);
   };
 
-  const handleRemove = (id) => {
-    fetch(`/api/remove?id=${id}`)
-      .then((response) => response.json())
-      .catch((err) => console.error(err));
+  const handleRemove = async (id) => {
+    try {
+      await fetch(`/api/remove?id=${id}`, { method: 'DELETE' });
+    } catch (err) {
+      console.error(err);
+    }
     getFormulas();
   };
 

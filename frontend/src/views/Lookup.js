@@ -15,30 +15,39 @@ const Lookup = () => {
   const [categories, setCategories] = React.useState([]);
   // eslint-disable-next-line no-unused-vars
   const [topics, setTopics] = React.useState([]);
-  const getFormulas = () => {
+  const getFormulas = async () => {
     const equation = new Equation(search.equation).latex;
     console.log(equation);
     const query = `select * from eq_search where title like '%${search.title}%'
     and description like '%${search.description}%' and equation like '%${equation}%' and
     category like '%${search.category}%' and topic like '%${search.topic}%'`;
-    dbUtils.getRows(query)
-      .then((results) => setFormulas(results))
-      .catch((err) => console.error(err));
+    try {
+      const results = await dbUtils.getRows(query);
+      setFormulas(results);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
-  const getCategories = () => {
+  const getCategories = async () => {
     const query = 'select * from Category';
-    dbUtils.getRows(query)
-      .then((results) => setCategories(results))
-      .catch((err) => console.error(err));
+    try {
+      const results = await dbUtils.getRows(query);
+      setCategories(results);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
-  const getTopics = () => {
+  const getTopics = async () => {
     const query = `select * from Topic where id_category=
         (select id_category from Category where txt='${search.category}')`;
-    dbUtils.getRows(query)
-      .then((results) => setTopics(results))
-      .catch((err) => console.error(err));
+    try {
+      const results = await dbUtils.getRows(query);
+      setTopics(results);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const submitHandler = (e) => {

@@ -37,14 +37,17 @@ const PdfGenerator = () => {
     }
   };
 
-  const getFormulas = () => {
+  const getFormulas = async () => {
     let removedText = formulasHeader.replace(/\D+/g, ', ');
     removedText = removedText.substr(2, removedText.length - 2);
     const idArray = removedText.split(',').map((x) => +x);
     const query = `select * from Formula where id_formula in (${idArray})`;
-    dbUtils.getRows(query)
-      .then((results) => setFormulas(results))
-      .catch((err) => console.error(err));
+    try {
+      const results = await dbUtils.getRows(query);
+      setFormulas(results);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   React.useEffect(() => {

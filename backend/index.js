@@ -24,7 +24,7 @@ app.get('/api/edit', (req, res) => {
   api.editFormula(req, res);
 });
 
-app.get('/api/remove', (req, res) => {
+app.delete('/api/remove', (req, res) => {
   api.removeFormula(req, res);
 });
 
@@ -48,14 +48,15 @@ app.post('/api/authenticate', (req, res) => {
 app.get('/api/validate', (req, res) => {
 });
 
-app.put('/api/user',  (req, res) => {
-  api.validate(req, res)
-  .then(() => {
+app.put('/api/user', async (req, res) => {
+  try {
+    await api.validate(req, res)
     if(res.statusCode !== 501 && res.statusCode !== 502) {
-      api.addUser(req, res);
-    }
-  })
-  .catch((err) => {throw new Error(err)});
+        api.addUser(req, res);
+    } 
+  }catch(err){
+    throw new Error(err)
+  }
 });
 
 app.get('/api/pdf', (req, res) => {

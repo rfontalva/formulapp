@@ -15,15 +15,18 @@ var api = {
     }
   },
 
-  getAllFormulas(req, res) {
+  async getAllFormulas(req, res) {
     const selectQuery = 'select * from Formula order by rand()';
-    this.execSql(selectQuery)
-      .then((results) => res.json(results))
-      .catch((error) => res.send(error));
+    try {
+      const results = await this.execSql(selectQuery);
+      res.json(results);
+    } catch(error) {
+      res.send(error);
+    };
   },
 
   async addFormula(req, res) {
-    const { title, equation, txt, category, topic } = req.query;
+    const { title, equation, txt, category, topic, rawLatex } = req.query;
     const insertCategory = `INSERT IGNORE INTO Category (txt) VALUE ('${category}');`;
     const insertTopic = `INSERT INTO Topic (id_category, txt)
     SELECT * FROM (SELECT id_category, '${topic}' AS txt FROM Category c
@@ -31,9 +34,10 @@ var api = {
     WHERE NOT EXISTS 
       (SELECT id_category, txt FROM Topic t WHERE id_category=(SELECT id_category FROM Category c
       WHERE c.txt='${category}') AND t.txt='${topic}');`;
-    const insertEquation = `INSERT INTO Formula (title, equation, txt, id_topic) 
-      VALUE ('${title}', '${equation}', '${txt}', (
-        SELECT id_topic from Topic t WHERE t.txt='${topic}'));`;
+    const insertEquation = `INSERT INTO Formula (title, equation, txt, rawLatex, id_topic) 
+      VALUE ('${title}', '${equation}', '${txt}', ${rawLatex}, 
+      (SELECT id_topic from Topic t JOIN Category c using (id_category) 
+      WHERE t.txt='${topic}' AND c.txt='${category}'));`;
     try {
       await this.execSql('START TRANSACTION;');
       await this.execSql(insertCategory);
@@ -54,9 +58,9 @@ var api = {
 
   async editFormula(req, res) {
     const {
-      id, title, equation, txt, category, topic
+      id, title, equation, txt, category, topic, rawLatex
     } = req.query;
-    const editEquation = `UPDATE Formula SET title='${title}', equation='${equation}', txt='${txt}', 
+    const editEquation = `UPDATE Formula SET title='${title}', equation='${equation}', txt='${txt}', rawLatex=${rawLatex},
       id_topic=(SELECT id_topic from Topic t JOIN Category c using (id_category) 
       WHERE t.txt='${topic}' AND c.txt='${category}')
       WHERE id_formula=${id};`;
@@ -68,7 +72,7 @@ var api = {
       await this.execSql(insertTopic);
       await this.execSql(editEquation);
       await this.execSql('COMMIT;');
-      res.send(`Edited equation: ${title}`);
+      res.status(200).send(`Edited equation: ${title}`);
     } catch (error) {
       try {
         await this.execSql('ROLLBACK;');
@@ -79,22 +83,28 @@ var api = {
     }
   },
 
-  removeFormula(req, res) {
+  async removeFormula(req, res) {
     const { id } = req.query;
     const deleteQuery = `DELETE FROM Formula WHERE id_formula = ${id}`;
-    this.execSql(deleteQuery)
-      .then(() => res.send('Removed equation'))
-      .catch((error) => res.send(error));
+    try {
+      await this.execSql(deleteQuery);
+      res.send('Removed equation');
+    } catch(error) {
+      res.send(error)
+    };
   },
 
-  getSelect(req, res) {
+  async getSelect(req, res) {
     const { query } = req.query;
     if (query.includes('insert') || query.includes('update') || query.includes('delete') || query.includes('drop') || query.includes('create')) {
       return res.send('Invalid operation');
     }
-    return this.execSql(query)
-      .then((results) => res.json(results))
-      .catch((error) => res.send(error));
+    try {
+      const results = await this.execSql(query)
+      res.json(results);
+    } catch(error) {
+      res.send(error)
+    }
   },
 
   async authenticate(req, res) {

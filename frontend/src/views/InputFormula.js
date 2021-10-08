@@ -11,7 +11,7 @@ const InputFormula = () => {
   let isNew = true;
   if (id) isNew = false;
   const [item, setItem] = React.useState({
-    title: '', equation: '', txt: '', topic: '', category: '',
+    title: '', equation: '', txt: '', topic: '', category: '', rawLatex: false,
   });
   const [errorMessages, setErrorMessages] = React.useState({
     title: false, equation: false, txt: false, topic: false, category: false,
@@ -23,19 +23,26 @@ const InputFormula = () => {
   const [latexParser, setLatex] = React.useState(new Equation(''));
   let tempName = '';
 
-  const getFormula = () => {
+  const getFormula = async () => {
     const query = `select * from eq_search where id_formula=${parseInt(id, 10)}`;
-    dbUtils.getRows(query).then((results) => {
-      const {
-        title, equation, description, category, topic,
-      } = results[0];
-      const isLatex = true;
-      const expr = new Equation(equation, isLatex).latex;
+    const results = await dbUtils.getRows(query);
+    const {
+      title, equation, description, category, topic, rawLatex,
+    } = await results[0];
+    setIsChecked(item.rawLatex);
+    if (rawLatex) {
       setItem({
-        title, txt: description, equation: expr, category, topic,
+        title, txt: description, equation, category, topic, rawLatex,
       });
-      setLatex(new Equation(expr));
+      setLatex({ latex: equation });
+      return;
+    }
+    const isLatex = true;
+    const expr = new Equation(equation, isLatex).latex;
+    setItem({
+      title, txt: description, equation: expr, category, topic, rawLatex,
     });
+    setLatex(new Equation(expr));
   };
 
   const validate = () => {
@@ -66,15 +73,19 @@ const InputFormula = () => {
 
   const addFormula = async () => {
     let {
-      title, txt, topic, category,
+      title, txt, topic, category, equation,
     } = item;
     title = urlUtils.urlEncoding(title);
     category = urlUtils.urlEncoding(category);
     topic = urlUtils.urlEncoding(topic);
-    const equation = urlUtils.urlEncoding(latexParser.latex);
+    if (!isChecked) {
+      equation = urlUtils.urlEncoding(new Equation(equation).latex);
+    } else {
+      equation = urlUtils.urlEncoding(equation);
+    }
     txt = encodeURIComponent(txt);
     try {
-      const response = await fetch(`/api/add?id=${parseInt(id, 10)}&title=${title}&equation=${equation}&txt=${txt}&category=${category}&topic=${topic}`);
+      const response = await fetch(`/api/add?id=${parseInt(id, 10)}&title=${title}&equation=${equation}&txt=${txt}&category=${category}&topic=${topic}&rawLatex=${isChecked}`);
       return response.status;
     } catch (err) {
       setFailed(true);
@@ -90,13 +101,15 @@ const InputFormula = () => {
     category = urlUtils.urlEncoding(category);
     topic = urlUtils.urlEncoding(topic);
     if (!isChecked) {
+      console.log(isChecked);
       equation = urlUtils.urlEncoding(latexParser.latex);
+      console.log(equation);
     } else {
       equation = urlUtils.urlEncoding(equation);
     }
     txt = encodeURIComponent(txt);
     try {
-      const response = await fetch(`/api/edit?id=${parseInt(id, 10)}&title=${title}&equation=${equation}&txt=${txt}&category=${category}&topic=${topic}`);
+      const response = await fetch(`/api/edit?id=${parseInt(id, 10)}&title=${title}&equation=${equation}&txt=${txt}&category=${category}&topic=${topic}&rawLatex=${isChecked}`);
       if (response.status !== 200) {
         setFailed(true);
         return;
@@ -110,7 +123,6 @@ const InputFormula = () => {
   const changeHandler = (e) => {
     const { name } = e.target;
     const { value } = e.target;
-    console.log(value);
     if (name === 'equation') {
       if (!isChecked) {
         setLatex(new Equation(value));
@@ -143,23 +155,36 @@ const InputFormula = () => {
     }
   };
 
-  const getCategories = () => {
+  const getCategories = async () => {
     const query = 'select * from Category';
-    dbUtils.getRows(query)
-      .then((results) => setCategories(results))
-      .catch((err) => console.error(err));
+    try {
+      const results = await dbUtils.getRows(query);
+      setCategories(results);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
-  const getTopics = () => {
+  const getTopics = async () => {
     const query = `select * from Topic where id_category=
     (select id_category from Category where txt='${item.category}')`;
-    dbUtils.getRows(query)
-      .then((results) => setTopics(results))
-      .catch((err) => console.error(err));
+    try {
+      const results = await dbUtils.getRows(query);
+      setTopics(results);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
+  // The SetLatex order is inverted to bypass state always being one step behind
+  // the Equation object should be displayed when !isChecked
   const changeCheckbox = () => {
     setIsChecked(!isChecked);
+    if (isChecked) {
+      setLatex(new Equation(item.equation));
+      return;
+    }
+    setLatex({ latex: item.equation });
   };
 
   useEffect(() => {
@@ -171,11 +196,23 @@ const InputFormula = () => {
     getTopics();
   }, [item.category]);
 
+  // show error message for 3 seconds
   useEffect(() => {
     if (failed) {
       setTimeout(() => { setFailed(false); }, 3000);
     }
   }, [failed]);
+
+  // force rerender for checkbox state, after get formula ends
+  useEffect(() => {
+    if (item.rawLatex) {
+      setIsChecked(item.rawLatex);
+    }
+  }, [item.rawLatex]);
+
+  useEffect(() => {
+    console.log('latex');
+  }, [latexParser]);
 
   return (
     <article className="grid">
@@ -228,7 +265,7 @@ const InputFormula = () => {
           </label>
           <label htmlFor="useLatex" id="checkbox-label">
             Usar Latex
-            <input type="checkbox" id="useLatex" onChange={changeCheckbox} />
+            <input type="checkbox" id="useLatex" onChange={changeCheckbox} checked={isChecked} />
           </label>
           {errorMessages.equation && <p className="error-text">El campo Ecuación no puede quedar vacío</p>}
         </form>
@@ -237,9 +274,9 @@ const InputFormula = () => {
         </MathJax.Provider>
         <button type="submit" onClick={submitHandler}>Enviar</button>
         {failed && (
-        <p className="error-text">
-          Hubo un error, intente de nuevo
-        </p>
+          <p className="error-text">
+            Hubo un error, intente de nuevo
+          </p>
         )}
       </div>
       {isNew && (

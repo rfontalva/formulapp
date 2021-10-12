@@ -110,4 +110,4 @@ dist
 
 /backend/generic.html
 
-/.github/workflows/version.txt
+/migrations/version.txt

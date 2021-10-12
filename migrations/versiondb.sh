@@ -29,5 +29,3 @@ do
         echo "$NEW_VERSION" > "${VERSION_PATH}"
     fi
 done
-
-#  > "${VERSION_PATH}"

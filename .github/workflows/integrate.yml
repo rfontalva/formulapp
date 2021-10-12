@@ -10,23 +10,11 @@ jobs:
   test_equation:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/node@v1
-        with:
-          node-version: 14
-        working-directory: ./formulapp/frontend
-      - run: npm ci
-      - run: npm test
-
-on:
-  pull_request
-
-jobs:
-  run:
-    runs-on: ubuntu-latest
-      steps:
-        - uses: actions/checkout@v2
-        - name: Version DB
-        run: ./versiondb.sh
-        shell: bash
-
+    - uses: actions/checkout@v2
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+      working-directory: ./formulapp/frontend
+    - run: npm ci
+    - run: npm test

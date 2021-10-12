@@ -1,0 +1,32 @@
+name: Formulapp CI Pipeline
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  test_equation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/node@v1
+        with:
+          node-version: 14
+        working-directory: ./formulapp/frontend
+      - run: npm ci
+      - run: npm test
+
+on:
+  pull_request
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v2
+        - name: Version DB
+        run: ./versiondb.sh
+        shell: bash
+

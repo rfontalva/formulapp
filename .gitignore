@@ -109,3 +109,5 @@ dist
 *.pdf
 
 /backend/generic.html
+
+/.github/workflows/version.txt

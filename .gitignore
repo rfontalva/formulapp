@@ -110,4 +110,4 @@ dist
 
 /backend/generic.html
 
-/migrations/version.txt
+*version.txt

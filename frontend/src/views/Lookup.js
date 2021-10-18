@@ -11,13 +11,10 @@ const Lookup = () => {
     title: '', description: '', equation: '', topic: '', category: '',
   });
   const [formulas, setFormulas] = React.useState([]);
-  // eslint-disable-next-line no-unused-vars
   const [categories, setCategories] = React.useState([]);
-  // eslint-disable-next-line no-unused-vars
   const [topics, setTopics] = React.useState([]);
   const getFormulas = async () => {
     const equation = new Equation(search.equation).latex;
-    console.log(equation);
     const query = `select * from eq_search where title like '%${search.title}%'
     and description like '%${search.description}%' and equation like '%${equation}%' and
     category like '%${search.category}%' and topic like '%${search.topic}%'`;

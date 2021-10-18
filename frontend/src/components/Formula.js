@@ -1,11 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import MathJax from '@innodoc/react-mathjax-node';
+import CheatsheetSelector from './CheatsheetSelector';
 import '../index.css';
 
 const Formula = ({
   id, title, equation, txt, handleRemove, buttons,
 }) => {
+  console.log(equation);
   const [isAdded, setAdded] = React.useState(false);
   const addId = () => {
     if (!localStorage.ids) {
@@ -22,31 +24,34 @@ const Formula = ({
       <button
         type="button"
         className="formula-button"
-        title="Delete formula"
+        title="Reportar formula"
         onClick={() => handleRemove(id)}
       >
         <i
-          className="fa fa-trash"
+          className="fa fa-flag"
         />
       </button>
       )}
       {buttons && (
-      <a className="formula-button" title="Edit formula" href={`${window.frontend}edit/${id}`}>
+      <a className="formula-button" title="Editar formula" href={`${window.frontend}edit/${id}`}>
         <i className="fa fa-edit" />
       </a>
       )}
       {buttons && !isAdded
         && (
-        <button
-          type="button"
-          className="formula-button"
-          title="Add formula"
-          onClick={addId}
-        >
-          <i
-            className="fa fa-plus"
-          />
-        </button>
+          <div className="cheatsheet-dropdown">
+            <button
+              type="button"
+              className="formula-button add-button"
+              title="Add formula"
+              onClick={addId}
+            >
+              <i
+                className="fa fa-plus"
+              />
+            </button>
+            <CheatsheetSelector />
+          </div>
         )}
       <div style={{ clear: 'both' }} />
       <MathJax.Provider>

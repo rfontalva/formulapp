@@ -70,3 +70,7 @@ app.delete('/api/pdf', (req, res) => {
     if (err) { res.send(err); }
   });
 });
+
+app.put('/api/cheatsheet', (req, res) => {
+  api.newCheatsheet(req, res);
+})

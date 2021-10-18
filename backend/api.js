@@ -108,11 +108,11 @@ var api = {
   },
 
   async authenticate(req, res) {
-    const { email, password } = req.query;
+    const { username, password } = req.query;
     const salted = password + secret.salt;
     const encrypted = crypto.createHash('sha256').update(salted, 'utf8').digest('hex');
-    const existsQuery = `SELECT IF((SELECT count(*) FROM User WHERE email = '${email}' and password = '${encrypted}') ,1,0) as isempty`;
-    const query = `SELECT * from User WHERE email = '${email}' and password = '${encrypted}'`;
+    const existsQuery = `SELECT IF((SELECT count(*) FROM User WHERE username = '${username}' and password = '${encrypted}') ,1,0) as isempty`;
+    const query = `SELECT * from User WHERE username = '${username}' and password = '${encrypted}'`;
     try {
       const existsResponse = await this.execSql(existsQuery);
       const isEmpty = existsResponse[0].isempty;
@@ -143,8 +143,8 @@ var api = {
       (firstname, lastname, username, email, password)
       VALUES ('${firstname}', '${lastname}', '${username}', '${email}', '${encrypted}')`;
     try {
-      const response = await this.execSql(query);
-      res.json(response);
+      await this.execSql(query);
+      res.json(username);
       res.status(200);
     } catch (err) {
       throw new Error(err);
@@ -173,6 +173,30 @@ var api = {
     if (responseUsername[0].userExists) {
       res.status(401).json({ usernameExists: 'Este nombre de usuario ya se encuentra en uso' })
       return;
+    }
+  },
+
+  async newCheatsheet(req, res) {
+    const { username, title } = req.query;
+    const insertCheatsheet = `INSERT INTO Cheatsheet (title) value ('${title}')`;
+    const insertPermission = `INSERT INTO Permission (id_user, id_cheatsheet) value (
+      (SELECT id_user from User where username='${username}'),
+      (SELECT id_cheatsheet from Cheatsheet where title='${title}')
+      )`;
+    try {
+      await this.execSql('START TRANSACTION;');
+      await this.execSql(insertCheatsheet);
+      await this.execSql(insertPermission);
+      await this.execSql('COMMIT;');
+      res.status(200).send(`Added cheatsheet: ${title}`);
+    } catch (error) {
+      try {
+        console.log(error);
+        await this.execSql('ROLLBACK;');
+      } catch(err) {
+        throw new Error(err);
+      }
+      res.status(400).send(error);
     }
   }
 }

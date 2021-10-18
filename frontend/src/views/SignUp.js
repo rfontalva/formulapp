@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import RefContext from '../context/RefContext';
-import urlUtils from '../utils/urlUtils';
+// import urlUtils from '../utils/urlUtils';
+import userUtils from '../utils/userUtils';
 import '../index.css';
 
 const SignUp = () => {
@@ -80,8 +81,9 @@ const SignUp = () => {
           setErrorMessages(res.json());
           break;
         case 200:
-          setUser(username);
-          urlUtils.goToUrl('profile');
+          setUser(await res.json().username);
+          userUtils.cookieLogIn(await res.json().username);
+          // urlUtils.goToUrl('profile');
           break;
         default:
       }

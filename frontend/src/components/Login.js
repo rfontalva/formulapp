@@ -2,7 +2,9 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import RefContext from '../context/RefContext';
 import utils from '../utils/urlUtils';
+import userUtils from '../utils/userUtils';
 import '../index.css';
+import BlurBox from './BlurBox';
 
 const Login = ({ show, setShow }) => {
   const { setUser } = React.useContext(RefContext);
@@ -10,22 +12,19 @@ const Login = ({ show, setShow }) => {
   const [wrongUser, setWrongUser] = useState(false);
   const close = () => {
     setShow(false);
-    setInputs({ email: '', password: '' });
+    setInputs({ usernameInput: '', password: '' });
     setWrongUser(false);
   };
 
   const authenticate = async () => {
     setWrongUser(false);
-    const { email, password } = inputs;
-    const response = await fetch(`/api/authenticate?email=${email}&password=${password}`, { method: 'POST' });
+    const { usernameInput, password } = inputs;
+    const response = await fetch(`/api/authenticate?username=${usernameInput}&password=${password}`, { method: 'POST' });
     if (response.status === 200) {
       const { username } = await response.json();
       setUser(username);
       setShow(false);
-      const cookievalue = `username=${username}`;
-      const expiryDate = new Date(new Date().getTime() + 60 * 60 * 1000 * 24).toGMTString();
-      document.cookie = `${cookievalue};`;
-      document.cookie = `Expires=${expiryDate};`;
+      userUtils.cookieLogIn(username);
       return;
     }
     setWrongUser(true);
@@ -44,7 +43,7 @@ const Login = ({ show, setShow }) => {
   return (
     show
     && (
-    <div className="blur">
+    <BlurBox>
       <div className="login-container">
         <div className="form-container sign-in-container">
           <button type="button" className="close-login" onClick={close}>
@@ -54,10 +53,10 @@ const Login = ({ show, setShow }) => {
             <h1>Iniciar sesión</h1>
             <input
               className="login-input"
-              id="email"
-              type="email"
-              placeholder="Email"
-              name="email"
+              id="username"
+              type="username"
+              placeholder="Nombre de usuario"
+              name="usernameInput"
               onKeyDown={keyDownHandler}
               onChange={changeHandler}
             />
@@ -78,7 +77,7 @@ const Login = ({ show, setShow }) => {
           </form>
         </div>
       </div>
-    </div>
+    </BlurBox>
     )
   );
 };
@@ -89,15 +88,3 @@ Login.propTypes = {
 };
 
 export default Login;
-
-// <div className="social-container">
-//   <a href="/" className="social">
-//     <i className="fa fa-facebook" />
-//   </a>
-//   <a href="/" className="social">
-//     <i className="fa fa-google" aria-hidden="true" />
-//   </a>
-//   <a href="/" className="social">
-//     <i className="fa fa-twitter" />
-//   </a>
-// </div>

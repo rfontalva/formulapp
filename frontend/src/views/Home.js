@@ -15,6 +15,7 @@ const Home = React.forwardRef(({ search }, ref) => {
   }
   const [formulas, setFormulas] = React.useState([]);
   const [page, setPage] = React.useState(0);
+
   const getFormulas = async () => {
     if (isSearch) {
       const query = `select * from Formula where title like '%${searchTitle}%'`;

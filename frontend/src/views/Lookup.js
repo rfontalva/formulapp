@@ -10,9 +10,12 @@ const Lookup = () => {
   const [search, setSearch] = React.useState({
     title: '', description: '', equation: '', topic: '', category: '',
   });
+  const CheatsheetContext = React.createContext();
   const [formulas, setFormulas] = React.useState([]);
   const [categories, setCategories] = React.useState([]);
   const [topics, setTopics] = React.useState([]);
+  const [selectedCheatsheet, setSelectedCheatsheet] = React.useState('');
+
   const getFormulas = async () => {
     const equation = new Equation(search.equation).latex;
     const query = `select * from eq_search where title like '%${search.title}%'
@@ -67,7 +70,7 @@ const Lookup = () => {
   }, [search.category]);
 
   return (
-    <>
+    <CheatsheetContext.Provider values={{ selectedCheatsheet, setSelectedCheatsheet }}>
       <article className="grid-side">
         <div className="inputs-box side-box">
           <form onSubmit={submitHandler}>
@@ -109,7 +112,7 @@ const Lookup = () => {
               Description
               <textarea id="searchDescription" name="description" onChange={changeHandler} value={search.description} />
             </label>
-            <label htmlFor="searchECategoryquation">
+            <label htmlFor="searchEquation">
               Equation
               <input type="text" id="searchEquation" name="equation" onChange={changeHandler} value={search.equation} />
             </label>
@@ -133,7 +136,7 @@ const Lookup = () => {
           />
         ))}
       </div>
-    </>
+    </CheatsheetContext.Provider>
   );
 };
 

@@ -2,14 +2,21 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import MathJax from '@innodoc/react-mathjax-node';
 import CheatsheetSelector from './CheatsheetSelector';
+import CheatsheetContext from '../context/CheatsheetContext';
+import UserContext from '../context/UserContext';
+import userUtils from '../utils/userUtils';
 import '../index.css';
 
 const Formula = ({
   id, title, equation, txt, handleRemove, buttons,
 }) => {
-  console.log(equation);
+  const { selectedCheatsheet } = React.useContext(CheatsheetContext);
+  const { user } = React.useContext(UserContext);
   const [isAdded, setAdded] = React.useState(false);
   const addId = () => {
+    if (userUtils.isLoggedIn(user) && selectedCheatsheet) {
+      console.log('hola');
+    }
     if (!localStorage.ids) {
       localStorage.ids = '';
     }

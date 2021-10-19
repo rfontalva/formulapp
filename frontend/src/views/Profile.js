@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import RefContext from '../context/RefContext';
+import UserContext from '../context/UserContext';
 import dbUtils from '../utils/dbUtils';
 import Error from './Error';
 
 const Profile = () => {
-  const { user } = React.useContext(RefContext);
+  const { user } = React.useContext(UserContext);
   const [userDetails, setUserDetails] = useState({
     user: '', firstname: '', lastname: '', email: '',
   });

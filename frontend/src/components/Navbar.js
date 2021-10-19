@@ -6,6 +6,7 @@ import SideMenu from './SideMenu';
 import Login from './Login';
 import useMobile from '../hooks/useMobile';
 import RefContext from '../context/RefContext';
+import UserContext from '../context/UserContext';
 import MenuItems from './data/menu.json';
 import utils from '../utils/urlUtils';
 import UserMenu from './UserMenu';
@@ -13,8 +14,9 @@ import userUtils from '../utils/userUtils';
 
 const Navbar = () => {
   const {
-    titleRef, divClick, user,
+    titleRef, divClick,
   } = React.useContext(RefContext);
+  const { user } = React.useContext(UserContext);
   const [isOpen, setIsOpen] = React.useState(false);
   const sideNavRef = React.createRef();
   const br = React.createRef();

@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import RefContext from '../context/RefContext';
+import UserContext from '../context/UserContext';
 // import urlUtils from '../utils/urlUtils';
 import userUtils from '../utils/userUtils';
 import '../index.css';
 
 const SignUp = () => {
-  const { setUser } = React.useContext(RefContext);
+  const { setUser } = React.useContext(UserContext);
   const [account, setAccount] = useState({
     firstname: '',
     lastname: '',

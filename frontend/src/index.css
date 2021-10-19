@@ -771,17 +771,30 @@ footer {
     background-color: #f9f9f9;
     box-shadow: var(--shadow-2);
     z-index: 1;
-    width:-50%;
+    max-height: 100px;
+    overflow-y: auto;
     margin-top: 50px;
     padding: 0 10px 10px 10px;
+    border-radius: 1rem;
 }
 
-.dropdown-selector button {
+.new-button {
     border: none;
     color: #ffff;
     border-radius: 0.5em;
     background-color: var(--clr-primary-2);
     box-shadow: var(--shadow-2);
+}
+
+.dropdown-selector .dropdown-item {
+    display: flex;
+    border: none;
+    background-color: inherit;
+    font-size: 15px;
+}
+
+.dropdown-selector .dropdown-item:hover {
+    text-decoration: underline;
 }
 
 .cheatsheet-dropdown:hover .dropdown-selector {

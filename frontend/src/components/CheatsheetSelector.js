@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import RefContext from '../context/RefContext';
+import UserContext from '../context/UserContext';
 import dbUtils from '../utils/dbUtils';
+import CheatsheetContext from '../context/CheatsheetContext';
 
 const CheatsheetSelector = () => {
   const [cheatsheets, setCheatsheets] = useState([]);
@@ -9,7 +10,8 @@ const CheatsheetSelector = () => {
   const [cheatsheetSearch, setSearch] = useState('');
   const [show, setShow] = useState(false);
   const [rerender, setRerender] = useState(false);
-  const { user } = React.useContext(RefContext);
+  const { user } = React.useContext(UserContext);
+  const { selectedCheatsheet, setSelectedCheatsheet } = React.useContext(CheatsheetContext);
 
   const getCheatsheets = async () => {
     const query = `select id_cheatsheet, title from Cheatsheet join Permission using (id_cheatsheet) join User using (id_user) where username='${user}'`;
@@ -25,7 +27,6 @@ const CheatsheetSelector = () => {
   };
 
   const newCheatsheet = async () => {
-    console.log('hola');
     try {
       const results = await fetch(`/api/cheatsheet?title=${cheatsheetName}&username=${user}`, { method: 'PUT' });
       if (results.status !== 200) {
@@ -35,7 +36,7 @@ const CheatsheetSelector = () => {
       setShow(false);
       setRerender(!rerender);
     } catch (err) {
-      console.log(err);
+      throw new Error(err);
     }
   };
 
@@ -60,6 +61,15 @@ const CheatsheetSelector = () => {
     setCheatsheetsFiltered(cheatsheets);
   };
 
+  const AddToCheatsheet = async (title) => {
+    setSelectedCheatsheet(title);
+    try {
+      await fetch(`/api/cheatsheet&title=${title}`);
+    } catch (err) {
+      throw new Error(err);
+    }
+  };
+
   React.useEffect(() => {
     getCheatsheets();
   }, [rerender]);
@@ -69,16 +79,24 @@ const CheatsheetSelector = () => {
       <div className="selector" onMouseLeave={cleanUp}>
         <div className="dropdown-selector">
           <input type="text" placeholder="Buscar..." onChange={SearchHandler} value={cheatsheetSearch} />
-          <ul>
+          <div style={{ marginTop: '5px' }}>
             {cheatsheetsFiltered.map(({ id_cheatsheet, title }) => (
-              <li key={id_cheatsheet} href="/">{title}</li>
+              <button
+                type="button"
+                key={id_cheatsheet}
+                className="dropdown-item"
+                onClick={() => AddToCheatsheet(title)}
+              >
+                {title}
+                {selectedCheatsheet === title && <i className="fa fa-check" />}
+              </button>
             ))}
-          </ul>
-          {show || <button type="button" className="button" onClick={() => setShow(true)}>Crear hoja nueva</button>}
+          </div>
+          {show || <button type="button" className="new-button" onClick={() => setShow(true)}>Crear hoja nueva</button>}
           {show && (
           <div className="add-cheatsheet">
             <input type="text" placeholder="Titulo" onChange={NamingHandler} value={cheatsheetName} />
-            <button type="button" onClick={newCheatsheet}>
+            <button type="button" className="new-button" onClick={newCheatsheet}>
               <i className="fa fa-check" />
             </button>
           </div>

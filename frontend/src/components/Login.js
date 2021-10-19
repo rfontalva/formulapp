@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import RefContext from '../context/RefContext';
+import UserContext from '../context/UserContext';
 import utils from '../utils/urlUtils';
 import userUtils from '../utils/userUtils';
 import '../index.css';
 import BlurBox from './BlurBox';
 
 const Login = ({ show, setShow }) => {
-  const { setUser } = React.useContext(RefContext);
+  const { setUser } = React.useContext(UserContext);
   const [inputs, setInputs] = useState({});
   const [wrongUser, setWrongUser] = useState(false);
   const close = () => {

@@ -1,10 +1,10 @@
 import React from 'react';
 import MenuItems from './data/menu.json';
 import userUtils from '../utils/userUtils';
-import RefContext from '../context/RefContext';
+import UserContext from '../context/UserContext';
 
 const Footer = () => {
-  const { user, setUser } = React.useContext(RefContext);
+  const { user, setUser } = React.useContext(UserContext);
 
   return (
     <footer>

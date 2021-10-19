@@ -1,10 +1,10 @@
 import React from 'react';
 import '../index.css';
 import userUtils from '../utils/userUtils';
-import RefContext from '../context/RefContext';
+import UserContext from '../context/UserContext';
 
 const UserMenu = () => {
-  const { setUser } = React.useContext(RefContext);
+  const { setUser } = React.useContext(UserContext);
   return (
     <div className="dropdown-content">
       <ul>

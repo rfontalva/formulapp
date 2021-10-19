@@ -1,6 +1,8 @@
 import React from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import RefContext from './context/RefContext';
+import UserContext from './context/UserContext';
+import CheatsheetContext from './context/CheatsheetContext';
 import {
   AppTitle, Navbar, Footer,
 } from './components/index';
@@ -14,13 +16,15 @@ const App = () => {
 
   const [divClick, setDivClick] = React.useState(false);
   const [user, setUser] = React.useState();
+  const [selectedCheatsheet, setSelectedCheatsheet] = React.useState('');
 
   const mouseDownHandler = (e) => {
     if (opRef.current.contains(e.target)) setDivClick(!divClick);
   };
   const refs = {
-    titleRef, opRef, divClick, user, setUser,
+    titleRef, opRef, divClick,
   };
+  const userDetails = { user, setUser };
 
   React.useEffect(() => {
     const username = 'username=';
@@ -35,16 +39,20 @@ const App = () => {
   return (
     <div className="page-container">
       <RefContext.Provider value={refs}>
-        <div className="content-wrap">
-          <Router>
-            <Navbar user={user} setUser={setUser} />
-            <div aria-hidden="true" onMouseDown={mouseDownHandler} ref={opRef}>
-              <AppTitle ref={titleRef} />
-              <SwitchTree />
+        <UserContext.Provider value={userDetails}>
+          <CheatsheetContext.Provider value={{ selectedCheatsheet, setSelectedCheatsheet }}>
+            <div className="content-wrap">
+              <Router>
+                <Navbar user={user} setUser={setUser} />
+                <div aria-hidden="true" onMouseDown={mouseDownHandler} ref={opRef}>
+                  <AppTitle ref={titleRef} />
+                  <SwitchTree />
+                </div>
+              </Router>
             </div>
-          </Router>
-        </div>
-        <Footer />
+            <Footer />
+          </CheatsheetContext.Provider>
+        </UserContext.Provider>
       </RefContext.Provider>
     </div>
   );

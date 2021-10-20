@@ -74,3 +74,7 @@ app.delete('/api/pdf', (req, res) => {
 app.put('/api/cheatsheet', (req, res) => {
   api.newCheatsheet(req, res);
 })
+
+app.post('/api/report', (req, res) => {
+  api.sendToModerate(req, res, 'remove');
+})

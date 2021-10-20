@@ -191,12 +191,26 @@ var api = {
       res.status(200).send(`Added cheatsheet: ${title}`);
     } catch (error) {
       try {
-        console.log(error);
         await this.execSql('ROLLBACK;');
       } catch(err) {
         throw new Error(err);
       }
       res.status(400).send(error);
+    }
+  },
+
+  async sendToModerate(req, res, action) {
+    const {id, user} = req.query;
+    const queryState = `SELECT state FROM ModerationResult WHERE id_moderation=(select id_moderation from Moderation where id_formula=${id});`;
+    const userQuery = `INSERT INTO Opinion (id_moderation, state) VALUE ((select id_moderation from Moderation where id_formula=${id}), '${action}');`
+    try {
+      const responseState = await this.execSql(queryState)
+      if (responseState[0].state == 'stand by')
+    } catch (err) {
+      throw new Error(err)
+    }
+    const query = `INSERT IGNORE INTO Moderate (id_formula, state) VALUE (${id}, '${action}');`;
+    if (user) {
     }
   }
 }

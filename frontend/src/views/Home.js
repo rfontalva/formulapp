@@ -2,17 +2,21 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { useParams } from 'react-router-dom';
 import dbUtils from '../utils/dbUtils';
+import userUtils from '../utils/userUtils';
 import {
   Paginator, Formula,
 } from '../components/index';
+import UserContext from '../context/UserContext';
 
 const Home = React.forwardRef(({ search }, ref) => {
   const isSearch = search;
   const pageLength = 12;
+  const { user } = React.useContext(UserContext);
   let searchTitle = '';
   if (isSearch) {
     searchTitle = useParams().searchTitle;
   }
+
   const [formulas, setFormulas] = React.useState([]);
   const [page, setPage] = React.useState(0);
 
@@ -46,7 +50,10 @@ const Home = React.forwardRef(({ search }, ref) => {
 
   const handleRemove = async (id) => {
     try {
-      await fetch(`/api/remove?id=${id}`, { method: 'DELETE' });
+      if (userUtils.isLoggedIn(user)) {
+        await fetch(`/api/report?id=${id}&username=${user}`, { method: 'POST' });
+      }
+      await fetch(`/api/report?id=${id}`, { method: 'POST' });
     } catch (err) {
       console.error(err);
     }

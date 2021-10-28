@@ -1,5 +1,5 @@
 create table Moderation(
-	id_moderation int not null primary key,
+	id_moderation int not null AUTO_INCREMENT primary key,
   id_formula int not null,
   state varchar(32),
 	constraint chkStateModeration CHECK (state in ('add','remove')),
@@ -8,7 +8,7 @@ create table Moderation(
 );
 
 create table Opinion(
-	id_opinion int not null primary key,
+	id_opinion int not null AUTO_INCREMENT primary key,
 	id_moderation int not null,
   id_user int not null,
   opinion varchar(32),

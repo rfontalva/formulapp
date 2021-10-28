@@ -34,7 +34,7 @@ app.get('/api/query', (req, res) => {
 
 app.post('/api/pdf', async (req, res) => {
   let ids;
-  if(typeof(req.query.ids) === 'string') ids = req.query.ids;
+  if (typeof (req.query.ids) === 'string') ids = req.query.ids;
   else ids = req.query.ids.map((x) => +x);
   const formulas = await api.execSql(`select * from Formula where id_formula in (${ids})`);
   await printPdf(formulas, req.query.header);
@@ -45,16 +45,13 @@ app.post('/api/authenticate', (req, res) => {
   api.authenticate(req, res);
 });
 
-app.get('/api/validate', (req, res) => {
-});
-
 app.put('/api/user', async (req, res) => {
   try {
     await api.validate(req, res)
-    if(res.statusCode !== 501 && res.statusCode !== 502) {
-        api.addUser(req, res);
-    } 
-  }catch(err){
+    if (res.statusCode !== 501 && res.statusCode !== 502) {
+      api.addUser(req, res);
+    }
+  } catch (err) {
     throw new Error(err)
   }
 });
@@ -73,8 +70,14 @@ app.delete('/api/pdf', (req, res) => {
 
 app.put('/api/cheatsheet', (req, res) => {
   api.newCheatsheet(req, res);
+});
+
+app.post('/api/cheatsheet', (req, res) => {
+  api.addToCheatsheet(req, res);
 })
 
-app.post('/api/report', (req, res) => {
-  api.sendToModerate(req, res, 'remove');
-})
+app.put('/api/moderate', (req, res) => {
+  if (req.query.report)
+    api.sendToModerate(req, res, 'remove', 'negative');
+  else api.sendToModerate(req, res, 'add', 'positive');
+});

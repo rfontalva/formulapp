@@ -20,7 +20,7 @@ var api = {
     try {
       const results = await this.execSql(selectQuery);
       res.json(results);
-    } catch(error) {
+    } catch (error) {
       res.send(error);
     };
   },
@@ -49,7 +49,7 @@ var api = {
       console.log(error);
       try {
         await this.execSql('ROLLBACK;');
-      } catch(err) {
+      } catch (err) {
         throw new Error(err);
       }
       res.status(400).send(error);
@@ -76,7 +76,7 @@ var api = {
     } catch (error) {
       try {
         await this.execSql('ROLLBACK;');
-      } catch(err) {
+      } catch (err) {
         throw new Error(err);
       }
       res.status(400).send(error);
@@ -89,7 +89,7 @@ var api = {
     try {
       await this.execSql(deleteQuery);
       res.send('Removed equation');
-    } catch(error) {
+    } catch (error) {
       res.send(error)
     };
   },
@@ -102,7 +102,7 @@ var api = {
     try {
       const results = await this.execSql(query)
       res.json(results);
-    } catch(error) {
+    } catch (error) {
       res.send(error)
     }
   },
@@ -192,25 +192,59 @@ var api = {
     } catch (error) {
       try {
         await this.execSql('ROLLBACK;');
-      } catch(err) {
+      } catch (err) {
         throw new Error(err);
       }
       res.status(400).send(error);
     }
   },
 
-  async sendToModerate(req, res, action) {
-    const {id, user} = req.query;
-    const queryState = `SELECT state FROM ModerationResult WHERE id_moderation=(select id_moderation from Moderation where id_formula=${id});`;
-    const userQuery = `INSERT INTO Opinion (id_moderation, state) VALUE ((select id_moderation from Moderation where id_formula=${id}), '${action}');`
+  async addToCheatsheet(req, res) {
+    const { username, title, id } = req.query;
+    const insertContent = `INSERT INTO CheatsheetContent (id_cheatsheet, id_formula) value 
+      ((SELECT id_cheatsheet from Cheatsheet NATURAL JOIN Permission NATURAL JOIN User where title='${title}' and username='${username}' and permission in ('a','w')),
+      ${id});`;
     try {
-      const responseState = await this.execSql(queryState)
-      if (responseState[0].state == 'stand by')
-    } catch (err) {
-      throw new Error(err)
+      await this.execSql('START TRANSACTION;');
+      await this.execSql(insertContent);
+      await this.execSql('COMMIT;');
+      res.status(200);
+    } catch (error) {
+      console.log(error);
+      try {
+        await this.execSql('ROLLBACK;');
+      } catch (err) {
+        throw new Error(err);
+      }
+      res.status(400).send(error);
     }
-    const query = `INSERT IGNORE INTO Moderate (id_formula, state) VALUE (${id}, '${action}');`;
-    if (user) {
+  },
+
+  async sendToModerate(req, res, action, opinion) {
+    const { id, user } = req.query;
+    const queryState = `SELECT count(*) as exists FROM ModerationResult NATURAL JOIN Moderation WHERE id_formula=${id} and state='stand by';`;
+    const moderationQuery = `INSERT IGNORE INTO Moderate (id_formula, action) VALUE (${id}, '${action}');`;
+    const userQuery = `INSERT INTO Opinion (id_moderation, id_user, opinion) VALUE 
+      ((select id_moderation from Moderation where id_formula=${id}), (select id_user from User where user='${user}'), '${opinion}');`;
+    try {
+      await this.execSql('START TRANSACTION;');
+      const responseState = await this.execSql(queryState);
+      if (!responseState[0].exists) {
+        try {
+          await this.execSql(moderationQuery);
+        } catch (err) {
+          throw new Error(err)
+        }
+      }
+      await this.execSql(userQuery);
+      await this.execSql('COMMIT;');
+    } catch (err) {
+      try {
+        await this.execSql('ROLLBACK;');
+      } catch (err) {
+        throw new Error(err)
+      }
+      throw new Error(err)
     }
   }
 }

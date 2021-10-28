@@ -51,9 +51,8 @@ const Home = React.forwardRef(({ search }, ref) => {
   const handleRemove = async (id) => {
     try {
       if (userUtils.isLoggedIn(user)) {
-        await fetch(`/api/report?id=${id}&username=${user}`, { method: 'POST' });
+        await fetch(`/api/moderate?id=${id}&username=${user}&report=true`, { method: 'POST' });
       }
-      await fetch(`/api/report?id=${id}`, { method: 'POST' });
     } catch (err) {
       console.error(err);
     }

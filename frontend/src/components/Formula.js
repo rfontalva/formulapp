@@ -57,7 +57,8 @@ const Formula = ({
                 className="fa fa-plus"
               />
             </button>
-            {userUtils.isLoggedIn(user) && <CheatsheetSelector />}
+            {userUtils.isLoggedIn(user)
+            && <CheatsheetSelector id_formula={id} setAdded={setAdded} />}
           </div>
         )}
       <div style={{ clear: 'both' }} />

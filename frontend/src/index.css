@@ -581,7 +581,7 @@ footer {
     width: 380px;
     margin-top: 10rem;
     max-height: 400px;
-	z-index: 2;
+	z-index: 4;
     border-radius: 10px;
   	box-shadow: 0 14px 28px rgba(0,0,0,0.25), 
       0 10px 10px rgba(0,0,0,0.22);
@@ -684,11 +684,19 @@ footer {
 	outline: none;
 }
 
-.blur{
+.blur {
     height: 100%;
     width: 100%;
     position: absolute;
     z-index: 3;
+    backdrop-filter: blur(5px);
+}
+
+.blur-2nd-level {
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    z-index: 2;
     backdrop-filter: blur(5px);
 }
 
@@ -876,18 +884,28 @@ footer {
     font-size: 1.25rem;
 }
 
-/* 
-.social-container {
-    margin: 20px 0;
+.not-logged {
+    height: 85%;
 }
 
-.social-container a {
-    border: 1px solid #DDDDDD;
-    border-radius: 50%;
-    display: inline-flex;
-    justify-content: center;
+#not-logged-msg {
+    display: grid;
+    place-items: center;
+    z-index: 0;
+}
+
+.box {
+    background-color: white;
+    padding: 50px;
     align-items: center;
-    margin: 0 5px;
-    height: 40px;
-    width: 40px;
-} */
+    border-radius: 1rem;
+    box-shadow: var(--shadow-2);
+    font-family: 'Rubik';
+    text-align: center;
+}
+
+.box a {
+    color: inherit;
+    justify-self: center;
+}
+

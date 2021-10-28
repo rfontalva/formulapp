@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import UserContext from '../context/UserContext';
 import dbUtils from '../utils/dbUtils';
 import CheatsheetContext from '../context/CheatsheetContext';
 
-const CheatsheetSelector = () => {
+const CheatsheetSelector = ({ id_formula, setAdded }) => {
   const [cheatsheets, setCheatsheets] = useState([]);
   const [cheatsheetsFiltered, setCheatsheetsFiltered] = useState([]);
   const [cheatsheetName, setCheatsheetName] = useState('');
@@ -63,8 +64,10 @@ const CheatsheetSelector = () => {
 
   const AddToCheatsheet = async (title) => {
     setSelectedCheatsheet(title);
+    setAdded(true);
+    console.log('hola');
     try {
-      await fetch(`/api/cheatsheet&title=${title}`);
+      await fetch(`/api/cheatsheet?title=${title}&id=${id_formula}&username=${user}`, { method: 'POST' });
     } catch (err) {
       throw new Error(err);
     }
@@ -105,6 +108,11 @@ const CheatsheetSelector = () => {
       </div>
     </>
   );
+};
+
+CheatsheetSelector.propTypes = {
+  setAdded: PropTypes.func.isRequired,
+  id_formula: PropTypes.number.isRequired,
 };
 
 export default CheatsheetSelector;

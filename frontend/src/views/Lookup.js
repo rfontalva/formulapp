@@ -10,16 +10,14 @@ const Lookup = () => {
   const [search, setSearch] = React.useState({
     title: '', description: '', equation: '', topic: '', category: '',
   });
-  const CheatsheetContext = React.createContext();
   const [formulas, setFormulas] = React.useState([]);
   const [categories, setCategories] = React.useState([]);
   const [topics, setTopics] = React.useState([]);
-  const [selectedCheatsheet, setSelectedCheatsheet] = React.useState('');
 
   const getFormulas = async () => {
     const equation = new Equation(search.equation).latex;
     const query = `select * from eq_search where title like '%${search.title}%'
-    and description like '%${search.description}%' and equation like '%${equation}%' and
+    and equation like '%${equation}%' and
     category like '%${search.category}%' and topic like '%${search.topic}%'`;
     try {
       const results = await dbUtils.getRows(query);
@@ -70,12 +68,12 @@ const Lookup = () => {
   }, [search.category]);
 
   return (
-    <CheatsheetContext.Provider values={{ selectedCheatsheet, setSelectedCheatsheet }}>
-      <article className="grid-side">
-        <div className="inputs-box side-box">
-          <form onSubmit={submitHandler}>
+    <>
+      <article className="grid-top-center">
+        <div id="lookup-box" className="inputs-box">
+          <form id="lookup-form" onSubmit={submitHandler}>
             <label htmlFor="searchTitle">
-              Title
+              Título
               <input type="text" id="searchTitle" name="title" onChange={changeHandler} value={search.title} />
             </label>
             <label htmlFor="searchCategory">
@@ -91,6 +89,10 @@ const Lookup = () => {
                   </option>
                 ))}
               </select>
+            </label>
+            <label htmlFor="searchEquation">
+              Ecuación
+              <input type="text" id="searchEquation" name="equation" onChange={changeHandler} value={search.equation} />
             </label>
             {search.category && (
             <label htmlFor="searchTopic">
@@ -108,14 +110,6 @@ const Lookup = () => {
               </select>
             </label>
             )}
-            <label htmlFor="searchDescription">
-              Description
-              <textarea id="searchDescription" name="description" onChange={changeHandler} value={search.description} />
-            </label>
-            <label htmlFor="searchEquation">
-              Equation
-              <input type="text" id="searchEquation" name="equation" onChange={changeHandler} value={search.equation} />
-            </label>
           </form>
           <button type="submit" onClick={submitHandler}>Enviar</button>
         </div>
@@ -136,7 +130,7 @@ const Lookup = () => {
           />
         ))}
       </div>
-    </CheatsheetContext.Provider>
+    </>
   );
 };
 

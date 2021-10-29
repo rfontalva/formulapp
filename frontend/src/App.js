@@ -17,6 +17,7 @@ const App = () => {
   const [divClick, setDivClick] = React.useState(false);
   const [user, setUser] = React.useState();
   const [selectedCheatsheet, setSelectedCheatsheet] = React.useState('');
+  const [cheatsheets, setCheatsheets] = React.useState([]);
 
   const mouseDownHandler = (e) => {
     if (opRef.current.contains(e.target)) setDivClick(!divClick);
@@ -40,7 +41,10 @@ const App = () => {
     <div className="page-container">
       <RefContext.Provider value={refs}>
         <UserContext.Provider value={userDetails}>
-          <CheatsheetContext.Provider value={{ selectedCheatsheet, setSelectedCheatsheet }}>
+          <CheatsheetContext.Provider value={{
+            selectedCheatsheet, setSelectedCheatsheet, cheatsheets, setCheatsheets,
+          }}
+          >
             <div className="content-wrap">
               <Router>
                 <Navbar user={user} setUser={setUser} />

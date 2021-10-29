@@ -5,17 +5,19 @@ import dbUtils from '../utils/dbUtils';
 import CheatsheetContext from '../context/CheatsheetContext';
 
 const CheatsheetSelector = ({ id_formula, setAdded }) => {
-  const [cheatsheets, setCheatsheets] = useState([]);
   const [cheatsheetsFiltered, setCheatsheetsFiltered] = useState([]);
   const [cheatsheetName, setCheatsheetName] = useState('');
   const [cheatsheetSearch, setSearch] = useState('');
   const [show, setShow] = useState(false);
   const [rerender, setRerender] = useState(false);
   const { user } = React.useContext(UserContext);
-  const { selectedCheatsheet, setSelectedCheatsheet } = React.useContext(CheatsheetContext);
+  const {
+    selectedCheatsheet, setSelectedCheatsheet, cheatsheets, setCheatsheets,
+  } = React.useContext(CheatsheetContext);
 
   const getCheatsheets = async () => {
-    const query = `select id_cheatsheet, title from Cheatsheet join Permission using (id_cheatsheet) join User using (id_user) where username='${user}'`;
+    const query = `select id_cheatsheet, title from Cheatsheet join Permission using (id_cheatsheet) 
+      join User using (id_user) where username='${user}'`;
     try {
       const results = await dbUtils.getRows(query);
       if (Array.isArray(results)) {
@@ -29,7 +31,8 @@ const CheatsheetSelector = ({ id_formula, setAdded }) => {
 
   const newCheatsheet = async () => {
     try {
-      const results = await fetch(`/api/cheatsheet?title=${cheatsheetName}&username=${user}`, { method: 'PUT' });
+      const results = await fetch(`/api/cheatsheet?title=${cheatsheetName}&username=${user}`,
+        { method: 'PUT' });
       if (results.status !== 200) {
         console.log('something went wrong');
         return;

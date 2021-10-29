@@ -909,3 +909,26 @@ footer {
     justify-self: center;
 }
 
+.grid-top-center {
+    display: grid;
+    place-items: center;
+    grid-template-areas: 
+        ". e ."
+}
+
+#lookup-box {
+    grid-area: e;
+    max-width: unset;
+    align-content: center;
+    width: fit-content;
+}
+
+#lookup-form {
+    display:grid;
+    grid-template-columns: 20rem 20rem;
+    grid-column-gap: 2rem;
+}
+
+#lookup-form input, select{
+    height: 2rem;
+}

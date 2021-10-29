@@ -27,17 +27,18 @@ var api = {
 
   async addFormula(req, res) {
     const { title, equation, txt, category, topic, rawLatex } = req.query;
-    const insertCategory = `INSERT IGNORE INTO Category (txt) VALUE ('${category}');`;
+    const insertCategory = `INSERT IGNORE INTO Category (txt) VALUE (${connection.escape(category)});`;
     const insertTopic = `INSERT INTO Topic (id_category, txt)
-    SELECT * FROM (SELECT id_category, '${topic}' AS txt FROM Category c
-      WHERE c.txt='${category}') AS tmp 
+    SELECT * FROM (SELECT id_category, ${connection.escape(topic)} AS txt FROM Category c
+      WHERE c.txt=${connection.escape(category)}) AS tmp 
     WHERE NOT EXISTS 
       (SELECT id_category, txt FROM Topic t WHERE id_category=(SELECT id_category FROM Category c
-      WHERE c.txt='${category}') AND t.txt='${topic}');`;
+      WHERE c.txt=${connection.escape(category)}) AND t.txt=${connection.escape(topic)});`;
     const insertEquation = `INSERT INTO Formula (title, equation, txt, rawLatex, id_topic) 
-      VALUE ('${title}', '${equation}', '${txt}', ${rawLatex}, 
+      VALUE (${connection.escape(title)}, '${equation}', 
+        ${connection.escape(txt)}, ${rawLatex}, 
       (SELECT id_topic from Topic t JOIN Category c using (id_category) 
-      WHERE t.txt='${topic}' AND c.txt='${category}'));`;
+      WHERE t.txt=${connection.escape(topic)} AND c.txt=${connection.escape(category)}));`;
     try {
       await this.execSql('START TRANSACTION;');
       await this.execSql(insertCategory);
@@ -60,12 +61,16 @@ var api = {
     const {
       id, title, equation, txt, category, topic, rawLatex
     } = req.query;
-    const editEquation = `UPDATE Formula SET title='${title}', equation='${equation}', txt='${txt}', rawLatex=${rawLatex},
+    const editEquation = `UPDATE Formula SET title=${connection.escape(title)}, 
+      equation='${equation}', 
+      txt=${connection.escape(txt)}, rawLatex=${rawLatex},
       id_topic=(SELECT id_topic from Topic t JOIN Category c using (id_category) 
-      WHERE t.txt='${topic}' AND c.txt='${category}')
-      WHERE id_formula=${id};`;
-    const insertCategory = `INSERT IGNORE INTO Category (txt) VALUE ('${category}');`;
-    const insertTopic = `INSERT IGNORE INTO Topic (id_category, txt) VALUE ((SELECT id_category FROM Category c WHERE c.txt='${category}'), '${topic}');`
+        WHERE t.txt=${connection.escape(topic)} AND c.txt=${connection.escape(category)})
+      WHERE id_formula=${connection.escape(id)};`;
+    const insertCategory = `INSERT IGNORE INTO Category (txt) VALUE (${connection.escape(category)});`;
+    const insertTopic = `INSERT IGNORE INTO Topic (id_category, txt) VALUE 
+      ((SELECT id_category FROM Category c 
+      WHERE c.txt=${connection.escape(category)}), ${connection.escape(topic)});`
     try {
       await this.execSql('START TRANSACTION;');
       await this.execSql(insertCategory);
@@ -74,6 +79,7 @@ var api = {
       await this.execSql('COMMIT;');
       res.status(200).send(`Edited equation: ${title}`);
     } catch (error) {
+      console.log(error);
       try {
         await this.execSql('ROLLBACK;');
       } catch (err) {
@@ -85,7 +91,7 @@ var api = {
 
   async removeFormula(req, res) {
     const { id } = req.query;
-    const deleteQuery = `DELETE FROM Formula WHERE id_formula = ${id}`;
+    const deleteQuery = `DELETE FROM Formula WHERE id_formula = ${connection.escape(id)}`;
     try {
       await this.execSql(deleteQuery);
       res.send('Removed equation');
@@ -96,9 +102,6 @@ var api = {
 
   async getSelect(req, res) {
     const { query } = req.query;
-    if (query.includes('insert') || query.includes('update') || query.includes('delete') || query.includes('drop') || query.includes('create')) {
-      return res.send('Invalid operation');
-    }
     try {
       const results = await this.execSql(query)
       res.json(results);
@@ -111,8 +114,10 @@ var api = {
     const { username, password } = req.query;
     const salted = password + secret.salt;
     const encrypted = crypto.createHash('sha256').update(salted, 'utf8').digest('hex');
-    const existsQuery = `SELECT IF((SELECT count(*) FROM User WHERE username = '${username}' and password = '${encrypted}') ,1,0) as isempty`;
-    const query = `SELECT * from User WHERE username = '${username}' and password = '${encrypted}'`;
+    const existsQuery = `SELECT IF((SELECT count(*) FROM User 
+      WHERE username = ${connection.escape(username)} and password = '${encrypted}') ,1,0) as isempty;`;
+    const query = `SELECT * from User WHERE username =${connection.escape(username)} 
+      and password ='${encrypted}';`;
     try {
       const existsResponse = await this.execSql(existsQuery);
       const isEmpty = existsResponse[0].isempty;
@@ -141,7 +146,8 @@ var api = {
     const query = `
       INSERT INTO User 
       (firstname, lastname, username, email, password)
-      VALUES ('${firstname}', '${lastname}', '${username}', '${email}', '${encrypted}')`;
+      VALUES (${connection.escape(firstname)}, ${connection.escape(lastname)}, 
+        ${connection.escape(username)}, ${connection.escape(email)}, ${encrypted})`;
     try {
       await this.execSql(query);
       res.json(username);
@@ -155,10 +161,10 @@ var api = {
     const { username, email } = req.query;
     const queryUsername = `
       select count(*) as userExists from User 
-      where username='${username}'`;
+        where username=${connection.escape(username)}`;
     const queryEmail = `
       select count(*) as emailExists from User 
-      where email='${email}'`;
+        where email=${connection.escape(email)}`;
     try {
       const responseEmail = await this.execSql(queryEmail);
       if (responseEmail[0].emailExists) {
@@ -178,10 +184,10 @@ var api = {
 
   async newCheatsheet(req, res) {
     const { username, title } = req.query;
-    const insertCheatsheet = `INSERT INTO Cheatsheet (title) value ('${title}')`;
+    const insertCheatsheet = `INSERT INTO Cheatsheet (title) value (${connection.escape(title)})`;
     const insertPermission = `INSERT INTO Permission (id_user, id_cheatsheet) value (
-      (SELECT id_user from User where username='${username}'),
-      (SELECT id_cheatsheet from Cheatsheet where title='${title}')
+      (SELECT id_user from User where username=${connection.escape(username)}),
+      (SELECT id_cheatsheet from Cheatsheet where title=${connection.escape(title)})
       )`;
     try {
       await this.execSql('START TRANSACTION;');
@@ -202,8 +208,10 @@ var api = {
   async addToCheatsheet(req, res) {
     const { username, title, id } = req.query;
     const insertContent = `INSERT INTO CheatsheetContent (id_cheatsheet, id_formula) value 
-      ((SELECT id_cheatsheet from Cheatsheet NATURAL JOIN Permission NATURAL JOIN User where title='${title}' and username='${username}' and permission in ('a','w')),
-      ${id});`;
+      ((SELECT id_cheatsheet from Cheatsheet NATURAL JOIN Permission NATURAL JOIN User 
+        WHERE title=${connection.escape(title)} and username=${connection.escape(username)} 
+        and permission in ('a','w')),
+      ${connection.escape(id)});`;
     try {
       await this.execSql('START TRANSACTION;');
       await this.execSql(insertContent);
@@ -222,10 +230,12 @@ var api = {
 
   async sendToModerate(req, res, action, opinion) {
     const { id, user } = req.query;
-    const queryState = `SELECT count(*) as exists FROM ModerationResult NATURAL JOIN Moderation WHERE id_formula=${id} and state='stand by';`;
-    const moderationQuery = `INSERT IGNORE INTO Moderate (id_formula, action) VALUE (${id}, '${action}');`;
+    const queryState = `SELECT count(*) as exists FROM ModerationResult NATURAL JOIN Moderation 
+      WHERE id_formula=${connection.escape(id)} and state='stand by';`;
+    const moderationQuery = `INSERT IGNORE INTO Moderate (id_formula, action) VALUE (${connection.escape(id)}, '${action}');`;
     const userQuery = `INSERT INTO Opinion (id_moderation, id_user, opinion) VALUE 
-      ((select id_moderation from Moderation where id_formula=${id}), (select id_user from User where user='${user}'), '${opinion}');`;
+      ((select id_moderation from Moderation where id_formula=${connection.escape(id)}), 
+      (select id_user from User where user=${connection.escape(user)}), '${opinion}');`;
     try {
       await this.execSql('START TRANSACTION;');
       const responseState = await this.execSql(queryState);

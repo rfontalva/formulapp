@@ -70,8 +70,14 @@ const PdfGenerator = () => {
         <div className="inputs-box side-box">
           <form onSubmit={submitHandler}>
             <label htmlFor="cheatSheetTitle">
-              Title
-              <input type="text" id="cheatSheetTitle" name="title" onChange={(e) => setCSTitle(e.target.value)} value={csTitle} />
+              Título
+              <input
+                type="text"
+                id="cheatSheetTitle"
+                name="title"
+                onChange={(e) => setCSTitle(e.target.value)}
+                value={csTitle}
+              />
             </label>
           </form>
           {!isDownloading && <button type="button" onClick={submitHandler}>Descargar</button>}

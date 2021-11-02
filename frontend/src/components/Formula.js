@@ -40,7 +40,7 @@ const Formula = ({
       </button>
       )}
       {buttons && (
-      <a className="formula-button" title="Editar formula" href={`${window.frontend}edit/${id}`}>
+      <a className="formula-button" title="Editar formula" href={`/edit/${id}`}>
         <i className="fa fa-edit" />
       </a>
       )}

@@ -6,11 +6,11 @@ const urlEncoding = (str) => {
 };
 
 const goToUrl = (ext) => {
-  window.location.href = `${window.frontend}${ext}`;
+  window.location.href = `/${ext}`;
 };
 
 const goHome = () => {
-  window.location.href = `${window.frontend}`;
+  window.location.href = '/';
 };
 
 const utils = {

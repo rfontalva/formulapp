@@ -114,7 +114,9 @@ const InputFormula = () => {
     }
     txt = encodeURIComponent(txt);
     try {
-      const response = await fetch(`/api/edit?id=${parseInt(id, 10)}&title=${title}&equation=${equation}&txt=${txt}&category=${category}&topic=${topic}&rawLatex=${isChecked}`);
+      const response = await fetch(
+        `/api/edit?id=${parseInt(id, 10)}&title=${title}&equation=${equation}&txt=${txt}&category=${category}&topic=${topic}&rawLatex=${isChecked}`,
+      );
       if (response.status !== 200) {
         setFailed(true);
         return;
@@ -145,16 +147,21 @@ const InputFormula = () => {
     e.preventDefault();
     if (!validate()) { return; }
     if (isNew) {
-      const status = await addFormula();
-      if (status === 400) { return; }
-      tempName = item.title;
-      const x = document.getElementById('snackbar');
-      x.className += ' show';
-      setTimeout(() => { x.className = x.className.replace(' show', ''); }, 3000);
-      setItem({
-        title: '', equation: '', txt: '', category: '', topic: '',
-      });
-      setLatex(new Equation(''));
+      try {
+        const status = await addFormula();
+        if (status !== 400) {
+          tempName = item.title;
+          const x = document.getElementById('snackbar');
+          x.className += ' show';
+          setTimeout(() => { x.className = x.className.replace(' show', ''); }, 3000);
+          setItem({
+            title: '', equation: '', txt: '', category: '', topic: '',
+          });
+          setLatex(new Equation(''));
+        }
+      } catch (err) {
+        throw new Error(err);
+      }
     } else {
       editFormula();
     }

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import UserContext from '../context/UserContext';
 import dbUtils from '../utils/dbUtils';
 import Error from './Error';
+import { SheetsList } from '../components/index';
 
 const Profile = () => {
   const { user } = React.useContext(UserContext);
@@ -67,6 +68,7 @@ const Profile = () => {
               Mis hojas de fórmulas
             </h3>
           </a>
+          <SheetsList />
         </div>
       </>
       )}

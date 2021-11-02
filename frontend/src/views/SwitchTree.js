@@ -8,6 +8,8 @@ import SignUp from './SignUp';
 import Error from './Error';
 import Profile from './Profile';
 import About from './About';
+import Cheatsheet from './Cheatsheet';
+import { SheetsList } from '../components/index';
 
 const SwitchTree = () => (
   <Switch>
@@ -29,6 +31,9 @@ const SwitchTree = () => (
     <Route path="/generate">
       <PdfGenerator />
     </Route>
+    <Route path="/cheatsheet/:idCheatsheet">
+      <Cheatsheet />
+    </Route>
     <Route path="/signup">
       <SignUp />
     </Route>
@@ -37,6 +42,9 @@ const SwitchTree = () => (
     </Route>
     <Route path="/about">
       <About />
+    </Route>
+    <Route path="/sheets">
+      <SheetsList />
     </Route>
     <Route path="*">
       <Error />

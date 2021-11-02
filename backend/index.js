@@ -32,15 +32,6 @@ app.get('/api/query', (req, res) => {
   api.getSelect(req, res);
 });
 
-app.post('/api/pdf', async (req, res) => {
-  let ids;
-  if (typeof (req.query.ids) === 'string') ids = req.query.ids;
-  else ids = req.query.ids.map((x) => +x);
-  const formulas = await api.execSql(`select * from Formula where id_formula in (${ids})`);
-  await printPdf(formulas, req.query.header);
-  res.send(Promise.resolve());
-});
-
 app.post('/api/authenticate', (req, res) => {
   api.authenticate(req, res);
 });
@@ -56,6 +47,18 @@ app.put('/api/user', async (req, res) => {
   }
 });
 
+app.post('/api/pdf', async (req, res) => {
+  let ids;
+  const { header } = req.query;
+  if (typeof (req.query.ids) === 'string') {
+    ({ ids } = req.query);
+  }
+  else ids = req.query.ids.map((x) => +x);
+  const formulas = await api.execSql(`select * from Formula where id_formula in (${ids})`);
+  await printPdf(formulas, header);
+  res.send(Promise.resolve());
+});
+
 app.get('/api/pdf', (req, res) => {
   const path = `${__dirname}/${req.query.header}.pdf`;
   res.sendFile(path);
@@ -66,6 +69,17 @@ app.delete('/api/pdf', (req, res) => {
   fs.unlink(path, (err) => {
     if (err) { res.send(err); }
   });
+});
+
+app.get('/api/makeCheatsheet', async (req, res) => {
+  await api.getCheatsheet(req, res);
+  const {formulas, title} = res.json;
+  await printPdf(formulas, title);
+  res.send(Promise.resolve());
+});
+
+app.get('/api/cheatsheet', (req, res) => {
+  api.getCheatsheet(req, res);
 });
 
 app.put('/api/cheatsheet', (req, res) => {

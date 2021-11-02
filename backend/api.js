@@ -15,6 +15,15 @@ var api = {
     }
   },
 
+  async simpleQuery(query) {
+    try {
+      const results = await queryDB(query);
+      return results[0];
+    } catch (err) {
+      throw new Error(err);
+    }
+  },
+
   async getAllFormulas(req, res) {
     const selectQuery = 'select * from Formula order by rand()';
     try {
@@ -228,7 +237,7 @@ var api = {
     }
   },
 
-  async sendToModerate(req, res, action, opinion) {
+  async sendToModerate(req, _, action, opinion) {
     const { id, user } = req.query;
     const queryState = `SELECT count(*) as exists FROM ModerationResult NATURAL JOIN Moderation 
       WHERE id_formula=${connection.escape(id)} and state='stand by';`;
@@ -255,6 +264,21 @@ var api = {
         throw new Error(err)
       }
       throw new Error(err)
+    }
+  },
+
+  async getCheatsheet(req, res) {
+    const {id} = req.query;
+    const queryFormulas = `SELECT f.* FROM Formula f JOIN CheatsheetContent USING (id_formula) 
+      JOIN Cheatsheet USING (id_cheatsheet) WHERE id_cheatsheet=${id};`;
+    const queryTitle = `SELECT title from Cheatsheet WHERE id_cheatsheet=${id};`;
+    try {
+      const formulas = await this.execSql(queryFormulas);
+      const resTitle = await this.simpleQuery(queryTitle);
+      const { title } = resTitle;
+      res.status(200).json({formulas, title})
+    } catch (err) {
+      throw new Error(err);
     }
   }
 }

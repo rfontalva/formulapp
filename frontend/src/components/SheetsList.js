@@ -12,7 +12,6 @@ const SheetList = () => {
         where username='${user}';`;
     try {
       const results = await dbUtils.getRows(query);
-      console.log(results);
       setCheatsheets(results);
     } catch (err) {
       throw new Error(err);

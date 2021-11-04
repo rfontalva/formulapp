@@ -2,7 +2,7 @@ import React from 'react';
 import MathJax from '@innodoc/react-mathjax-node';
 
 const AppTitle = React.forwardRef((_, ref) => (
-  <div ref={ref} id="app-title">
+  <div ref={ref} id="app-title" className="unselectable">
     <a style={{ textDecoration: 'none', color: 'inherit' }} href="/">
       <h1 style={{ display: 'inline' }}>Formulapp</h1>
       <MathJax.Provider>

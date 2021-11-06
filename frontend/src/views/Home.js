@@ -66,17 +66,35 @@ const Home = React.forwardRef(({ search }, ref) => {
           {
             id_formula, title, equation, txt,
           },
-        ) => (
-          <Formula
-            key={id_formula}
-            id={id_formula}
-            title={title}
-            equation={equation}
-            txt={txt}
-            handleRemove={handleRemove}
-            buttons
-          />
-        ))}
+        ) => {
+          const buttons = [{
+            state: 'report',
+            handleClick: () => handleRemove(),
+            user,
+            id: id_formula,
+          },
+          {
+            state: 'edit',
+            user,
+            id: id_formula,
+          },
+          {
+            state: 'add',
+            user,
+            id: id_formula,
+          },
+          ];
+          return (
+            <Formula
+              key={id_formula}
+              id={id_formula}
+              title={title}
+              equation={equation}
+              txt={txt}
+              buttons={buttons}
+            />
+          );
+        })}
       </div>
       <Paginator
         paginate={paginate}

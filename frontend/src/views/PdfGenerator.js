@@ -4,12 +4,14 @@ import { saveAs } from 'file-saver';
 import dbUtils from '../utils/dbUtils';
 import { Formula } from '../components/index';
 import userUtils from '../utils/userUtils';
+import UserContext from '../context/UserContext';
 
 const PdfGenerator = () => {
   const [csTitle, setCSTitle] = React.useState('');
   const [formulasHeader, setHeader] = React.useState(localStorage.ids);
   const [formulas, setFormulas] = React.useState([]);
   const [isDownloading, setIsDownloading] = React.useState(false);
+  const { user } = React.useContext(UserContext);
 
   const createPdf = async () => {
     setIsDownloading(true);
@@ -39,8 +41,10 @@ const PdfGenerator = () => {
 
   const getFormulas = async () => {
     let removedText = formulasHeader.replace(/\D+/g, ', ');
+    console.log(removedText);
     removedText = removedText.substr(2, removedText.length - 2);
     const idArray = removedText.split(',').map((x) => +x);
+    console.log(idArray);
     const query = `select * from Formula where id_formula in (${idArray})`;
     try {
       const results = await dbUtils.getRows(query);
@@ -52,16 +56,24 @@ const PdfGenerator = () => {
 
   React.useEffect(() => {
     if (formulasHeader) { getFormulas(); }
-  }, []);
+  }, [formulasHeader]);
 
-  const handleRemove = (id) => {
+  const handleRemove = async (id) => {
+    console.log('id is ', id);
     const replaced = formulasHeader.replace(`ids=${id}&`, '');
+    console.log(replaced);
+    localStorage.ids = localStorage.ids.replace(`ids=${id}&`, '');
+    if (replaced === '') {
+      console.log('is empty');
+      setFormulas([]);
+      return;
+    }
     setHeader(replaced);
-    getFormulas();
   };
 
   const saveSheet = () => {
-    console.log('WIP');
+    // TODO: guarda todo junto y si no estas logueado
+    // te abre el coso de login, guardo en cookie lo que hay en el localstorage
   };
 
   return (
@@ -82,7 +94,7 @@ const PdfGenerator = () => {
           </form>
           {!isDownloading && <button type="button" onClick={submitHandler}>Descargar</button>}
           {isDownloading && <p>Descargando...</p>}
-          {userUtils.isLoggedIn() && <button type="button" onClick={saveSheet}>Guardar</button>}
+          {userUtils.isLoggedIn(user) && <button type="button" onClick={saveSheet}>Guardar</button>}
         </div>
       </article>
       {csTitle && <h1>{csTitle}</h1>}
@@ -91,16 +103,26 @@ const PdfGenerator = () => {
           {
             id_formula, title, equation, txt,
           },
-        ) => (
-          <Formula
-            key={id_formula}
-            id={id_formula}
-            title={title}
-            equation={equation}
-            txt={txt}
-            handleRemove={handleRemove}
-          />
-        ))}
+        ) => {
+          const buttons = [
+            {
+              state: 'remove',
+              handleClick: handleRemove,
+              id: id_formula,
+              user,
+            },
+          ];
+          return (
+            <Formula
+              key={id_formula}
+              id={id_formula}
+              title={title}
+              equation={equation}
+              txt={txt}
+              buttons={buttons}
+            />
+          );
+        })}
       </div>
     </div>
   );

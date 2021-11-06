@@ -1,14 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import MathJax from '@innodoc/react-mathjax-node';
-import CheatsheetSelector from './CheatsheetSelector';
 import CheatsheetContext from '../context/CheatsheetContext';
 import UserContext from '../context/UserContext';
 import userUtils from '../utils/userUtils';
 import '../index.css';
+import FormulaButton from './FormulaButton';
 
 const Formula = ({
-  id, title, equation, txt, handleRemove, buttons,
+  id, title, equation, txt, buttons,
 }) => {
   const { selectedCheatsheet } = React.useContext(CheatsheetContext);
   const { user } = React.useContext(UserContext);
@@ -27,40 +27,22 @@ const Formula = ({
   return (
     <article className="formula">
       <h3 className="formula-title">{title}</h3>
-      {handleRemove && (
-      <button
-        type="button"
-        className="formula-button"
-        title="Reportar formula"
-        onClick={() => handleRemove(id)}
-      >
-        <i
-          className="fa fa-flag"
-        />
-      </button>
-      )}
-      {buttons && (
-      <a className="formula-button" title="Editar formula" href={`/edit/${id}`}>
-        <i className="fa fa-edit" />
-      </a>
-      )}
-      {buttons && !isAdded
-        && (
-          <div className="cheatsheet-dropdown">
-            <button
-              type="button"
-              className="formula-button add-button"
-              title="Add formula"
-              onClick={addId}
-            >
-              <i
-                className="fa fa-plus"
-              />
-            </button>
-            {userUtils.isLoggedIn(user)
-            && <CheatsheetSelector id_formula={id} setAdded={setAdded} />}
-          </div>
-        )}
+      {buttons.map((obj) => {
+        if (obj.state === 'add') {
+        // eslint-disable-next-line no-param-reassign
+          obj.handleClick = addId;
+        }
+        return (
+          <FormulaButton
+            key={obj.state + obj.id}
+            state={obj.state}
+            id={obj.id}
+            user={obj.user}
+            handleClick={obj.handleClick}
+            isAdded={isAdded}
+          />
+        );
+      })}
       <div style={{ clear: 'both' }} />
       <MathJax.Provider>
         <MathJax.MathJaxNode displayType="inline" texCode={equation} />
@@ -75,13 +57,7 @@ Formula.propTypes = {
   title: PropTypes.string.isRequired,
   equation: PropTypes.string.isRequired,
   txt: PropTypes.string.isRequired,
-  handleRemove: PropTypes.func,
-  buttons: PropTypes.bool,
-};
-
-Formula.defaultProps = {
-  handleRemove: undefined,
-  buttons: false,
+  buttons: PropTypes.arrayOf(PropTypes.object).isRequired,
 };
 
 export default Formula;

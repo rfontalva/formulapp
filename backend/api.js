@@ -25,7 +25,7 @@ var api = {
   },
 
   async getAllFormulas(req, res) {
-    const selectQuery = 'select * from Formula order by rand()';
+    const selectQuery = "select * from Formula where state='added' order by rand()";
     try {
       const results = await this.execSql(selectQuery);
       res.json(results);
@@ -35,7 +35,7 @@ var api = {
   },
 
   async addFormula(req, res) {
-    const { title, equation, txt, category, topic, rawLatex } = req.query;
+    const { title, equation, txt, category, topic, rawLatex, user } = req.query;
     const insertCategory = `INSERT IGNORE INTO Category (txt) VALUE (${connection.escape(category)});`;
     const insertTopic = `INSERT INTO Topic (id_category, txt)
     SELECT * FROM (SELECT id_category, ${connection.escape(topic)} AS txt FROM Category c
@@ -43,26 +43,33 @@ var api = {
     WHERE NOT EXISTS 
       (SELECT id_category, txt FROM Topic t WHERE id_category=(SELECT id_category FROM Category c
       WHERE c.txt=${connection.escape(category)}) AND t.txt=${connection.escape(topic)});`;
-    const insertEquation = `INSERT INTO Formula (title, equation, txt, rawLatex, id_topic) 
+    const insertEquation = `INSERT INTO Formula (title, equation, txt, rawLatex, id_topic, id_user) 
       VALUE (${connection.escape(title)}, '${equation}', 
         ${connection.escape(txt)}, ${rawLatex}, 
-      (SELECT id_topic from Topic t JOIN Category c using (id_category) 
-      WHERE t.txt=${connection.escape(topic)} AND c.txt=${connection.escape(category)}));`;
+      (SELECT id_topic from Topic t JOIN Category c using (id_category)
+      WHERE t.txt=${connection.escape(topic)} AND c.txt=${connection.escape(category)}),
+      (SELECT id_user FROM User u WHERE u.username=${connection.escape(user)}));`;
+    const insertModeration = `INSERT INTO Moderation (id_formula, action) VALUE
+      ((SELECT id_formula FROM Formula f JOIN Topic t using (id_topic) JOIN Category c using (id_category)
+      WHERE f.title=${connection.escape(title)} AND t.txt=${connection.escape(topic)} AND
+      c.txt=${connection.escape(category)}), 'add');`
+    console.log(insertEquation);
     try {
       await this.execSql('START TRANSACTION;');
       await this.execSql(insertCategory);
       await this.execSql(insertTopic);
       await this.execSql(insertEquation);
+      await this.execSql(insertModeration);
       await this.execSql('COMMIT;');
-      res.status(200).send(`Edited equation: ${title}`);
+      res.status(200).send({msg: `Se agregó: ${title}`});
     } catch (error) {
+      res.status(400);
       console.log(error);
       try {
         await this.execSql('ROLLBACK;');
       } catch (err) {
         throw new Error(err);
       }
-      res.status(400).send(error);
     }
   },
 
@@ -156,12 +163,13 @@ var api = {
       INSERT INTO User 
       (firstname, lastname, username, email, password)
       VALUES (${connection.escape(firstname)}, ${connection.escape(lastname)}, 
-        ${connection.escape(username)}, ${connection.escape(email)}, ${encrypted})`;
+        ${connection.escape(username)}, ${connection.escape(email)}, '${encrypted}')`;
     try {
       await this.execSql(query);
-      res.json(username);
+      res.json({user: username});
       res.status(200);
     } catch (err) {
+      res.status(401);
       throw new Error(err);
     }
   },
@@ -184,10 +192,14 @@ var api = {
     catch (err) {
       throw new Error(err);
     }
-    const responseUsername = await this.execSql(queryUsername);
-    if (responseUsername[0].userExists) {
-      res.status(401).json({ usernameExists: 'Este nombre de usuario ya se encuentra en uso' })
-      return;
+    try {
+      const responseUsername = await this.execSql(queryUsername);
+      if (responseUsername[0].userExists) {
+        res.status(401).json({ usernameExists: 'Este nombre de usuario ya se encuentra en uso' })
+        return;
+      }
+    } catch (err) {
+      throw new Error(err);
     }
   },
 
@@ -216,7 +228,7 @@ var api = {
 
   async addToCheatsheet(req, res) {
     const { username, title, id } = req.query;
-    const insertContent = `INSERT INTO CheatsheetContent (id_cheatsheet, id_formula) value 
+    const insertContent = `INSERT IGNORE INTO CheatsheetContent (id_cheatsheet, id_formula) value 
       ((SELECT id_cheatsheet from Cheatsheet NATURAL JOIN Permission NATURAL JOIN User 
         WHERE title=${connection.escape(title)} and username=${connection.escape(username)} 
         and permission in ('a','w')),
@@ -239,16 +251,17 @@ var api = {
 
   async sendToModerate(req, _, action, opinion) {
     const { id, user } = req.query;
-    const queryState = `SELECT count(*) as exists FROM ModerationResult NATURAL JOIN Moderation 
-      WHERE id_formula=${connection.escape(id)} and state='stand by';`;
-    const moderationQuery = `INSERT IGNORE INTO Moderate (id_formula, action) VALUE (${connection.escape(id)}, '${action}');`;
+    const queryState = `SELECT count(*) as isNotEmpty FROM Moderation JOIN Formula using (id_formula) 
+      WHERE id_formula=${connection.escape(id)} and state='started';`;
+    const moderationQuery = `INSERT IGNORE INTO Moderate (id_formula, action) 
+      VALUE (${connection.escape(id)}, '${action}');`;
     const userQuery = `INSERT INTO Opinion (id_moderation, id_user, opinion) VALUE 
       ((select id_moderation from Moderation where id_formula=${connection.escape(id)}), 
       (select id_user from User where user=${connection.escape(user)}), '${opinion}');`;
     try {
       await this.execSql('START TRANSACTION;');
       const responseState = await this.execSql(queryState);
-      if (!responseState[0].exists) {
+      if (!responseState[0].isNotEmpty) {
         try {
           await this.execSql(moderationQuery);
         } catch (err) {
@@ -276,7 +289,20 @@ var api = {
       const formulas = await this.execSql(queryFormulas);
       const resTitle = await this.simpleQuery(queryTitle);
       const { title } = resTitle;
-      res.status(200).json({formulas, title})
+      res.status(200).json({formulas, title});
+      return ({formulas, title})
+    } catch (err) {
+      throw new Error(err);
+    }
+  },
+
+  async deleteCheatsheetContent(req, res) {
+    const {idFormula, idCheatsheet} = req.query;
+    const query = `DELETE from CheatsheetContent where id_formula=${connection.escape(idFormula)} 
+      and id_cheatsheet=${connection.escape(idCheatsheet)}`;
+    try {
+      await this.execSql(query);
+      res.status(200);
     } catch (err) {
       throw new Error(err);
     }

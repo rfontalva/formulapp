@@ -71,11 +71,14 @@ app.delete('/api/pdf', (req, res) => {
   });
 });
 
-app.get('/api/makeCheatsheet', async (req, res) => {
-  await api.getCheatsheet(req, res);
-  const {formulas, title} = res.json;
-  await printPdf(formulas, title);
-  res.send(Promise.resolve());
+app.post('/api/makeCheatsheet', async (req, res) => {
+  try {
+    const {formulas, title} = await api.getCheatsheet(req, res);
+    await printPdf(formulas, title);
+  } catch (err) {
+    throw new Error(err);
+  } 
+  res.send(Promise.resolve());  
 });
 
 app.get('/api/cheatsheet', (req, res) => {
@@ -88,6 +91,10 @@ app.put('/api/cheatsheet', (req, res) => {
 
 app.post('/api/cheatsheet', (req, res) => {
   api.addToCheatsheet(req, res);
+})
+
+app.delete('/api/cheatsheetContent', (req, res) => {
+  api.deleteCheatsheetContent(req, res);
 })
 
 app.put('/api/moderate', (req, res) => {

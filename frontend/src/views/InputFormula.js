@@ -23,8 +23,8 @@ const InputFormula = () => {
   const [isChecked, setIsChecked] = React.useState(false);
   const [categories, setCategories] = React.useState([]);
   const [topics, setTopics] = React.useState([]);
+  const [toast, setToast] = React.useState('');
   const [latexParser, setLatex] = React.useState(new Equation(''));
-  let tempName = '';
 
   const getFormula = async () => {
     const query = `select * from eq_search where id_formula=${parseInt(id, 10)}`;
@@ -88,9 +88,13 @@ const InputFormula = () => {
     }
     txt = encodeURIComponent(txt);
     try {
-      const responseAdd = await fetch(`/api/add?id=${parseInt(id, 10)}&title=${title}&equation=${equation}&txt=${txt}&category=${category}&topic=${topic}&rawLatex=${isChecked}`);
-      const responseModerate = await fetch(`/api/moderate?id=${id}&username=${user}`, { method: 'POST' });
-      if (responseAdd.ok && responseModerate.ok) { return responseAdd.status; }
+      const responseAdd = await fetch(`/api/add?title=${title}&equation=${equation}&txt=${txt}&category=${category}&topic=${topic}&rawLatex=${isChecked}&user=${user}`);
+      if (responseAdd.ok) {
+        const { msg } = await responseAdd.json();
+        setToast(msg);
+        return responseAdd.status;
+      }
+      setFailed(true);
       return 401;
     } catch (err) {
       setFailed(true);
@@ -149,8 +153,7 @@ const InputFormula = () => {
     if (isNew) {
       try {
         const status = await addFormula();
-        if (status !== 400) {
-          tempName = item.title;
+        if (status === 200) {
           const x = document.getElementById('snackbar');
           x.className += ' show';
           setTimeout(() => { x.className = x.className.replace(' show', ''); }, 3000);
@@ -221,10 +224,6 @@ const InputFormula = () => {
       setIsChecked(item.rawLatex);
     }
   }, [item.rawLatex]);
-
-  useEffect(() => {
-    console.log('latex');
-  }, [latexParser]);
 
   return (
     <>
@@ -304,7 +303,7 @@ const InputFormula = () => {
         </div>
         {isNew && (
         <div id="snackbar" className="snackbar">
-          {`Se agrego ${tempName}`}
+          {`${toast}`}
         </div>
         )}
       </article>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import UserContext from '../context/UserContext';
-// import urlUtils from '../utils/urlUtils';
+import urlUtils from '../utils/urlUtils';
 import userUtils from '../utils/userUtils';
 import '../index.css';
 
@@ -73,6 +73,8 @@ const SignUp = () => {
       return;
     }
     if (!validate()) return;
+    const link = `/api/user?firstname=${firstname}&lastname=${lastname}&email=${email}&username=${username}&password=${password}`;
+    console.log(link);
     try {
       const res = await fetch(`/api/user?firstname=${firstname}&lastname=${lastname}&email=${email}&username=${username}&password=${password}`,
         { method: 'PUT' });
@@ -81,9 +83,11 @@ const SignUp = () => {
           setErrorMessages(res.json());
           break;
         case 200:
-          setUser(await res.json().username);
-          userUtils.cookieLogIn(await res.json().username);
-          // urlUtils.goToUrl('profile');
+          // eslint-disable-next-line
+          const { user } = await res.json();
+          setUser(user);
+          userUtils.cookieLogIn(user);
+          urlUtils.goToUrl('profile');
           break;
         default:
       }

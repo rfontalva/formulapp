@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import UserContext from '../context/UserContext';
 import dbUtils from '../utils/dbUtils';
-import Error from './Error';
+import ErrorComp from './Error';
+import MyFormulas from './MyFormulas';
 import { SheetsList } from '../components/index';
 
 const Profile = () => {
@@ -14,8 +15,8 @@ const Profile = () => {
     if (!user) { return; }
     const query = `select firstname, lastname, email from User where username='${user}'`;
     try {
-      const results = await dbUtils.getRows(query);
-      const { firstname, lastname, email } = results[0];
+      const results = await dbUtils.simpleQuery(query);
+      const { firstname, lastname, email } = results;
       setUserDetails({
         user, firstname, lastname, email,
       });
@@ -62,17 +63,11 @@ const Profile = () => {
 
           </button>
         </div>
-        <div className="inputs-box side-box">
-          <a style={{ textDecoration: 'none', color: 'inherit' }} href="/">
-            <h3>
-              Mis hojas de fórmulas
-            </h3>
-          </a>
-          <SheetsList />
-        </div>
+        <SheetsList />
+        <MyFormulas />
       </>
       )}
-      {!user && <Error />}
+      {!user && <ErrorComp />}
     </>
   );
 };

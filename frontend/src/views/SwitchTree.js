@@ -9,6 +9,7 @@ import Error from './Error';
 import Profile from './Profile';
 import About from './About';
 import Cheatsheet from './Cheatsheet';
+import MyFormulas from './MyFormulas';
 import { SheetsList } from '../components/index';
 
 const SwitchTree = () => (
@@ -45,6 +46,9 @@ const SwitchTree = () => (
     </Route>
     <Route path="/sheets">
       <SheetsList />
+    </Route>
+    <Route path="/formulas">
+      <MyFormulas />
     </Route>
     <Route path="*">
       <Error />

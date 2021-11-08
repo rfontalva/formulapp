@@ -12,6 +12,7 @@ const SheetList = () => {
         where username='${user}';`;
     try {
       const results = await dbUtils.getRows(query);
+      console.log(results);
       setCheatsheets(results);
     } catch (err) {
       throw new Error(err);
@@ -20,21 +21,30 @@ const SheetList = () => {
 
   React.useEffect(() => {
     getCheatsheets();
-  }, []);
+  }, [user]);
   return (
-    <>
+    <div className="inputs-box side-box">
+      <a style={{ textDecoration: 'none', color: 'inherit' }} href="/sheets">
+        <h3>
+          Mis hojas de fórmulas
+        </h3>
+      </a>
       {Array.isArray(cheatsheets) && (
       <div>
         {cheatsheets.map(({ id_cheatsheet, title }) => (
-          <p
-            key={id_cheatsheet}
-          >
-            {title}
-          </p>
+          <>
+            <a
+              key={id_cheatsheet}
+              href={`/cheatsheet/${id_cheatsheet}`}
+            >
+              {title}
+            </a>
+            <br />
+          </>
         ))}
       </div>
       )}
-    </>
+    </div>
   );
 };
 

@@ -1,5 +1,6 @@
 const puppeteer = require('puppeteer');
 const fs = require('fs');
+const { newCheatsheet } = require('./api');
 
 const generateCheatsheet = (formulas, header) => {
   const mapp = formulas.map(((val) => (
@@ -83,13 +84,21 @@ const printPdf = async (formulas, header) => {
   const path = `${__dirname}/generic.html`;
   fs.writeFileSync(path, html);
   const url = `file:///${path}`;
-  const browser = await puppeteer.launch({
-    headless: true,
-  });
-  const page = await browser.newPage();
-  await page.goto(url, { waitUntil: 'networkidle0' });
-  await page.pdf({ path: `${header}.pdf`, format: 'A4' });
-  await browser.close();
+  try {
+    const browser = await puppeteer.launch({
+      headless: true,
+    });
+    const page = await browser.newPage();
+    try {
+      await page.goto(url, { waitUntil: 'networkidle0' });
+      await page.pdf({ path: `${header}.pdf`, format: 'A4' });
+      await browser.close();
+    } catch (err) {
+      throw new Error(err);
+    }
+  } catch (err) {
+    throw new Error(err);
+  }
 };
 
 module.exports = printPdf;

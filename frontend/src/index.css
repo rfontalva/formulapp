@@ -943,3 +943,12 @@ footer {
     -ms-user-select: none;
     user-select: none;
 }
+
+.no-decoration {
+    text-decoration: none;
+    color: inherit;
+}
+
+.underline:hover {
+    text-decoration: underline;
+}

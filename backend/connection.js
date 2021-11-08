@@ -3,7 +3,7 @@ const secret = require('./secret.json');
 
 const connection = mysql.createConnection({
   host: 'localhost',
-  user: 'root',
+  user: secret.user,
   password: secret.password,
   database: 'formulapp',
 });

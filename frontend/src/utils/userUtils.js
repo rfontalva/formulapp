@@ -22,16 +22,16 @@ const utils = {
     document.cookie = `Expires=${expiryDate};`;
   },
 
+  // eslint-disable-next-line no-unused-vars
   async hasAccess(user, idCheatsheet) {
-    console.log(user);
+    if (user === undefined) { return { hasPermission: false, permission: undefined }; }
     const query = `SELECT permission FROM Permission JOIN User using (id_user)
       WHERE id_cheatsheet=${idCheatsheet}
-      and where username='${user}');`;
+      and username='${user}';`;
     const results = await dbUtils.simpleQuery(query);
-    console.log(await results);
-    // const { permission } = await results;
-    // const hasPermission = permission !== undefined;
-    return { hasPermission: true, permission: 'a' };
+    const { permission } = await results;
+    const hasPermission = permission !== undefined;
+    return { hasPermission, permission };
   },
 };
 export default utils;

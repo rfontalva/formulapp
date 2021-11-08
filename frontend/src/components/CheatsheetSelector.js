@@ -4,15 +4,16 @@ import UserContext from '../context/UserContext';
 import dbUtils from '../utils/dbUtils';
 import CheatsheetContext from '../context/CheatsheetContext';
 
-const CheatsheetSelector = ({ id_formula, setAdded }) => {
+const CheatsheetSelector = ({ id_formula }) => {
   const [cheatsheetsFiltered, setCheatsheetsFiltered] = useState([]);
   const [cheatsheetName, setCheatsheetName] = useState('');
   const [cheatsheetSearch, setSearch] = useState('');
+  const [selectedCheatsheet, setSelectedCheatsheet] = useState('');
   const [show, setShow] = useState(false);
   const [rerender, setRerender] = useState(false);
   const { user } = React.useContext(UserContext);
   const {
-    selectedCheatsheet, setSelectedCheatsheet, cheatsheets, setCheatsheets,
+    cheatsheets, setCheatsheets,
   } = React.useContext(CheatsheetContext);
 
   const getCheatsheets = async () => {
@@ -67,8 +68,6 @@ const CheatsheetSelector = ({ id_formula, setAdded }) => {
 
   const AddToCheatsheet = async (title) => {
     setSelectedCheatsheet(title);
-    setAdded(true);
-    console.log('hola');
     try {
       await fetch(`/api/cheatsheet?title=${title}&id=${id_formula}&username=${user}`, { method: 'POST' });
     } catch (err) {
@@ -114,7 +113,6 @@ const CheatsheetSelector = ({ id_formula, setAdded }) => {
 };
 
 CheatsheetSelector.propTypes = {
-  setAdded: PropTypes.func.isRequired,
   id_formula: PropTypes.number.isRequired,
 };
 

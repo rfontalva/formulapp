@@ -13,10 +13,10 @@ const Cheatsheet = () => {
   const [formulasDisplay, setFormulas] = useState([]);
   const [isDownloading, setIsDownloading] = useState(false);
   const [permission, setPermission] = useState(false);
+  const [removed, setRemoved] = useState(1);
   const [hasPermission, setHasPermission] = useState(false);
   const { idCheatsheet } = useParams();
   const { user } = React.useContext(UserContext);
-  console.log(permission);
   // eslint-disable-next-line no-unused-vars
   const [isReadOnly, _setIsReadOnly] = useState(permission === 'r');
 
@@ -53,8 +53,10 @@ const Cheatsheet = () => {
   const getFormulas = async () => {
     const query = `select f.* from Formula f inner join CheatsheetContent using (id_formula) 
       inner join Cheatsheet using (id_cheatsheet) where id_cheatsheet=${idCheatsheet})`;
+    console.log(query);
     try {
       const results = await dbUtils.getRows(query);
+      console.log(results);
       setFormulas(results);
     } catch (err) {
       console.error(err);
@@ -66,24 +68,27 @@ const Cheatsheet = () => {
     setPermission(hasAccess.permission);
     setHasPermission(hasAccess.hasPermission);
     getCheatsheetDetails();
-  }, []);
+  }, [user]);
 
   const handleRemove = async (id) => {
     try {
-      const res = await fetch(`api/cheatsheetContent?id=${id}`, { method: 'DELETE' });
+      const res = await fetch(`/api/cheatsheetContent?idFormula=${id}&idCheatsheet=${idCheatsheet}`, { method: 'DELETE' });
       if (res.ok) {
-        getFormulas();
+        await getFormulas();
+        setRemoved(removed + 1);
         return;
       }
-      console.log('hubo un error');
     } catch (err) {
-      throw new ErrorComp(err);
+      throw new Error(err);
     }
   };
 
   const saveSheet = () => {
     console.log('WIP');
   };
+
+  React.useEffect(() => {
+  }, [removed]);
 
   return (
     <>
@@ -115,16 +120,26 @@ const Cheatsheet = () => {
               {
                 id_formula, title, equation, txt,
               },
-            ) => (
-              <Formula
-                key={id_formula}
-                id={id_formula}
-                title={title}
-                equation={equation}
-                txt={txt}
-                handleRemove={handleRemove}
-              />
-            ))}
+            ) => {
+              const buttons = [
+                {
+                  state: 'remove',
+                  handleClick: handleRemove,
+                  id: id_formula,
+                  user,
+                },
+              ];
+              return (
+                <Formula
+                  key={id_formula}
+                  id={id_formula}
+                  title={title}
+                  equation={equation}
+                  txt={txt}
+                  buttons={buttons}
+                />
+              );
+            })}
           </div>
         </div>
       )}

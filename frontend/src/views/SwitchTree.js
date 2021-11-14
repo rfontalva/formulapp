@@ -10,6 +10,7 @@ import Profile from './Profile';
 import About from './About';
 import Cheatsheet from './Cheatsheet';
 import MyFormulas from './MyFormulas';
+import Moderate from './Moderate';
 import { SheetsList } from '../components/index';
 
 const SwitchTree = () => (
@@ -45,10 +46,13 @@ const SwitchTree = () => (
       <About />
     </Route>
     <Route path="/sheets">
-      <SheetsList />
+      <SheetsList isView />
     </Route>
     <Route path="/formulas">
       <MyFormulas />
+    </Route>
+    <Route path="/moderate">
+      <Moderate />
     </Route>
     <Route path="*">
       <Error />

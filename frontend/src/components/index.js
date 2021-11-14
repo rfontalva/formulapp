@@ -4,3 +4,5 @@ export { default as AppTitle } from './AppTitle';
 export { default as Navbar } from './Navbar';
 export { default as Footer } from './Footer';
 export { default as SheetsList } from './SheetsList';
+export { default as BlurBox } from './BlurBox';
+export { DeleteAccount } from './PopUps';

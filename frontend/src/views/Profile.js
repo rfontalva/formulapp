@@ -1,15 +1,17 @@
 import React, { useState } from 'react';
 import UserContext from '../context/UserContext';
+import RefContext from '../context/RefContext';
 import dbUtils from '../utils/dbUtils';
 import ErrorComp from './Error';
 import MyFormulas from './MyFormulas';
-import { SheetsList } from '../components/index';
+import { SheetsList, DeleteAccount } from '../components/index';
 
 const Profile = () => {
   const { user } = React.useContext(UserContext);
   const [userDetails, setUserDetails] = useState({
     user: '', firstname: '', lastname: '', email: '',
   });
+  const { blurBoxRef, setChild } = React.useContext(RefContext);
 
   const getUserData = async () => {
     if (!user) { return; }
@@ -23,6 +25,15 @@ const Profile = () => {
     } catch (error) {
       throw new Error(error);
     }
+  };
+
+  const hideBlurBox = () => {
+    blurBoxRef.current.style.display = 'none';
+  };
+
+  const openPopUp = () => {
+    blurBoxRef.current.style.display = 'flex';
+    setChild(<DeleteAccount hideBlurBox={hideBlurBox} user={user} />);
   };
 
   React.useEffect(() => {
@@ -57,10 +68,9 @@ const Profile = () => {
           <a href="/">Cambiar mi contraseña</a>
           <button
             type="button"
-            onClick={() => console.log('click')}
+            onClick={openPopUp}
           >
             Borrar mi cuenta
-
           </button>
         </div>
         <SheetsList />

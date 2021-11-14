@@ -53,10 +53,8 @@ const Cheatsheet = () => {
   const getFormulas = async () => {
     const query = `select f.* from Formula f inner join CheatsheetContent using (id_formula) 
       inner join Cheatsheet using (id_cheatsheet) where id_cheatsheet=${idCheatsheet})`;
-    console.log(query);
     try {
       const results = await dbUtils.getRows(query);
-      console.log(results);
       setFormulas(results);
     } catch (err) {
       console.error(err);

@@ -47,6 +47,14 @@ app.put('/api/user', async (req, res) => {
   }
 });
 
+app.delete('/api/user', async (req, res) => {
+  try {
+    await api.deleteUser(req, res)
+  } catch (err) {
+    throw new Error(err)
+  }
+});
+
 app.post('/api/pdf', async (req, res) => {
   let ids;
   const { header } = req.query;
@@ -93,11 +101,15 @@ app.post('/api/cheatsheet', (req, res) => {
   api.addToCheatsheet(req, res);
 })
 
+app.delete('/api/cheatsheet', (req, res) => {
+  api.deleteCheatsheet(req, res);
+})
+
 app.delete('/api/cheatsheetContent', (req, res) => {
   api.deleteCheatsheetContent(req, res);
 })
 
-app.put('/api/moderate', (req, res) => {
+app.post('/api/moderate', (req, res) => {
   if (req.query.report)
     api.sendToModerate(req, res, 'remove', 'negative');
   else api.sendToModerate(req, res, 'add', 'positive');

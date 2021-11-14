@@ -53,18 +53,23 @@ var api = {
       ((SELECT id_formula FROM Formula f JOIN Topic t using (id_topic) JOIN Category c using (id_category)
       WHERE f.title=${connection.escape(title)} AND t.txt=${connection.escape(topic)} AND
       c.txt=${connection.escape(category)}), 'add');`
-    console.log(insertEquation);
+    const insertOpinion = `INSERT INTO Opinion (id_moderation, opinion, id_user) VALUE
+      ((SELECT id_moderation FROM Moderation m join Formula f using (id_formula)
+      JOIN Topic t using (id_topic) JOIN Category c using (id_category)
+      WHERE f.title=${connection.escape(title)} AND t.txt=${connection.escape(topic)} AND
+      c.txt=${connection.escape(category)}), 'positive',
+      (SELECT id_user FROM User u WHERE u.username=${connection.escape(user)}));`
     try {
       await this.execSql('START TRANSACTION;');
       await this.execSql(insertCategory);
       await this.execSql(insertTopic);
       await this.execSql(insertEquation);
       await this.execSql(insertModeration);
+      await this.execSql(insertOpinion);
       await this.execSql('COMMIT;');
       res.status(200).send({msg: `Se agregó: ${title}`});
     } catch (error) {
       res.status(400);
-      console.log(error);
       try {
         await this.execSql('ROLLBACK;');
       } catch (err) {
@@ -95,7 +100,6 @@ var api = {
       await this.execSql('COMMIT;');
       res.status(200).send(`Edited equation: ${title}`);
     } catch (error) {
-      console.log(error);
       try {
         await this.execSql('ROLLBACK;');
       } catch (err) {
@@ -174,6 +178,28 @@ var api = {
     }
   },
 
+  async deleteUser(req, res) {
+    const {username, password} = req.query;
+    const salted = password + secret.salt;
+    const encrypted = crypto.createHash('sha256').update(salted, 'utf8').digest('hex');
+    const existsQuery = `SELECT count(*) as isThere FROM User WHERE username=${connection.escape(username)} 
+      and password='${encrypted}'`;
+    const query = `DELETE FROM User WHERE username=${connection.escape(username)} 
+      and password='${encrypted}'`;
+    try {
+      const res = await this.simpleQuery(existsQuery);
+      if (res.isThere) {
+        await this.execSql(query);
+        res.status(200);
+      } else {
+        res.status(401);
+      }
+    } catch (err) {
+      res.status(400);
+      throw new Error(err);
+    }
+  },
+
   async validate(req, res) {
     const { username, email } = req.query;
     const queryUsername = `
@@ -229,7 +255,8 @@ var api = {
   async addToCheatsheet(req, res) {
     const { username, title, id } = req.query;
     const insertContent = `INSERT IGNORE INTO CheatsheetContent (id_cheatsheet, id_formula) value 
-      ((SELECT id_cheatsheet from Cheatsheet NATURAL JOIN Permission NATURAL JOIN User 
+      ((SELECT id_cheatsheet from Cheatsheet JOIN Permission p using (id_cheatsheet) 
+      JOIN User u on p.id_user=u.id_user 
         WHERE title=${connection.escape(title)} and username=${connection.escape(username)} 
         and permission in ('a','w')),
       ${connection.escape(id)});`;
@@ -239,7 +266,6 @@ var api = {
       await this.execSql('COMMIT;');
       res.status(200);
     } catch (error) {
-      console.log(error);
       try {
         await this.execSql('ROLLBACK;');
       } catch (err) {
@@ -250,14 +276,14 @@ var api = {
   },
 
   async sendToModerate(req, _, action, opinion) {
-    const { id, user } = req.query;
-    const queryState = `SELECT count(*) as isNotEmpty FROM Moderation JOIN Formula using (id_formula) 
-      WHERE id_formula=${connection.escape(id)} and state='started';`;
+    const { id, username } = req.query;
+    const queryState = `SELECT count(*) as isNotEmpty FROM Moderation m JOIN Formula using (id_formula) 
+      WHERE id_formula=${connection.escape(id)} and m.state='started';`;
     const moderationQuery = `INSERT IGNORE INTO Moderate (id_formula, action) 
       VALUE (${connection.escape(id)}, '${action}');`;
     const userQuery = `INSERT INTO Opinion (id_moderation, id_user, opinion) VALUE 
       ((select id_moderation from Moderation where id_formula=${connection.escape(id)}), 
-      (select id_user from User where user=${connection.escape(user)}), '${opinion}');`;
+      (select id_user from User where username=${connection.escape(username)}), '${opinion}');`;
     try {
       await this.execSql('START TRANSACTION;');
       const responseState = await this.execSql(queryState);
@@ -300,6 +326,17 @@ var api = {
     const {idFormula, idCheatsheet} = req.query;
     const query = `DELETE from CheatsheetContent where id_formula=${connection.escape(idFormula)} 
       and id_cheatsheet=${connection.escape(idCheatsheet)}`;
+    try {
+      await this.execSql(query);
+      res.status(200);
+    } catch (err) {
+      throw new Error(err);
+    }
+  },
+
+  async deleteCheatsheet(req, res) {
+    const { id } = req.query;
+    const query = `DELETE from Cheatsheet where id_cheatsheet=${connection.escape(id)}`;
     try {
       await this.execSql(query);
       res.status(200);

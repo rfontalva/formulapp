@@ -31,6 +31,7 @@
     --clr-green-light: hsl(125, 71%, 66%);
     --clr-black: #222;
     --transition: all 0.3s linear;
+    --transition-slow: 0.3s ;
     --spacing: 0.1rem;
     --radius: 0.25rem;
     --light-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
@@ -692,6 +693,8 @@ footer {
     position: absolute;
     z-index: 3;
     backdrop-filter: blur(5px);
+    justify-content: center;
+    align-items: center;
 }
 
 .blur-2nd-level {
@@ -951,4 +954,140 @@ footer {
 
 .underline:hover {
     text-decoration: underline;
+}
+
+#my-sheets {
+    text-align: justify;
+}
+
+.accordion-button {
+    color: black !important;
+    background: unset !important;
+}
+
+.accordion-button.open {
+    transform: rotate(180deg);
+    transition: transform var(--transition-slow) ease-in-out;
+}
+
+.accordion-button.collapsed {
+    transform: rotate(0deg);
+    transition: transform var(--transition-slow) ease-in-out;
+}
+
+@keyframes accordion {
+    from {
+      opacity: 0;
+      margin-top: -10px;
+    }
+    to {
+      opacity: 1;
+      margin-top: 15px;
+    }
+}
+
+.accordion .open .cheatsheets {
+    display: block;
+    opacity: 1;
+    z-index: 1;
+    animation: accordion var(--transition-slow) ease-in-out forwards;
+    transform-origin: top center;
+    transition: animation var(--transition-slow) ease-in-out;
+}
+
+.collapsed .cheatsheets {
+    display: none;
+}
+
+.cheatsheets ul {
+    list-style-type: none;
+    margin-left: -2rem;
+    margin-right: 1rem;
+}
+
+.cheatsheets li button{
+    color: black !important;
+    background: unset !important;
+    float: right;
+    display: flex;
+    margin: unset;
+    margin-top: 1rem;
+    vertical-align: center;
+}
+
+.cheatsheets li {
+    border-bottom: 1px solid darkgray;
+    line-height: 3;
+}
+
+.cheatsheets a {
+    margin-left: 0.5rem;
+}
+
+.centered-box {
+    margin: unset !important;
+}
+
+.warning-btn {
+    background: red !important;
+}
+
+.removed {
+    color: red;
+    position: absolute;
+}
+
+.removed:before {
+    content: "Esta fórmula ha sido eliminada por la comunidad";
+    visibility: hidden;
+    opacity: 0;
+    width: 200px;
+    background-color:mintcream;
+    color: black;
+    text-align: center;
+    border-radius: 5px;
+    padding: 5px 0;
+    font-size: small;
+    transition: opacity 1s ease-in-out;
+    position: absolute;
+    z-index: 1;
+    left: 0;
+    top: 110%;
+}
+
+.removed:hover:before {
+    opacity: 1;
+    visibility: visible;
+}
+
+.stand.by {
+    color: #e6bd38;
+    position: absolute;
+}
+
+.stand.by:before {
+    content: "Esta fórmula está en revisión";
+    visibility: hidden;
+    opacity: 0;
+    width: 200px;
+    background-color:mintcream;
+    color: black;
+    text-align: center;
+    border-radius: 5px;
+    padding: 5px 0;
+    font-size: small;
+    transition: opacity 1s ease-in-out;
+    position: absolute;
+    z-index: 1;
+    left: 0;
+    top: 110%;
+}
+
+.stand.by:hover:before {
+    opacity: 1;
+    visibility: visible;
+}
+
+.moderation {
+    padding: 5rem 15rem;
 }

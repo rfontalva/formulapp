@@ -5,6 +5,8 @@ import {
 } from '../components/index';
 import '../index.css';
 import Equation from '../utils/equationUtils';
+import userUtils from '../utils/userUtils';
+import UserContext from '../context/UserContext';
 
 const Lookup = () => {
   const [search, setSearch] = React.useState({
@@ -13,6 +15,7 @@ const Lookup = () => {
   const [formulas, setFormulas] = React.useState([]);
   const [categories, setCategories] = React.useState([]);
   const [topics, setTopics] = React.useState([]);
+  const { user } = React.useContext(UserContext);
 
   const getFormulas = async () => {
     const equation = new Equation(search.equation).latex;
@@ -57,6 +60,17 @@ const Lookup = () => {
     const { name } = e.target;
     const { value } = e.target;
     setSearch({ ...search, [name]: value });
+  };
+
+  const handleRemove = async (id) => {
+    try {
+      if (userUtils.isLoggedIn(user)) {
+        await fetch(`/api/moderate?id=${id}&username=${user}&report=true`, { method: 'POST' });
+      }
+    } catch (err) {
+      console.error(err);
+    }
+    getFormulas();
   };
 
   React.useEffect(() => {
@@ -119,16 +133,35 @@ const Lookup = () => {
           {
             id_formula, title, equation, description,
           },
-        ) => (
-          <Formula
-            key={id_formula}
-            id={id_formula}
-            title={title}
-            equation={equation}
-            txt={description}
-            buttons
-          />
-        ))}
+        ) => {
+          const buttons = [{
+            state: 'report',
+            handleClick: () => handleRemove(),
+            user,
+            id: id_formula,
+          },
+          {
+            state: 'edit',
+            user,
+            id: id_formula,
+          },
+          {
+            state: 'add',
+            user,
+            id: id_formula,
+          },
+          ];
+          return (
+            <Formula
+              key={id_formula}
+              id={id_formula}
+              title={title}
+              equation={equation}
+              txt={description}
+              buttons={buttons}
+            />
+          );
+        })}
       </div>
     </>
   );

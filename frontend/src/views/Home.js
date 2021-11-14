@@ -18,6 +18,7 @@ const Home = React.forwardRef(({ search }, ref) => {
   }
 
   const [formulas, setFormulas] = React.useState([]);
+  const [whichModerated, setWhichModerated] = React.useState([]);
   const [page, setPage] = React.useState(0);
 
   const getFormulas = async () => {
@@ -40,9 +41,18 @@ const Home = React.forwardRef(({ search }, ref) => {
     }
   };
 
+  const getWhichModerated = async () => {
+    const res = await userUtils.getWhichModerated(user);
+    setWhichModerated(res);
+  };
+
   React.useEffect(() => {
     getFormulas();
   }, []);
+
+  React.useEffect(() => {
+    getWhichModerated();
+  }, [user]);
 
   const paginate = (increment) => {
     setPage(page + increment);
@@ -56,7 +66,7 @@ const Home = React.forwardRef(({ search }, ref) => {
     } catch (err) {
       console.error(err);
     }
-    getFormulas();
+    // getFormulas();
   };
 
   return (
@@ -67,23 +77,30 @@ const Home = React.forwardRef(({ search }, ref) => {
             id_formula, title, equation, txt,
           },
         ) => {
-          const buttons = [{
-            state: 'report',
-            handleClick: () => handleRemove(),
-            user,
-            id: id_formula,
-          },
-          {
-            state: 'edit',
-            user,
-            id: id_formula,
-          },
-          {
-            state: 'add',
-            user,
-            id: id_formula,
-          },
+          const buttons = [
+            {
+              state: 'report',
+              handleClick: () => handleRemove(id_formula),
+              user,
+              id: id_formula,
+            },
+            {
+              state: 'edit',
+              user,
+              id: id_formula,
+            },
+            {
+              state: 'add',
+              user,
+              id: id_formula,
+            },
           ];
+          if (userUtils.isLoggedIn(user)) {
+            const hasModerated = whichModerated.includes(id_formula);
+            if (hasModerated) {
+              buttons.shift();
+            }
+          }
           return (
             <Formula
               key={id_formula}

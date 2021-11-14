@@ -110,9 +110,7 @@ const InputFormula = () => {
     category = urlUtils.urlEncoding(category);
     topic = urlUtils.urlEncoding(topic);
     if (!isChecked) {
-      console.log(isChecked);
       equation = urlUtils.urlEncoding(latexParser.latex);
-      console.log(equation);
     } else {
       equation = urlUtils.urlEncoding(equation);
     }

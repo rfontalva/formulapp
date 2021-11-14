@@ -17,7 +17,6 @@ const MyFormulas = React.forwardRef((_, ref) => {
   const getFormulas = async () => {
     const query = `SELECT f.* from Formula f JOIN User using (id_user)
       WHERE username='${user}'`;
-    console.log(query);
     try {
       const results = await dbUtils.getRows(query);
       setFormulas(results);

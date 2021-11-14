@@ -4,7 +4,6 @@ import UserContext from '../context/UserContext';
 import utils from '../utils/urlUtils';
 import userUtils from '../utils/userUtils';
 import '../index.css';
-import BlurBox from './BlurBox';
 
 const Login = ({ show, setShow }) => {
   const { setUser } = React.useContext(UserContext);
@@ -19,7 +18,8 @@ const Login = ({ show, setShow }) => {
   const authenticate = async () => {
     setWrongUser(false);
     const { usernameInput, password } = inputs;
-    const response = await fetch(`/api/authenticate?username=${usernameInput}&password=${password}`, { method: 'POST' });
+    const response = await fetch(`/api/authenticate?username=${usernameInput}&password=${password}`,
+      { method: 'POST' });
     if (response.status === 200) {
       const { username } = await response.json();
       setUser(username);
@@ -43,7 +43,7 @@ const Login = ({ show, setShow }) => {
   return (
     show
     && (
-    <BlurBox>
+    <div className="blur">
       <div className="login-container">
         <div className="form-container sign-in-container">
           <button type="button" className="close-login" onClick={close}>
@@ -77,7 +77,7 @@ const Login = ({ show, setShow }) => {
           </form>
         </div>
       </div>
-    </BlurBox>
+    </div>
     )
   );
 };

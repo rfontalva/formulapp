@@ -39,6 +39,7 @@ const CheatsheetSelector = ({ id_formula }) => {
         return;
       }
       setShow(false);
+      setCheatsheetName('');
       setRerender(!rerender);
     } catch (err) {
       throw new Error(err);
@@ -54,6 +55,9 @@ const CheatsheetSelector = ({ id_formula }) => {
   const NamingHandler = (e) => {
     const { value } = e.target;
     setCheatsheetName(value);
+  };
+
+  const submitKeyDown = (e) => {
     if (e.keyCode === 13) {
       newCheatsheet();
     }
@@ -61,7 +65,6 @@ const CheatsheetSelector = ({ id_formula }) => {
 
   const cleanUp = () => {
     setSearch('');
-    setCheatsheetName('');
     setShow(false);
     setCheatsheetsFiltered(cheatsheets);
   };
@@ -100,7 +103,13 @@ const CheatsheetSelector = ({ id_formula }) => {
           {show || <button type="button" className="new-button" onClick={() => setShow(true)}>Crear hoja nueva</button>}
           {show && (
           <div className="add-cheatsheet">
-            <input type="text" placeholder="Titulo" onChange={NamingHandler} value={cheatsheetName} />
+            <input
+              type="text"
+              placeholder="Titulo"
+              onChange={NamingHandler}
+              onKeyDown={submitKeyDown}
+              value={cheatsheetName}
+            />
             <button type="button" className="new-button" onClick={newCheatsheet}>
               <i className="fa fa-check" />
             </button>

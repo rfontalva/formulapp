@@ -8,7 +8,7 @@ import '../index.css';
 import FormulaButton from './FormulaButton';
 
 const Formula = ({
-  id, title, equation, txt, buttons,
+  id, title, equation, txt, buttons, state,
 }) => {
   // const { selectedCheatsheet } = React.useContext(CheatsheetContext);
   // const { user } = React.useContext(UserContext);
@@ -16,7 +16,6 @@ const Formula = ({
   const addId = () => {
     // TODO: Si seleccionó una hoja antes, que al tocar en + se agregue ahi?
     // if (userUtils.isLoggedIn(user) && selectedCheatsheet) {
-    //   console.log('hola');
     // }
     if (!localStorage.ids) {
       localStorage.ids = '';
@@ -27,7 +26,7 @@ const Formula = ({
 
   return (
     <article className="formula">
-      <h3 className="formula-title">{title}</h3>
+      <h3 className={`formula-title ${state}`}>{title}</h3>
       {buttons.map((obj) => {
         if (obj.state === 'add') {
         // eslint-disable-next-line no-param-reassign
@@ -58,7 +57,12 @@ Formula.propTypes = {
   title: PropTypes.string.isRequired,
   equation: PropTypes.string.isRequired,
   txt: PropTypes.string.isRequired,
+  state: PropTypes.string,
   buttons: PropTypes.arrayOf(PropTypes.object).isRequired,
+};
+
+Formula.defaultProps = {
+  state: '',
 };
 
 export default Formula;

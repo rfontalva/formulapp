@@ -33,5 +33,14 @@ const utils = {
     const hasPermission = permission !== undefined;
     return { hasPermission, permission };
   },
+
+  async getWhichModerated(user) {
+    const query = `SELECT f.id_formula FROM Opinion o JOIN Moderation m using (id_moderation)
+      JOIN Formula f on m.id_formula=f.id_formula JOIN User u on o.id_user=u.id_user 
+      where username='${user}' and m.state='started'`;
+    const res = await dbUtils.getRows(query);
+    const ids = await res.map((val) => val.id_formula);
+    return ids;
+  },
 };
 export default utils;

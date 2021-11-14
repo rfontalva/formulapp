@@ -73,6 +73,60 @@ const RemoveButton = ({
   return (<></>);
 };
 
+const OpinionButton = ({
+  action, handleClick, id, user,
+}) => {
+  const approve = () => (
+    <button
+      type="button"
+      className="formula-button"
+      title="Esta fórmula está bien"
+      onClick={() => handleClick(id, user)}
+    >
+      <i
+        className="fa fa-check"
+      />
+    </button>
+  );
+
+  const reject = () => (
+    <button
+      type="button"
+      className="formula-button"
+      title="Esta fórmula está mal"
+      onClick={() => handleClick(id, user)}
+    >
+      <i
+        className="fa fa-close"
+      />
+    </button>
+  );
+
+  const NA = () => (
+    <button
+      type="button"
+      className="formula-button"
+      title="Sin opinion"
+      onClick={() => handleClick(id, user)}
+    >
+      <i
+        className="fa fa-question"
+      />
+    </button>
+  );
+
+  switch (action) {
+    case 'reject':
+      return reject();
+    case 'approve':
+      return approve();
+    case 'NA':
+      return NA();
+    default:
+      return <></>;
+  }
+};
+
 const Button_states = ({
   id, handleClick, isAdded, user,
 }) => ({
@@ -85,6 +139,9 @@ const Button_states = ({
   edit: <EditButton id={id} user={user} />,
   remove: <RemoveButton action="remove" user={user} id={id} handleClick={handleClick} />,
   report: <RemoveButton action="report" user={user} id={id} handleClick={handleClick} />,
+  approve: <OpinionButton action="approve" user={user} id={id} handleClick={handleClick} />,
+  reject: <OpinionButton action="reject" user={user} id={id} handleClick={handleClick} />,
+  NA: <OpinionButton action="NA" user={user} id={id} handleClick={handleClick} />,
 });
 
 const FormulaButton = (props) => (
@@ -119,6 +176,13 @@ AddButton.propTypes = {
 };
 
 RemoveButton.propTypes = {
+  id: PropTypes.number.isRequired,
+  user: PropTypes.string.isRequired,
+  action: PropTypes.string.isRequired,
+  handleClick: PropTypes.func.isRequired,
+};
+
+OpinionButton.propTypes = {
   id: PropTypes.number.isRequired,
   user: PropTypes.string.isRequired,
   action: PropTypes.string.isRequired,

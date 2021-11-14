@@ -41,10 +41,8 @@ const PdfGenerator = () => {
 
   const getFormulas = async () => {
     let removedText = formulasHeader.replace(/\D+/g, ', ');
-    console.log(removedText);
     removedText = removedText.substr(2, removedText.length - 2);
     const idArray = removedText.split(',').map((x) => +x);
-    console.log(idArray);
     const query = `select * from Formula where id_formula in (${idArray})`;
     try {
       const results = await dbUtils.getRows(query);
@@ -59,12 +57,9 @@ const PdfGenerator = () => {
   }, [formulasHeader]);
 
   const handleRemove = async (id) => {
-    console.log('id is ', id);
     const replaced = formulasHeader.replace(`ids=${id}&`, '');
-    console.log(replaced);
     localStorage.ids = localStorage.ids.replace(`ids=${id}&`, '');
     if (replaced === '') {
-      console.log('is empty');
       setFormulas([]);
       return;
     }

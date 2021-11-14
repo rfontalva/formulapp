@@ -4,7 +4,7 @@ import RefContext from './context/RefContext';
 import UserContext from './context/UserContext';
 import CheatsheetContext from './context/CheatsheetContext';
 import {
-  AppTitle, Navbar, Footer,
+  AppTitle, Navbar, Footer, BlurBox,
 } from './components/index';
 import SwitchTree from './views/SwitchTree';
 
@@ -13,8 +13,10 @@ window.frontend = 'http://localhost:3000/';
 const App = () => {
   const titleRef = React.useRef(null);
   const opRef = React.useRef(null);
+  const blurBoxRef = React.useRef(null);
 
   const [divClick, setDivClick] = React.useState(false);
+  const [child, setChild] = React.useState();
   const [user, setUser] = React.useState();
   const [selectedCheatsheet, setSelectedCheatsheet] = React.useState('');
   const [cheatsheets, setCheatsheets] = React.useState([]);
@@ -23,7 +25,7 @@ const App = () => {
     if (opRef.current.contains(e.target)) setDivClick(!divClick);
   };
   const refs = {
-    titleRef, opRef, divClick,
+    titleRef, opRef, divClick, blurBoxRef, setChild,
   };
   const userDetails = { user, setUser };
 
@@ -45,6 +47,10 @@ const App = () => {
             selectedCheatsheet, setSelectedCheatsheet, cheatsheets, setCheatsheets,
           }}
           >
+            <BlurBox
+              child={child}
+              ref={blurBoxRef}
+            />
             <div className="content-wrap">
               <Router>
                 <Navbar user={user} setUser={setUser} />

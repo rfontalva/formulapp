@@ -73,8 +73,6 @@ const SignUp = () => {
       return;
     }
     if (!validate()) return;
-    const link = `/api/user?firstname=${firstname}&lastname=${lastname}&email=${email}&username=${username}&password=${password}`;
-    console.log(link);
     try {
       const res = await fetch(`/api/user?firstname=${firstname}&lastname=${lastname}&email=${email}&username=${username}&password=${password}`,
         { method: 'PUT' });

@@ -1091,3 +1091,22 @@ footer {
 .moderation {
     padding: 5rem 15rem;
 }
+
+.oops {
+    display: flex;
+    align-items: center;
+    vertical-align: center;
+    flex-direction: column;
+    font-family: 'Rubik', 'sans-serif';
+}
+
+.oops .wrapper {
+    display: flex;
+    align-items: center;
+    vertical-align: center;
+    flex-direction: column;
+    background: white;
+    padding: 2.5rem;
+    border-radius: 1rem;
+    box-shadow: var(--shadow-1);
+}

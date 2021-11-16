@@ -78,7 +78,8 @@ const SignUp = () => {
         { method: 'PUT' });
       switch (res.status) {
         case 401:
-          setErrorMessages(res.json());
+          console.log('xd');
+          setErrorMessages(await res.json());
           break;
         case 200:
           // eslint-disable-next-line

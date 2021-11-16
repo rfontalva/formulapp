@@ -81,7 +81,7 @@ const OpinionButton = ({
       type="button"
       className="formula-button"
       title="Esta fórmula está bien"
-      onClick={() => handleClick(id, user)}
+      onClick={() => handleClick(id, 'positive', user)}
     >
       <i
         className="fa fa-check"
@@ -94,7 +94,7 @@ const OpinionButton = ({
       type="button"
       className="formula-button"
       title="Esta fórmula está mal"
-      onClick={() => handleClick(id, user)}
+      onClick={() => handleClick(id, 'negative', user)}
     >
       <i
         className="fa fa-close"
@@ -107,7 +107,7 @@ const OpinionButton = ({
       type="button"
       className="formula-button"
       title="Sin opinion"
-      onClick={() => handleClick(id, user)}
+      onClick={() => handleClick()}
     >
       <i
         className="fa fa-question"

@@ -39,7 +39,7 @@ app.post('/api/authenticate', (req, res) => {
 app.put('/api/user', async (req, res) => {
   try {
     await api.validate(req, res)
-    if (res.statusCode !== 501 && res.statusCode !== 502) {
+    if (res.statusCode !== 401) {
       api.addUser(req, res);
     }
   } catch (err) {
@@ -114,3 +114,7 @@ app.post('/api/moderate', (req, res) => {
     api.sendToModerate(req, res, 'remove', 'negative');
   else api.sendToModerate(req, res, 'add', 'positive');
 });
+
+app.post('/api/opinion', (req, res) => {
+  api.sendOpinion(req, res)
+})

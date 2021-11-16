@@ -343,6 +343,22 @@ var api = {
     } catch (err) {
       throw new Error(err);
     }
+  }, 
+
+  async sendOpinion(req, res) {
+    const { id, username, opinion } = req.query;
+    const query = `INSERT INTO Opinion (id_moderation, id_user, opinion) VALUES
+      ((SELECT id_moderation from Moderation m JOIN Formula f using (id_formula) WHERE
+      f.id_formula=${connection.escape(id)} and m.state='started'), (SELECT id_user from User
+      where username=${connection.escape(username)}), ${connection.escape(opinion)})`;
+    console.log(query);
+    try {
+      await this.execSql(query);
+      res.status(200);
+    } catch (err) {
+      console.log(err);
+      throw new Error(err);
+    }
   }
 }
 

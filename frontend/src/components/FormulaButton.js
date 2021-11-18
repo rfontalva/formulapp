@@ -40,19 +40,25 @@ const AddButton = ({
 const RemoveButton = ({
   action, handleClick, id, user,
 }) => {
+  const [reported, setReported] = React.useState(false);
+
+  const wrapperHandler = () => {
+    handleClick(id);
+    setReported(true);
+  };
+
   const report = () => (
     <button
       type="button"
       className="formula-button"
       title="Reportar formula"
-      onClick={() => handleClick(id)}
+      onClick={wrapperHandler}
     >
       <i
         className="fa fa-flag"
       />
     </button>
   );
-
   const remove = () => (
     <button
       type="button"
@@ -66,10 +72,12 @@ const RemoveButton = ({
     </button>
   );
 
-  if (action === 'report' && userUtils.isLoggedIn(user)) {
+  if (action === 'report' && userUtils.isLoggedIn(user) && !reported) {
     return report();
   }
-  if (action === 'remove') return remove();
+  if (action === 'remove') {
+    return remove();
+  }
   return (<></>);
 };
 

@@ -13,7 +13,7 @@ const SheetList = ({ isView }) => {
   const { blurBoxRef, setChild } = React.useContext(RefContext);
 
   const getCheatsheets = async () => {
-    const query = `select id_cheatsheet, title from Cheatsheet
+    const query = `select id_cheatsheet, title, permission from Cheatsheet
         JOIN Permission using (id_cheatsheet) join User using (id_user)
         where username='${user}';`;
     try {
@@ -136,7 +136,7 @@ const SheetList = ({ isView }) => {
           </button>
         </div>
         <ul>
-          {cheatsheets.map(({ id_cheatsheet, title }) => (
+          {cheatsheets.map(({ id_cheatsheet, title, permission }) => (
             <li>
               <a
                 className="underline no-decoration"
@@ -145,20 +145,24 @@ const SheetList = ({ isView }) => {
               >
                 {title}
               </a>
-              <button
-                type="button"
-                title="Eliminar hoja"
-                onClick={() => handleDelete(id_cheatsheet)}
-              >
-                <i className="fa fa-trash" />
-              </button>
-              <button
-                type="button"
-                title="Compartir hoja"
-                onClick={() => handleShare(id_cheatsheet)}
-              >
-                <i className="fa fa-share-alt" />
-              </button>
+              {permission === 'a' && (
+                <>
+                  <button
+                    type="button"
+                    title="Eliminar hoja"
+                    onClick={() => handleDelete(id_cheatsheet)}
+                  >
+                    <i className="fa fa-trash" />
+                  </button>
+                  <button
+                    type="button"
+                    title="Compartir hoja"
+                    onClick={() => handleShare(id_cheatsheet)}
+                  >
+                    <i className="fa fa-share-alt" />
+                  </button>
+                </>
+              )}
             </li>
           ))}
         </ul>

@@ -17,8 +17,7 @@ const Cheatsheet = () => {
   const [hasPermission, setHasPermission] = useState(false);
   const { idCheatsheet } = useParams();
   const { user } = React.useContext(UserContext);
-  // eslint-disable-next-line no-unused-vars
-  const [isReadOnly, _setIsReadOnly] = useState(permission === 'r');
+  const [isReadOnly, setIsReadOnly] = useState(permission === 'r');
 
   const getCheatsheetDetails = async () => {
     try {
@@ -67,6 +66,10 @@ const Cheatsheet = () => {
     setHasPermission(hasAccess.hasPermission);
     getCheatsheetDetails();
   }, [user]);
+
+  React.useEffect(() => {
+    setIsReadOnly(permission === 'r');
+  }, [permission]);
 
   const handleRemove = async (id) => {
     try {

@@ -116,5 +116,9 @@ app.post('/api/moderate', (req, res) => {
 });
 
 app.post('/api/opinion', (req, res) => {
-  api.sendOpinion(req, res)
+  api.sendOpinion(req, res);
+})
+
+app.post('/api/shareCheatsheet', (req, res) => {
+  api.shareCheatsheet(req, res);
 })

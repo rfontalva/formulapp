@@ -11,6 +11,7 @@ import UserContext from '../context/UserContext';
 const MyFormulas = React.forwardRef((_, ref) => {
   const pageLength = 12;
   const { user } = React.useContext(UserContext);
+  const [whichModerated, setWhichModerated] = React.useState([]);
   const [formulas, setFormulas] = React.useState([]);
   const [page, setPage] = React.useState(0);
 
@@ -25,8 +26,17 @@ const MyFormulas = React.forwardRef((_, ref) => {
     }
   };
 
+  const getWhichModerated = async () => {
+    const res = await userUtils.getWhichModerated(user);
+    setWhichModerated(res);
+  };
+
   React.useEffect(() => {
     getFormulas();
+  }, [user]);
+
+  React.useEffect(() => {
+    getWhichModerated();
   }, [user]);
 
   const paginate = (increment) => {
@@ -57,7 +67,7 @@ const MyFormulas = React.forwardRef((_, ref) => {
             ) => {
               const buttons = [{
                 state: 'report',
-                handleClick: () => handleRemove(),
+                handleClick: () => handleRemove(id_formula),
                 user,
                 id: id_formula,
               },
@@ -72,6 +82,10 @@ const MyFormulas = React.forwardRef((_, ref) => {
                 id: id_formula,
               },
               ];
+              const hasModerated = whichModerated.includes(id_formula);
+              if (hasModerated) {
+                buttons.shift();
+              }
               return (
                 <Formula
                   key={id_formula}

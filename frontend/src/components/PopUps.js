@@ -34,7 +34,7 @@ DeleteCheatsheetPopUp.propTypes = {
 
 const ShareCheatsheetPopUp = ({ id_cheatsheet, hideBlurBox }) => {
   const [searchUser, setSearchUser] = React.useState('');
-  const [permission, setPermission] = React.useState('');
+  const [permission, setPermission] = React.useState('r');
   const [hasError, setHasError] = React.useState(false);
   const userHandler = (e) => {
     setSearchUser(e.target.value);
@@ -42,10 +42,12 @@ const ShareCheatsheetPopUp = ({ id_cheatsheet, hideBlurBox }) => {
   };
 
   const shareSheet = async () => {
-    const res = await fetch(`/api/shareCheatsheet?id=${id_cheatsheet}&user=${searchUser}&permission=${permission}`,
+    const res = await fetch(`/api/shareCheatsheet?id=${id_cheatsheet}&username=${searchUser}&permission=${permission}`,
       { method: 'POST' });
     if (res.status === 401) {
       setHasError(true);
+    } else {
+      hideBlurBox();
     }
   };
 

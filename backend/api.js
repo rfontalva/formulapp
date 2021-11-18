@@ -279,11 +279,14 @@ var api = {
     const { id, username } = req.query;
     const queryState = `SELECT count(*) as isNotEmpty FROM Moderation m JOIN Formula using (id_formula) 
       WHERE id_formula=${connection.escape(id)} and m.state='started';`;
-    const moderationQuery = `INSERT IGNORE INTO Moderate (id_formula, action) 
+    const moderationQuery = `INSERT IGNORE INTO Moderation (id_formula, action) 
       VALUE (${connection.escape(id)}, '${action}');`;
     const userQuery = `INSERT INTO Opinion (id_moderation, id_user, opinion) VALUE 
       ((select id_moderation from Moderation where id_formula=${connection.escape(id)}), 
       (select id_user from User where username=${connection.escape(username)}), '${opinion}');`;
+    console.log(queryState);
+    console.log(moderationQuery);
+    console.log(userQuery);
     try {
       await this.execSql('START TRANSACTION;');
       const responseState = await this.execSql(queryState);
@@ -343,7 +346,37 @@ var api = {
     } catch (err) {
       throw new Error(err);
     }
-  }, 
+  },
+
+  async calculateReputation(id) {
+    const queryReputation = `SELECT @id=id_moderation, action, f.state as state, @rep:=moderation_reputation(id_moderation) as reputation
+    FROM Moderation m JOIN Formula f using (id_formula) where
+      f.id_formula=${connection.escape(id)} and m.state='started';`;
+    const updateState = `UPDATE Moderation SET state=(SELECT IF(@rep>=10, 'added', IF(@rep <= -10, 'removed', 'started')))
+      where id_moderation=@id;`;
+    const updateUsers = `UPDATE User u1 JOIN User u2 using (id_user) SET u1.lvl=(select calc_user_lvl(u2.id_user)) where u1.id_user=u2.id_user`;
+    try {
+      const {action, state, reputation} = await this.simpleQuery(queryReputation);
+      console.log(action, state, reputation);
+      if (reputation <= -5 && action === "remove" && state === "added")
+      {
+        console.log("entro");
+        const standByQuery = `UPDATE Formula SET state='stand by' where id_formula=${connection.escape(id)}`;
+        await this.execSql(standByQuery);  
+      }
+      await this.execSql(updateState);
+      await this.execSql(updateUsers);
+      await this.execSql('COMMIT;');
+      return true;
+    } catch (err) {
+      try {
+        await this.execSql('ROLLBACK;');
+      } catch (err) {
+        throw new Error(err);
+      }
+      throw new Error(err);
+    }
+  },
 
   async sendOpinion(req, res) {
     const { id, username, opinion } = req.query;
@@ -351,8 +384,32 @@ var api = {
       ((SELECT id_moderation from Moderation m JOIN Formula f using (id_formula) WHERE
       f.id_formula=${connection.escape(id)} and m.state='started'), (SELECT id_user from User
       where username=${connection.escape(username)}), ${connection.escape(opinion)})`;
-    console.log(query);
     try {
+      await this.execSql('START TRANSACTION;');
+      await this.execSql(query);
+      await api.calculateReputation(id);
+      res.status(200);
+    } catch (err) {
+      console.log(err);
+      throw new Error(err);
+    }
+  },
+  
+  async shareCheatsheet(req, res) {
+    const {id, username, permission} = req.query;
+    const queryUsername = `select count(*) as userExists from User 
+      where username=${connection.escape(username)}`;
+    const query = `INSERT INTO Permission (id_cheatsheet, permission, id_user) VALUE
+      (${connection.escape(id)}, ${connection.escape(permission)}, 
+      (SELECT id_user from User where username=${connection.escape(username)}))`;
+    console.log("query", query);
+    console.log("queryUsername", queryUsername);
+    try {
+      const responseUsername = await this.simpleQuery(queryUsername);
+      if (!responseUsername.userExists) {
+        res.status(401);
+        return;
+      }
       await this.execSql(query);
       res.status(200);
     } catch (err) {

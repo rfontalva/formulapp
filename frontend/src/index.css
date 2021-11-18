@@ -141,6 +141,12 @@ input:focus, textarea:focus, select:focus {
 .formula-title {
     float: left;
     max-width: 50%;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    -ms-hyphens: auto;
+    -moz-hyphens: auto;
+    -webkit-hyphens: auto;
+    hyphens: auto;
     font-family: 'Rubik', sans-serif;
 }
 
@@ -1062,7 +1068,7 @@ footer {
 
 .stand.by {
     color: #e6bd38;
-    position: absolute;
+    position: relative;
 }
 
 .stand.by:before {

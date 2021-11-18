@@ -31,6 +31,7 @@ const utils = {
     const results = await dbUtils.simpleQuery(query);
     const { permission } = await results;
     const hasPermission = permission !== undefined;
+    console.log(permission);
     return { hasPermission, permission };
   },
 

@@ -18,7 +18,7 @@ const CheatsheetSelector = ({ id_formula }) => {
 
   const getCheatsheets = async () => {
     const query = `select id_cheatsheet, title from Cheatsheet join Permission using (id_cheatsheet) 
-      join User using (id_user) where username='${user}'`;
+      join User using (id_user) where username='${user}' and permission not in ('r')`;
     try {
       const results = await dbUtils.getRows(query);
       if (Array.isArray(results)) {

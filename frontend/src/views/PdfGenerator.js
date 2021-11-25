@@ -3,7 +3,7 @@ import axios from 'axios';
 import { saveAs } from 'file-saver';
 import dbUtils from '../utils/dbUtils';
 import { Formula } from '../components/index';
-import userUtils from '../utils/userUtils';
+// import userUtils from '../utils/userUtils';
 import UserContext from '../context/UserContext';
 
 const PdfGenerator = () => {
@@ -11,6 +11,7 @@ const PdfGenerator = () => {
   const [formulasHeader, setHeader] = React.useState(localStorage.ids);
   const [formulas, setFormulas] = React.useState([]);
   const [isDownloading, setIsDownloading] = React.useState(false);
+  const [isSaved, setIsSaved] = React.useState(false);
   const { user } = React.useContext(UserContext);
 
   const createPdf = async () => {
@@ -66,9 +67,10 @@ const PdfGenerator = () => {
     setHeader(replaced);
   };
 
-  const saveSheet = () => {
-    // TODO: guarda todo junto y si no estas logueado
-    // te abre el coso de login, guardo en cookie lo que hay en el localstorage
+  const saveSheet = async () => {
+    await fetch(`/api/saveCheatsheet?${formulasHeader}&title=${csTitle}&user=${user}`, { method: 'POST' });
+    setIsSaved(true);
+    // que pasa si ya tiene esta hoja de datos?
   };
 
   return (
@@ -89,7 +91,7 @@ const PdfGenerator = () => {
           </form>
           {!isDownloading && <button type="button" onClick={submitHandler}>Descargar</button>}
           {isDownloading && <p>Descargando...</p>}
-          {userUtils.isLoggedIn(user) && <button type="button" onClick={saveSheet}>Guardar</button>}
+          {!isSaved && <button type="button" onClick={saveSheet}>Guardar</button>}
         </div>
       </article>
       {csTitle && <h1>{csTitle}</h1>}

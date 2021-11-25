@@ -62,13 +62,18 @@ app.post('/api/pdf', async (req, res) => {
     ({ ids } = req.query);
   }
   else ids = req.query.ids.map((x) => +x);
-  const formulas = await api.execSql(`select * from Formula where id_formula in (${ids})`);
-  await printPdf(formulas, header);
+  try {
+    const formulas = await api.execSql(`select * from Formula where id_formula in (${ids})`);
+    await printPdf(formulas, header);
+  } catch(err) {
+    throw new Error(err);
+  }
   res.send(Promise.resolve());
 });
 
-app.get('/api/pdf', (req, res) => {
+app.get('/api/pdf', async (req, res) => {
   const path = `${__dirname}/${req.query.header}.pdf`;
+  await new Promise(resolve => setTimeout(resolve, 4000));
   res.sendFile(path);
 });
 
@@ -82,11 +87,13 @@ app.delete('/api/pdf', (req, res) => {
 app.post('/api/makeCheatsheet', async (req, res) => {
   try {
     const {formulas, title} = await api.getCheatsheet(req, res);
-    await printPdf(formulas, title);
+    const success = await printPdf(formulas, title)
+    if (!success) {
+      res.status(401)
+    }
   } catch (err) {
     throw new Error(err);
   } 
-  res.send(Promise.resolve());  
 });
 
 app.get('/api/cheatsheet', (req, res) => {
@@ -121,4 +128,12 @@ app.post('/api/opinion', (req, res) => {
 
 app.post('/api/shareCheatsheet', (req, res) => {
   api.shareCheatsheet(req, res);
+})
+
+app.post('/api/saveCheatsheet', (req, res) => {
+  api.saveCheatsheet(req, res);
+})
+
+app.patch('/api/saveCheatsheet', (req, res) => {
+  api.editCheatsheet(req, res);
 })

@@ -11,7 +11,9 @@ import UserContext from '../context/UserContext';
 const Cheatsheet = () => {
   const [csTitle, setCSTitle] = useState('');
   const [formulasDisplay, setFormulas] = useState([]);
+  const [isSaved, setIsSaved] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
+  const [downloadError, setDownloadError] = useState(false);
   const [permission, setPermission] = useState(false);
   const [removed, setRemoved] = useState(1);
   const [hasPermission, setHasPermission] = useState(false);
@@ -21,7 +23,7 @@ const Cheatsheet = () => {
 
   const getCheatsheetDetails = async () => {
     try {
-      const results = await fetch(`http://localhost:4000/api/cheatsheet?id=${idCheatsheet}`);
+      const results = await fetch(`/api/cheatsheet?id=${idCheatsheet}`);
       const { formulas, title } = await results.json();
       setCSTitle(title);
       setFormulas(formulas);
@@ -31,13 +33,19 @@ const Cheatsheet = () => {
   };
 
   const createPdf = async () => {
+    setDownloadError(false);
     setIsDownloading(true);
-    await fetch(`/api/makeCheatsheet?id=${idCheatsheet}`, { method: 'POST' });
-    const res = await axios.get(`/api/pdf?header=${csTitle}`, { responseType: 'blob' });
-    const pdfBlob = new Blob([res.data], { type: 'application/pdf' });
-    saveAs(pdfBlob, `${csTitle}.pdf`);
-    setIsDownloading(false);
-    await fetch(`/api/pdf?header=${csTitle}`, { method: 'DELETE' });
+    const makeResponse = await fetch(`/api/makeCheatsheet?id=${idCheatsheet}`, { method: 'POST' });
+    if (makeResponse.ok) {
+      const res = await axios.get(`/api/pdf?header=${csTitle}`, { responseType: 'blob' });
+      const pdfBlob = new Blob([res.data], { type: 'application/pdf' });
+      saveAs(pdfBlob, `${csTitle}.pdf`);
+      setIsDownloading(false);
+      await fetch(`/api/pdf?header=${csTitle}`, { method: 'DELETE' });
+    } else {
+      setIsDownloading(false);
+      setDownloadError(true);
+    }
   };
 
   const submitHandler = () => {
@@ -84,8 +92,9 @@ const Cheatsheet = () => {
     }
   };
 
-  const saveSheet = () => {
-    console.log('WIP');
+  const saveSheet = async () => {
+    await fetch(`/api/saveCheatsheet?title=${csTitle}&id=${idCheatsheet}`, { method: 'PATCH' });
+    setIsSaved(true);
   };
 
   React.useEffect(() => {
@@ -112,7 +121,8 @@ const Cheatsheet = () => {
               </form>
               {!isDownloading && <button type="button" onClick={submitHandler}>Descargar</button>}
               {isDownloading && <p>Descargando...</p>}
-              {!isReadOnly && <button type="button" onClick={saveSheet}>Guardar</button>}
+              {!isReadOnly && !isSaved && <button type="button" onClick={saveSheet}>Guardar</button>}
+              {downloadError && <p className="error-msg">Hubo un error, intente de nuevo</p>}
             </div>
           </article>
           {csTitle && <h1>{csTitle}</h1>}

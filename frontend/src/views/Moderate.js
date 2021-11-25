@@ -13,9 +13,15 @@ const Moderate = () => {
   const { user } = React.useContext(UserContext);
 
   const getFormulas = async () => {
-    const query = `SELECT * from Moderation m
+    const query = `SELECT m.id_moderation, f.id_formula, f.title, f.equation, f.txt, f.state
+      from Moderation m
       JOIN Formula f on m.id_formula=f.id_formula
-      WHERE  m.state='started' and id_moderation not in 
+      WHERE  m.state='started' and m.action not in ('edit') and id_moderation not in 
+      (SELECT id_moderation from Opinion join User using (id_user) where username='${user}')
+      UNION
+      SELECT m.id_moderation, e.id_formula, e.title, e.equation, e.txt, '' as state from Moderation m
+      JOIN Edition e on m.id_formula=e.id_formula
+      WHERE  m.state='started' and m.action='edit' and id_moderation not in 
       (SELECT id_moderation from Opinion join User using (id_user) where username='${user}')`;
     try {
       const res = await dbUtils.getRows(query);

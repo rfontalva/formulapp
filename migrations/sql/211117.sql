@@ -33,3 +33,7 @@ CREATE TABLE Edition (
   PRIMARY KEY (id_edition),
   constraint fk_formula_edition foreign key (id_formula) references Formula(id_formula) on delete cascade
 );
+
+alter table Moderation drop constraint chkActionModeration;
+alter table Moderation modify column action enum('add','remove','edit');
+alter table Formula modify column state enum('stand by','added','removed', 'edited');

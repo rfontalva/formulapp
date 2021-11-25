@@ -117,7 +117,7 @@ const InputFormula = () => {
     txt = encodeURIComponent(txt);
     try {
       const response = await fetch(
-        `/api/edit?id=${parseInt(id, 10)}&title=${title}&equation=${equation}&txt=${txt}&category=${category}&topic=${topic}&rawLatex=${isChecked}`,
+        `/api/edit?id=${parseInt(id, 10)}&title=${title}&equation=${equation}&txt=${txt}&category=${category}&topic=${topic}&rawLatex=${isChecked}&user=${user}`,
       );
       if (response.status !== 200) {
         setFailed(true);

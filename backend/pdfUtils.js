@@ -1,6 +1,5 @@
 const puppeteer = require('puppeteer');
 const fs = require('fs');
-const { newCheatsheet } = require('./api');
 
 const generateCheatsheet = (formulas, header) => {
   const mapp = formulas.map(((val) => (

@@ -23,7 +23,7 @@ const Home = React.forwardRef(({ search }, ref) => {
 
   const getFormulas = async () => {
     if (isSearch) {
-      const query = `select * from Formula where title like '%${searchTitle}%'`;
+      const query = `select * from Formula where title like '%${searchTitle}%' and state='added'`;
       try {
         const results = await dbUtils.getRows(query);
         setFormulas(results);

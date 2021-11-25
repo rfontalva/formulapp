@@ -78,7 +78,6 @@ const SignUp = () => {
         { method: 'PUT' });
       switch (res.status) {
         case 401:
-          console.log('xd');
           setErrorMessages(await res.json());
           break;
         case 200:
